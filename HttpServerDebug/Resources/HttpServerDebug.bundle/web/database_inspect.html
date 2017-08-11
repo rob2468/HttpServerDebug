@@ -1,0 +1,27 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据库查看</title>
+<style type="text/css">
+td {
+  text-align: center;
+}
+</style>
+<script type="text/javascript">
+function onSelectChanged() {
+  var tableNamesEle = document.getElementsByClassName("table_names")[0];
+  var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
+  window.location.search = "table_name=" + tableName;
+}
+</script>
+</head>
+<body>
+  <select class="table_names" onchange="onSelectChanged()">%@</select>
+  <table border="1">
+    <thead><tr>%@</tr></thead>
+    <tbody>%@</tbody>
+  </table>
+<br>
+</body>
+</html>

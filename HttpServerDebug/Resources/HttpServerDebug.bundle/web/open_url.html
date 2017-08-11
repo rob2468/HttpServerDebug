@@ -1,0 +1,37 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>链接打开</title>
+<style type="text/css">
+input {
+  width: 500px;
+}
+</style>
+<script type="text/javascript">
+function submitForm() {
+  document.getElementById('invoke_form').submit();
+}
+</script>
+</head>
+<body>
+  <form id="invoke_form">
+    <input type="text" id="invoke_link_input" name="invoke_link" placeholder="调起链接"></input>
+    <button type="button" class="submit" onclick=submitForm()><span>打开链接</span></button>
+  </form>
+  <div>
+    <p>示例链接：</p>
+    <p>首页：bdbrowser://bdhome/params</p>
+    <p>趣听：flyflow://com.baidu.browser.apps/ting?CMD=open&level=home</p>
+    <p>网址导航：bdb://SiteNavi/params?</p>
+    <p>小说：flyflow://com.baidu.browser.apps/novel?CMD=open?sub_feature=home</p>
+    <p>假日：bdb://holiday/params?holidayDate=</p>
+    <p>播放音频：flyflow://com.baidu.browser.apps/ting?CMD=play&audioId=2070140&albumId=41105</p>
+    <p>漫画：flyflow://com.baidu.browser.apps/comic?CMD=open&level=home&from=home</p>
+  </div>
+  <div>
+    <p>web上传的文件路径：</p>
+    %@
+  </div>
+</body>
+</html>
