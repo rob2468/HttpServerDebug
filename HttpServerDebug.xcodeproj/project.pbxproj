@@ -57,7 +57,6 @@
 		8F704BB71F3D52DD002E1FAF /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B9F1F3D5275002E1FAF /* FMDatabasePool.m */; };
 		8F704BB81F3D52DD002E1FAF /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704BA11F3D5275002E1FAF /* FMDatabaseQueue.m */; };
 		8F704BB91F3D52DD002E1FAF /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704BA41F3D5275002E1FAF /* FMResultSet.m */; };
-		8F704BBD1F3D53CF002E1FAF /* libFMDB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F704BA91F3D529E002E1FAF /* libFMDB.a */; };
 		8F704BC01F3D57B0002E1FAF /* HttpServerDebug.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704BBA1F3D533B002E1FAF /* HttpServerDebug.h */; };
 		8FEFE7421F3F4F1100D841E0 /* BDHttpServerManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8FAC0A211F3C84F600D329B1 /* BDHttpServerManager.h */; };
 		8FEFE7441F3F4F5700D841E0 /* FMDatabase.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9A1F3D5275002E1FAF /* FMDatabase.h */; };
@@ -217,7 +216,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F704BBD1F3D53CF002E1FAF /* libFMDB.a in Frameworks */,
 				8F16DD721F3CABD200A2BFBF /* libxml2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -759,10 +757,7 @@
 		8F13E2BC1F3C7B4500FF8881 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../Pods/Pods\"",
-					/usr/include/libxml2,
-				);
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -776,10 +771,7 @@
 		8F13E2BD1F3C7B4500FF8881 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../Pods/Pods\"",
-					/usr/include/libxml2,
-				);
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
