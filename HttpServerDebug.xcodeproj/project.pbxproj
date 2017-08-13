@@ -98,7 +98,6 @@
 
 /* Begin PBXFileReference section */
 		8F13E2B21F3C7B4500FF8881 /* libHttpServerDebug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHttpServerDebug.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		8F16DD481F3CA62800A2BFBF /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPods.a; path = "../../../Library/Developer/Xcode/DerivedData/Closet-cqlnlhkclkznrocfxsuxkhtnzpov/Build/Products/Debug-iphoneos/libPods.a"; sourceTree = "<group>"; };
 		8F16DD711F3CABD200A2BFBF /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = ../../../../../usr/lib/libxml2.dylib; sourceTree = "<group>"; };
 		8F704B911F3D5275002E1FAF /* FMDatabase+FTS3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FMDatabase+FTS3.h"; sourceTree = "<group>"; };
 		8F704B921F3D5275002E1FAF /* FMDatabase+FTS3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "FMDatabase+FTS3.m"; sourceTree = "<group>"; };
@@ -279,7 +278,6 @@
 			isa = PBXGroup;
 			children = (
 				8F16DD711F3CABD200A2BFBF /* libxml2.dylib */,
-				8F16DD481F3CA62800A2BFBF /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
