@@ -57,10 +57,8 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     manager.server = [[HTTPServer alloc] init];
     [manager.server setType:@"_http._tcp."];
     [manager.server setDocumentRoot:webLocalPath];
-#ifdef DEBUG
     // 开发模式下使用固定端口，方便调试
     [manager.server setPort:5555];
-#endif
     [manager.server setConnectionClass:[BDHttpServerConnection class]];
     NSError *error;
     [manager.server start:&error];

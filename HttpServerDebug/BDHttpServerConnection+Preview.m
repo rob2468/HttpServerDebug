@@ -48,7 +48,8 @@
         NSData *data;
         if ([filePath isEqualToString:@"standardUserDefaults"]) {
             NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
-            data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
+            NSString *str = [dict description];
+            data = [str dataUsingEncoding:NSUTF8StringEncoding];
         } else {
             filePath = [filePath stringByRemovingPercentEncoding];
             NSString *extension = filePath.pathExtension;
@@ -61,7 +62,9 @@
                 contentType = @"image/jpeg";
             }
         }
-        response = [[BDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
+        if (data) {
+            response = [[BDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
+        }
     }
     if (!response) {
         NSString *prompt = @"文件不存在或不支持预览";
