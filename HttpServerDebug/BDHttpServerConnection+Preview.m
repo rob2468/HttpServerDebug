@@ -45,15 +45,21 @@
     NSString *contentType = @"text/plain;charset=utf-8";
     if (params) {
         NSString *filePath = [params objectForKey:@"file_path"];
-        filePath = [filePath stringByRemovingPercentEncoding];
-        NSString *extension = filePath.pathExtension;
-        
-        NSData *data = [[NSData alloc] initWithContentsOfFile:filePath];
-        if ([extension isEqualToString:@"png"]) {
-            contentType = @"image/png";
-        } else if ([extension isEqualToString:@"jpg"] ||
-                   [extension isEqualToString:@"jpeg"]) {
-            contentType = @"image/jpeg";
+        NSData *data;
+        if ([filePath isEqualToString:@"standardUserDefaults"]) {
+            NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+            data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
+        } else {
+            filePath = [filePath stringByRemovingPercentEncoding];
+            NSString *extension = filePath.pathExtension;
+            
+            data = [[NSData alloc] initWithContentsOfFile:filePath];
+            if ([extension isEqualToString:@"png"]) {
+                contentType = @"image/png";
+            } else if ([extension isEqualToString:@"jpg"] ||
+                       [extension isEqualToString:@"jpeg"]) {
+                contentType = @"image/jpeg";
+            }
         }
         response = [[BDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
     }
