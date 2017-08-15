@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Dependencies onfiguration
-FMDB_INCLUDE=0
+FMDB_INCLUDE=1
 CocoaLumberjack_INCLUDE=1
 CocoaAsyncSocket_INCLUDE=1
 CocoaHttpServer_INCLUDE=1
