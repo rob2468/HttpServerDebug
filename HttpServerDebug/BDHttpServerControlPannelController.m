@@ -61,7 +61,7 @@
 
 - (void)startHttpServer
 {
-    [BDHttpServerManager startHttpServer];
+    [BDHttpServerManager startHttpServer:nil];
     
     self.siteLabel.text = [BDHttpServerManager fetchServerSite];
 }

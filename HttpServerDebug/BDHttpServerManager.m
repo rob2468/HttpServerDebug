@@ -40,8 +40,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return isRunning;
 }
 
-+ (void)startHttpServer
-{
++ (void)startHttpServer:(NSString *)port {
     // 将bundle中的web资源拷贝到服务器根目录中
     NSString *webLocalPath = NSTemporaryDirectory();
     webLocalPath = [webLocalPath stringByAppendingPathComponent:@"web"];
@@ -57,8 +56,9 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     manager.server = [[HTTPServer alloc] init];
     [manager.server setType:@"_http._tcp."];
     [manager.server setDocumentRoot:webLocalPath];
-    // 开发模式下使用固定端口，方便调试
-    [manager.server setPort:5555];
+    if (port.length > 0) {
+        [manager.server setPort:port.integerValue];
+    }
     [manager.server setConnectionClass:[BDHttpServerConnection class]];
     NSError *error;
     [manager.server start:&error];

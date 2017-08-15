@@ -14,7 +14,10 @@
 
 + (BOOL)isHttpServerRunning;
 
-+ (void)startHttpServer;
+/**
+ *  @param port  port number. nil will use random number.
+ */
++ (void)startHttpServer:(NSString *)port;
 
 + (void)stopHttpServer;
 
