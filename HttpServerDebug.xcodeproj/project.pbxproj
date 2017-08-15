@@ -16,6 +16,7 @@
 		8F16DD421F3CA5EE00A2BFBF /* BDHttpServerDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC0A0F1F3C84F600D329B1 /* BDHttpServerDefine.m */; };
 		8F16DD441F3CA5EE00A2BFBF /* BDHttpServerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC0A131F3C84F600D329B1 /* BDHttpServerManager.m */; };
 		8F16DD461F3CA5EE00A2BFBF /* BDHttpServerUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC0A161F3C84F600D329B1 /* BDHttpServerUtility.m */; };
+		8F1FAB091F42922C00BA2E14 /* BDHttpServerControlPannelController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8FAC0A121F3C84F600D329B1 /* BDHttpServerControlPannelController.h */; };
 		8F704BB21F3D52CC002E1FAF /* FMDatabase+FTS3.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B921F3D5275002E1FAF /* FMDatabase+FTS3.m */; };
 		8F704BB31F3D52DD002E1FAF /* FMTokenizers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B941F3D5275002E1FAF /* FMTokenizers.m */; };
 		8F704BB41F3D52DD002E1FAF /* FMDatabase+InMemoryOnDiskIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B981F3D5275002E1FAF /* FMDatabase+InMemoryOnDiskIO.m */; };
@@ -74,6 +75,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				8F1FAB091F42922C00BA2E14 /* BDHttpServerControlPannelController.h in CopyFiles */,
 				8FEFE7421F3F4F1100D841E0 /* BDHttpServerManager.h in CopyFiles */,
 				8F704BC01F3D57B0002E1FAF /* HttpServerDebug.h in CopyFiles */,
 			);

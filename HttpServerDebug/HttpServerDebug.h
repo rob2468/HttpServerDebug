@@ -10,6 +10,6 @@
 #define HttpServerDebug_h
 
 #import "BDHttpServerManager.h"
-#import "FMDB.h"
+#import "BDHttpServerControlPannelController.h"
 
 #endif /* HttpServerDebug_h */
