@@ -2,7 +2,7 @@
 
 HttpServerDebug offers debug utilities (exploring file system, inspecting database, etc.) with the help of http server. HttpServerDebug will start http server in your device, and you can connect to the server through user agents.
 
-In the root directory, there is the "archive.sh" script. This script will generate files in the "output" folder in the same directory. The "output" folder contains three kinds of files, headers, library and bundle. These are all files that needed.
+In the root directory, there is the "archive.sh" script. `cd` to the root directory, then `bash archive.sh`. This script will generate files in the "output" folder in the same directory. The "output" folder contains three kinds of files, headers, library and bundle. These are all files that needed.
 
 You may need add libxml2 to your project after integrating HttpServerDebug. In "Build Phases -> Link Binary With Libraries", add libxml2.
 
