@@ -897,7 +897,7 @@
 		8F13E2BC1F3C7B4500FF8881 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				HEADER_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
