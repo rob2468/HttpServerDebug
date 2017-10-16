@@ -10,9 +10,9 @@ td {
 </style>
 <script type="text/javascript">
 function onSelectChanged() {
-  var tableNamesEle = document.getElementsByClassName("table_names")[0];
-  var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
-  window.location.search = "table_name=" + tableName;
+    var tableNamesEle = document.getElementsByClassName('table-names')[0];
+    var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
+    window.location.search = 'table_name=' + tableName;
 }
 </script>
 </head>
@@ -23,7 +23,7 @@ function onSelectChanged() {
     <div></div>
     <!-- browse data -->
     <div class="tab-pane active">
-        <select class="table_names" onchange="onSelectChanged()">%%SELECT_HTML%%</select>
+        <select class="table-names" onchange="onSelectChanged()">%%SELECT_HTML%%</select>
         <table border="1">
             <thead><tr>%%HEAD_TABLE%%</tr></thead>
             <tbody>%%BODY_TABLE%%</tbody>
