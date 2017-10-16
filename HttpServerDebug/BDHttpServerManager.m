@@ -55,6 +55,10 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
     manager.server = [[HTTPServer alloc] init];
     [manager.server setType:@"_http._tcp."];
+    
+    // develop web in simulator, use files in the project bundle directly
+    webLocalPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+    
     [manager.server setDocumentRoot:webLocalPath];
     if (port.length > 0) {
         [manager.server setPort:port.integerValue];

@@ -11,12 +11,13 @@
 #import "BDHttpServerDefine.h"
 #import "FMDB.h"
 #import "BDHttpServerManager.h"
+#import "HTTPDynamicFileResponse.h"
 
 @implementation BDHttpServerConnection (Database)
 
 - (NSObject<HTTPResponse> *)fetchDatabaseResponse:(NSDictionary *)params
 {
-    HTTPDataResponse *response;
+    NSObject<HTTPResponse> *response;
     NSString *dbPath = [BDHttpServerManager fetchDatabaseFilePath];
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     NSString *tableName = [params objectForKey:@"table_name"];
@@ -70,13 +71,14 @@
         }
         [database close];
         
-        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
-        NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
-        NSString *htmlPath = [webPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kBDHttpServerDBInspect]];
-        NSString *htmlStr = [NSString stringWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
-        htmlStr = [NSString stringWithFormat:htmlStr, selectHtml, headTable, bodyTable];
-        NSData *htmlData = [htmlStr dataUsingEncoding:NSUTF8StringEncoding];
-        response = [[HTTPDataResponse alloc] initWithData:htmlData];
+        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kBDHttpServerDBInspect]];
+        NSDictionary *replacementDict =
+        @{@"DB_FILE_PATH": dbPath,
+          @"SELECT_HTML": selectHtml,
+          @"HEAD_TABLE": headTable,
+          @"BODY_TABLE": bodyTable
+          };
+        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
     }
     return response;
 }

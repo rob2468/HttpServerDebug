@@ -17,11 +17,22 @@ function onSelectChanged() {
 </script>
 </head>
 <body>
-  <select class="table_names" onchange="onSelectChanged()">%@</select>
-  <table border="1">
-    <thead><tr>%@</tr></thead>
-    <tbody>%@</tbody>
-  </table>
+    <!-- db file path -->
+    <div><p>数据库文件路径：%%DB_FILE_PATH%%</p></div>
+    <!-- navigation -->
+    <div></div>
+    <!-- browse data -->
+    <div class="tab-pane active">
+        <select class="table_names" onchange="onSelectChanged()">%%SELECT_HTML%%</select>
+        <table border="1">
+            <thead><tr>%%HEAD_TABLE%%</tr></thead>
+            <tbody>%%BODY_TABLE%%</tbody>
+        </table>
+    </div>
+    <!-- execute SQL -->
+    <div class="tab-pane"></div>
+    <!-- db structure -->
+    <div class="tab-pane"></div>
 <br>
 </body>
 </html>
