@@ -4,11 +4,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>数据库查看</title>
 <style type="text/css">
+body,
+table {
+    font-size: 12px;
+}
 td {
   text-align: center;
 }
+.nav-bar {
+    display: block;
+    border: 1px solid;
+}
+.nav-bar ul {
+    list-style-type: none;
+    margin: 0;
+}
+.nav-bar li {
+    display: inline-block;
+    padding: 15px 0;
+    width: 100px;
+    text-align: center;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.8);
+}
+.nav-bar li:hover {
+    color: #000;
+}
+.nav-bar li.active {
+    background-color: #e7e7e7;
+    color: #000;
+}
+.tab-pane {
+    display: none;
+}
+.tab-pane.active {
+    display: block;
+}
 </style>
 <script type="text/javascript">
+$(document).ready(function () {
+
+});
+function onNavBarItemClick(id) {
+    var id0 = 'browse-data';
+    var id1 = 'execute-sql';
+    var id2 = 'db-structure';
+    var selectedItem = document.getElementById(id);
+    if (!selectedItem.classList.contains('active')) {
+        activeNavAndTabElement(selectedItem);
+        if (selectedItem.id === id0) {
+            inactiveNavAndTabElement(document.getElementById(id1));
+            inactiveNavAndTabElement(document.getElementById(id2));
+        } else if (selectedItem.id === id1) {
+            inactiveNavAndTabElement(document.getElementById(id0));
+            inactiveNavAndTabElement(document.getElementById(id2));
+        } else {
+            inactiveNavAndTabElement(document.getElementById(id0));
+            inactiveNavAndTabElement(document.getElementById(id1));
+        }
+    }
+}
+function activeNavAndTabElement(navEle) {
+    navEle.classList.add('active');
+    var tabEle = document.getElementById(navEle.id + '-tab');
+    tabEle.classList.add('active');
+}
+function inactiveNavAndTabElement(navEle) {
+    navEle.classList.remove('active');
+    var tabEle = document.getElementById(navEle.id + '-tab');
+    tabEle.classList.remove('active');
+}
 function onSelectChanged() {
     var tableNamesEle = document.getElementsByClassName('table-names')[0];
     var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
@@ -20,9 +85,15 @@ function onSelectChanged() {
     <!-- db file path -->
     <div><p>数据库文件路径：%%DB_FILE_PATH%%</p></div>
     <!-- navigation -->
-    <div></div>
+    <div class="nav-bar">
+        <ul>
+            <li class="nav-item active" id="browse-data" onclick="onNavBarItemClick(this.id)">浏览数据</li>
+            <li class="nav-item" id="execute-sql" onclick="onNavBarItemClick(this.id)">执行SQL</li>
+            <li class="nav-item" id="db-structure" onclick="onNavBarItemClick(this.id)">数据库结构</li>
+        </ul>
+    </div>
     <!-- browse data -->
-    <div class="tab-pane active">
+    <div class="tab-pane active" id="browse-data-tab">
         <select class="table-names" onchange="onSelectChanged()">%%SELECT_HTML%%</select>
         <table border="1">
             <thead><tr>%%HEAD_TABLE%%</tr></thead>
@@ -30,9 +101,9 @@ function onSelectChanged() {
         </table>
     </div>
     <!-- execute SQL -->
-    <div class="tab-pane"></div>
+    <div class="tab-pane" id="execute-sql-tab">execute SQL</div>
     <!-- db structure -->
-    <div class="tab-pane"></div>
+    <div class="tab-pane" id="db-structure-tab">db structure</div>
 <br>
 </body>
 </html>
