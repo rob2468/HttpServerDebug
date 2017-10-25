@@ -40,6 +40,9 @@ td {
 .tab-pane.active {
     display: block;
 }
+.tab-pane .table {
+    overflow-x: scroll;
+}
 </style>
 <script type="text/javascript">
 $(document).ready(function () {
@@ -95,10 +98,12 @@ function onSelectChanged() {
     <!-- browse data -->
     <div class="tab-pane active" id="browse-data-tab">
         <select class="table-names" onchange="onSelectChanged()">%%SELECT_HTML%%</select>
+        <div class="table">
         <table border="1">
             <thead><tr>%%HEAD_TABLE%%</tr></thead>
             <tbody>%%BODY_TABLE%%</tbody>
         </table>
+        </div>
     </div>
     <!-- execute SQL -->
     <div class="tab-pane" id="execute-sql-tab">execute SQL</div>
