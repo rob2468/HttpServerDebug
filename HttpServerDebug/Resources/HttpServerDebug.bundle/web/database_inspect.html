@@ -80,7 +80,22 @@ function inactiveNavAndTabElement(navEle) {
 function onSelectChanged() {
     var tableNamesEle = document.getElementsByClassName('table-names')[0];
     var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
-    window.location.search = 'table_name=' + tableName;
+
+    // update search, table_name field
+    var searchURL = window.location.search;
+    searchURL = searchURL.substring(1, searchURL.length);
+    var keyValueArr = searchURL.split('&');
+    for (var i = 0; i < keyValueArr.length; i++) {
+        var keyValue = keyValueArr[i].split('=');
+        if (keyValue[0] === 'table_name') {
+            keyValueArr[i] = 'table_name=' + tableName;
+            break;
+        }
+    }
+    if (i === keyValueArr.length) {
+        keyValueArr[keyValueArr.length] = 'table_name=' + tableName;
+    }
+    window.location.search = keyValueArr.join('&');
 }
 </script>
 </head>

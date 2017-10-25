@@ -25,7 +25,7 @@
 
 + (NSString *)fetchWebUploadDirectoryPath;
 
-+ (void)updateDatabaseFilePath:(NSString *)path;
++ (void)updateDefaultInspectDBFilePath:(NSString *)path;
 
 + (NSString *)fetchDatabaseFilePath;
 

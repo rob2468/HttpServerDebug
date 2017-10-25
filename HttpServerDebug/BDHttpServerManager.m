@@ -16,7 +16,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 @interface BDHttpServerManager ()
 
 @property (strong, nonatomic) HTTPServer *server;
-@property (copy, nonatomic) NSString *dbFilePath;
+@property (copy, nonatomic) NSString *dbFilePath;   // default inspect db file path
 
 @end
 
@@ -79,7 +79,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     NSLog(@"http server stopped");
 }
 
-+ (void)updateDatabaseFilePath:(NSString *)path {
++ (void)updateDefaultInspectDBFilePath:(NSString *)path {
     BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
     manager.dbFilePath = path;
 }

@@ -18,10 +18,10 @@
 - (NSObject<HTTPResponse> *)fetchDatabaseResponse:(NSDictionary *)params
 {
     NSObject<HTTPResponse> *response;
-    NSString *dbPath = [BDHttpServerManager fetchDatabaseFilePath];
-    FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
+    NSString *dbPath = [params objectForKey:@"db_path"];
     NSString *tableName = [params objectForKey:@"table_name"];
-    if ([database open]) {
+    FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
+    if (dbPath.length > 0 && [database open]) {
         // 获取所有表
         NSMutableString *selectHtml = [[NSMutableString alloc] initWithString:@"<option></option>"];
         NSString *stat = [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type='table';"];

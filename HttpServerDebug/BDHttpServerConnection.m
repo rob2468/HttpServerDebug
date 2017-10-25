@@ -16,6 +16,8 @@
 #import "BDHttpServerConnection+Preview.h"
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
+#import "HTTPDynamicFileResponse.h"
+#import "BDHttpServerManager.h"
 
 @interface BDHttpServerConnection ()
 
@@ -111,8 +113,11 @@
         response = [self fetchWebUploadResponse:params forMethod:method URI:path];
     } else if ([p isEqualToString:[NSString stringWithFormat:@"/%@.html", kBDHttpServerFilePreview]]) {
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
-    } else {
-        response = [super httpResponseForMethod:method URI:path];
+    } else { // index.html
+        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
+        NSDictionary *replacementDict =
+        @{@"DB_FILE_PATH": [BDHttpServerManager fetchDatabaseFilePath]};
+        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
     }
     return response;
 }
