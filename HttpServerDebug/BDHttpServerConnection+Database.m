@@ -15,8 +15,7 @@
 
 @implementation BDHttpServerConnection (Database)
 
-- (NSObject<HTTPResponse> *)fetchDatabaseResponse:(NSDictionary *)params
-{
+- (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params {
     NSObject<HTTPResponse> *response;
     NSString *dbPath = [params objectForKey:@"db_path"];
     NSString *tableName = [params objectForKey:@"table_name"];
@@ -80,6 +79,12 @@
           };
         response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
     }
+    return response;
+}
+
+- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponse:(NSDictionary *)params {
+    NSData *data = [NSJSONSerialization dataWithJSONObject:params options:0 error:nil];
+    HTTPDataResponse *response = [[HTTPDataResponse alloc] initWithData:data];
     return response;
 }
 

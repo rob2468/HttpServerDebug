@@ -10,6 +10,14 @@
 
 @interface BDHttpServerConnection (Database)
 
-- (NSObject<HTTPResponse> *)fetchDatabaseResponse:(NSDictionary *)params;
+/**
+ *  fetch html page
+ */
+- (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params;
+
+/**
+ *  fetch request data
+ */
+- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponse:(NSDictionary *)params;
 
 @end

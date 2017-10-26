@@ -40,14 +40,14 @@ td {
 .tab-pane.active {
     display: block;
 }
+.tab-pane .ctrl-head {
+    margin: 15px 0;
+}
 .tab-pane .table {
     overflow-x: scroll;
 }
 </style>
 <script type="text/javascript">
-$(document).ready(function () {
-
-});
 function onNavBarItemClick(id) {
     var id0 = 'browse-data';
     var id1 = 'execute-sql';
@@ -78,7 +78,7 @@ function inactiveNavAndTabElement(navEle) {
     tabEle.classList.remove('active');
 }
 function onSelectChanged() {
-    var tableNamesEle = document.getElementsByClassName('table-names')[0];
+    var tableNamesEle = document.getElementById('table-name-select');
     var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
 
     // update search, table_name field
@@ -97,6 +97,24 @@ function onSelectChanged() {
     }
     window.location.search = keyValueArr.join('&');
 }
+function onDatabaseTableReload() {
+    var tableNamesEle = document.getElementById('table-name-select');
+    var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
+
+    var resultSetXHR = new XMLHttpRequest();
+    var requestURL = document.location.protocol + '//' + document.location.host + '/database_inspect?table_name=' + tableName;
+    resultSetXHR.open('GET', requestURL);
+    resultSetXHR.onreadystatechange = function () {
+        if (resultSetXHR.readyState === 4) {
+            if (resultSetXHR.status === 200) {
+                var responseText = resultSetXHR.responseText;
+                var responseJSON = JSON.parse(responseText);
+                console.log(responseJSON);
+            }
+        }
+    };
+    resultSetXHR.send(null);
+}
 </script>
 </head>
 <body>
@@ -112,7 +130,10 @@ function onSelectChanged() {
     </div>
     <!-- browse data -->
     <div class="tab-pane active" id="browse-data-tab">
-        <select class="table-names" onchange="onSelectChanged()">%%SELECT_HTML%%</select>
+        <div class="ctrl-head">
+        <select id='table-name-select' onchange="onSelectChanged()">%%SELECT_HTML%%</select>
+        <button onclick="onDatabaseTableReload()">刷新</button>
+        </div>
         <div class="table">
         <table border="1">
             <thead><tr>%%HEAD_TABLE%%</tr></thead>

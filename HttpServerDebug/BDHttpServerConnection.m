@@ -38,8 +38,7 @@
     return isSupported;
 }
 
-- (BOOL)expectsRequestBodyFromMethod:(NSString *)method atPath:(NSString *)path
-{
+- (BOOL)expectsRequestBodyFromMethod:(NSString *)method atPath:(NSString *)path {
     BOOL isExpect = [super expectsRequestBodyFromMethod:method atPath:path];
     if([method isEqualToString:@"POST"] && [path isEqualToString:[NSString stringWithFormat:@"/%@.html", kBDHttpServerWebUpload]]) {
         BOOL isExpectTmp = YES;
@@ -87,9 +86,20 @@
 - (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path
 {
     id response;
-    // 解析请求参数
     NSArray *comps = [path componentsSeparatedByString:@"?"];
     NSString *p = [comps firstObject];
+    // parse paths
+    NSArray<NSString *> *pathComps = [p componentsSeparatedByString:@"/"];
+    if ([pathComps count] > 0) {
+        NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:pathComps];
+        [tmp removeObject:@""];
+        pathComps = tmp;
+    }
+    NSString *firstPath;
+    if ([pathComps count] > 0) {
+        firstPath = [pathComps firstObject];
+    }
+    // parse parameters
     NSMutableDictionary *params;
     if ([comps count] > 1) {
         params = [[NSMutableDictionary alloc] init];
@@ -105,13 +115,18 @@
             }
         }
     }
-    if ([p isEqualToString:[NSString stringWithFormat:@"/%@.html", kBDHttpServerFileExplorer]]) {
+    if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerFileExplorer]]) {
+        // file_explorer.html
         response = [self fetchFileExplorerResponse:params forMethod:method URI:path];
-    } else if ([p isEqualToString:[NSString stringWithFormat:@"/%@.html", kBDHttpServerDBInspect]]) {
-        response = [self fetchDatabaseResponse:params];
-    } else if ([p isEqualToString:[NSString stringWithFormat:@"/%@.html", kBDHttpServerWebUpload]]) {
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerDBInspect]]) {
+        // database_inspect.html
+        response = [self fetchDatabaseHTMLResponse:params];
+    } else if ([firstPath isEqualToString:kBDHttpServerDBInspect]) {
+        // database_inspect api
+        response = [self fetchDatabaseAPIResponse:params];
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerWebUpload]]) {
         response = [self fetchWebUploadResponse:params forMethod:method URI:path];
-    } else if ([p isEqualToString:[NSString stringWithFormat:@"/%@.html", kBDHttpServerFilePreview]]) {
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerFilePreview]]) {
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
     } else { // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
