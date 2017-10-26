@@ -77,49 +77,60 @@ function inactiveNavAndTabElement(navEle) {
     var tabEle = document.getElementById(navEle.id + '-tab');
     tabEle.classList.remove('active');
 }
-function onSelectChanged() {
-    var tableNamesEle = document.getElementById('table-name-select');
-    var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
-
-    // update search, table_name field
-    var searchURL = window.location.search;
-    searchURL = searchURL.substring(1, searchURL.length);
-    var keyValueArr = searchURL.split('&');
-    for (var i = 0; i < keyValueArr.length; i++) {
-        var keyValue = keyValueArr[i].split('=');
-        if (keyValue[0] === 'table_name') {
-            keyValueArr[i] = 'table_name=' + tableName;
-            break;
-        }
-    }
-    if (i === keyValueArr.length) {
-        keyValueArr[keyValueArr.length] = 'table_name=' + tableName;
-    }
-    window.location.search = keyValueArr.join('&');
-}
 function onDatabaseTableReload() {
+    // request parameters
+    var dbPathEle = document.getElementById('db-path');
+    var dbPath = dbPathEle.innerText;
     var tableNamesEle = document.getElementById('table-name-select');
     var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
 
+    // request
     var resultSetXHR = new XMLHttpRequest();
-    var requestURL = document.location.protocol + '//' + document.location.host + '/database_inspect?table_name=' + tableName;
+    var requestURL = document.location.protocol + '//' + document.location.host + '/database_inspect?db_path=' + dbPath + '&table_name=' + tableName;
     resultSetXHR.open('GET', requestURL);
     resultSetXHR.onreadystatechange = function () {
         if (resultSetXHR.readyState === 4) {
             if (resultSetXHR.status === 200) {
                 var responseText = resultSetXHR.responseText;
                 var responseJSON = JSON.parse(responseText);
-                console.log(responseJSON);
+                // generate table html with table information
+                generateTableHTML(responseJSON);
             }
         }
     };
     resultSetXHR.send(null);
 }
+function generateTableHTML(tableData) {
+    var i, j;
+    // thead
+    var theadData = tableData[0];
+    var theadHTML = '<thead><tr>';
+    for (var i = 0; i < theadData.length; i++) {
+        theadHTML += '<th>' + theadData[i] + '</th>';
+    }
+    theadHTML += '</tr></thead>';
+
+    // tbody
+    var tbodyHTML = '<tbody>';
+    for (i = 1; i < tableData.length; i++) {
+        var trData = tableData[i];
+        var trHTML = '<tr>';
+        for (j = 0; j < trData.length; j++) {
+            trHTML += '<td>' + trData[j] + '</td>';
+        }
+        trHTML += '</tr>';
+        tbodyHTML += trHTML;
+    }
+    tbodyHTML += '</tbody>';
+
+    var tableEle = document.getElementById('browse-data-table');
+    tableEle.innerHTML = theadHTML + tbodyHTML;
+}
 </script>
 </head>
 <body>
     <!-- db file path -->
-    <div><p>数据库文件路径：%%DB_FILE_PATH%%</p></div>
+    <div><p>数据库文件路径：<span id="db-path">%%DB_FILE_PATH%%</span></p></div>
     <!-- navigation -->
     <div class="nav-bar">
         <ul>
@@ -131,13 +142,13 @@ function onDatabaseTableReload() {
     <!-- browse data -->
     <div class="tab-pane active" id="browse-data-tab">
         <div class="ctrl-head">
-        <select id='table-name-select' onchange="onSelectChanged()">%%SELECT_HTML%%</select>
+        <select id='table-name-select' onchange="onDatabaseTableReload()">%%SELECT_HTML%%</select>
         <button onclick="onDatabaseTableReload()">刷新</button>
         </div>
         <div class="table">
-        <table border="1">
-            <thead><tr>%%HEAD_TABLE%%</tr></thead>
-            <tbody>%%BODY_TABLE%%</tbody>
+        <table id="browse-data-table" border="1">
+            <!-- generate by ajax -->
+            <thead><tr><th>...</th></tr><thead>
         </table>
         </div>
     </div>

@@ -16,7 +16,7 @@
 - (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params;
 
 /**
- *  fetch request data
+ *  request table data
  */
 - (NSObject<HTTPResponse> *)fetchDatabaseAPIResponse:(NSDictionary *)params;
 

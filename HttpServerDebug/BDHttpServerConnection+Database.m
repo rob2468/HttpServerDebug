@@ -21,7 +21,7 @@
     NSString *tableName = [params objectForKey:@"table_name"];
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     if (dbPath.length > 0 && [database open]) {
-        // 获取所有表
+        // all tables
         NSMutableString *selectHtml = [[NSMutableString alloc] initWithString:@"<option></option>"];
         NSString *stat = [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type='table';"];
         FMResultSet *rs = [database executeQuery:stat];
@@ -37,45 +37,12 @@
             [selectHtml appendString:optionHtml];
         }
         [rs close];
-        
-        NSMutableString *headTable = [[NSMutableString alloc] initWithString:@""];
-        NSMutableString *bodyTable = [[NSMutableString alloc] initWithString:@""];
-        if (tableName.length > 0) {
-            // 获取字段名
-            stat = [NSString stringWithFormat:@"PRAGMA TABLE_INFO(%@)", tableName];
-            rs = [database executeQuery:stat];
-            while ([rs next]) {
-                NSString *fieldName = [rs stringForColumn:@"name"];
-                fieldName = fieldName.length > 0? fieldName: @"";
-                NSString *fieldHtml = [NSString stringWithFormat:@"<th>%@</th>", fieldName];
-                [headTable appendString:fieldHtml];
-            }
-            [rs close];
-            
-            // 检索数据条目
-            stat = [NSString stringWithFormat:@"SELECT * FROM %@;", tableName];
-            rs = [database executeQuery:stat];
-            int columnCount = [rs columnCount];
-            while ([rs next]) {
-                NSMutableString *htmlRow = [[NSMutableString alloc] initWithString:@""];
-                for (int i = 0; i < columnCount; i++) {
-                    NSString *tmp = [rs stringForColumnIndex:i];
-                    tmp = tmp.length > 0? tmp: @"";
-                    NSString *htmlField = [NSString stringWithFormat:@"<td>%@</td>", tmp];
-                    [htmlRow appendString:htmlField];
-                }
-                [bodyTable appendString:[NSString stringWithFormat:@"<tr>%@</tr>", htmlRow]];
-            }
-            [rs close];
-        }
         [database close];
         
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kBDHttpServerDBInspect]];
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": dbPath,
-          @"SELECT_HTML": selectHtml,
-          @"HEAD_TABLE": headTable,
-          @"BODY_TABLE": bodyTable
+          @"SELECT_HTML": selectHtml
           };
         response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
     }
@@ -83,7 +50,41 @@
 }
 
 - (NSObject<HTTPResponse> *)fetchDatabaseAPIResponse:(NSDictionary *)params {
-    NSData *data = [NSJSONSerialization dataWithJSONObject:params options:0 error:nil];
+    NSString *dbPath = [params objectForKey:@"db_path"];
+    NSString *tableName = [params objectForKey:@"table_name"];
+    FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
+    NSMutableArray *allData = [[NSMutableArray alloc] init];
+    if (dbPath.length > 0 && tableName.length > 0 && [database open]) {
+        NSMutableArray *record = [[NSMutableArray alloc] init];
+        // field names
+        NSString *stat = [NSString stringWithFormat:@"PRAGMA TABLE_INFO(%@)", tableName];
+        FMResultSet *rs = [database executeQuery:stat];
+        while ([rs next]) {
+            NSString *fieldName = [rs stringForColumn:@"name"];
+            fieldName = fieldName.length > 0? fieldName: @"";
+            [record addObject:fieldName];
+        }
+        [rs close];
+        [allData addObject:record];
+        
+        // query data
+        stat = [NSString stringWithFormat:@"SELECT * FROM %@;", tableName];
+        rs = [database executeQuery:stat];
+        int columnCount = [rs columnCount];
+        while ([rs next]) {
+            record = [[NSMutableArray alloc] init];
+            for (int i = 0; i < columnCount; i++) {
+                NSString *tmp = [rs stringForColumnIndex:i];
+                tmp = tmp.length > 0? tmp: @"";
+                [record addObject:tmp];
+            }
+            [allData addObject:record];
+        }
+        [rs close];
+        [database close];
+    }
+    
+    NSData *data = [NSJSONSerialization dataWithJSONObject:allData options:0 error:nil];
     HTTPDataResponse *response = [[HTTPDataResponse alloc] initWithData:data];
     return response;
 }
