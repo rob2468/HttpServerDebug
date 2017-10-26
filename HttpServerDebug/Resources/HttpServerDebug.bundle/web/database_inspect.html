@@ -138,31 +138,37 @@ function onDatabaseTableReload() {
     resultSetXHR.send(null);
 }
 function generateTableHTML(tableData) {
-    var i;
-    var j;
-    // thead
-    var theadData = tableData[0];
-    var theadHTML = '<thead><tr>';
-    for (var i = 0; i < theadData.length; i++) {
-        theadHTML += '<th>' + theadData[i] + '</th>';
-    }
-    theadHTML += '</tr></thead>';
-
-    // tbody
-    var tbodyHTML = '<tbody>';
-    for (i = 1; i < tableData.length; i++) {
-        var trData = tableData[i];
-        var trHTML = '<tr>';
-        for (j = 0; j < trData.length; j++) {
-            trHTML += '<td>' + trData[j] + '</td>';
+    var tableHTML;
+    if (tableData.length > 0) {
+        var i;
+        var j;
+        // thead
+        var theadData = tableData[0];
+        var theadHTML = '<thead><tr>';
+        for (var i = 0; i < theadData.length; i++) {
+            theadHTML += '<th>' + theadData[i] + '</th>';
         }
-        trHTML += '</tr>';
-        tbodyHTML += trHTML;
-    }
-    tbodyHTML += '</tbody>';
+        theadHTML += '</tr></thead>';
 
+        // tbody
+        var tbodyHTML = '<tbody>';
+        for (i = 1; i < tableData.length; i++) {
+            var trData = tableData[i];
+            var trHTML = '<tr>';
+            for (j = 0; j < trData.length; j++) {
+                trHTML += '<td>' + trData[j] + '</td>';
+            }
+            trHTML += '</tr>';
+            tbodyHTML += trHTML;
+        }
+        tbodyHTML += '</tbody>';
+        tableHTML = theadHTML + tbodyHTML;
+    } else {
+        // default html
+        tableHTML = '<thead><tr><th>...</th></tr></thead>';
+    }
     var tableEle = document.getElementById('browse-data-table');
-    tableEle.innerHTML = theadHTML + tbodyHTML;
+    tableEle.innerHTML = tableHTML;
 }
 </script>
 </head>
