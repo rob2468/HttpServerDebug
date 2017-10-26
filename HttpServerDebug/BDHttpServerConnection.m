@@ -128,11 +128,14 @@
         response = [self fetchWebUploadResponse:params forMethod:method URI:path];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerFilePreview]]) {
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
-    } else { // index.html
+    } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
+        // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": [BDHttpServerManager fetchDatabaseFilePath]};
         response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
+    } else {
+        response = [super httpResponseForMethod:method URI:path];
     }
     return response;
 }

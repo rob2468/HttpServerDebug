@@ -3,6 +3,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="dist/themes/default/style.min.css" />
+<script src="dist/libs/jquery.js"></script>
+<script src="dist/jstree.min.js"></script>
 <title>文件浏览</title>
 <style type="text/css">
 input[type="text"] {
@@ -10,6 +12,25 @@ input[type="text"] {
 }
 </style>
 <script type="text/javascript">
+$(function () {
+  $.jstree.defaults.core.data
+  // create an instance when the DOM is ready
+  $('#jstree').jstree({
+    'core' : {
+      'data' :
+      %%TREE_DATA%%
+    }
+  }
+);
+  // bind to events triggered on the tree
+  $('#jstree').on("changed.jstree", function (e, data) {
+    var isDirectory = data.node.data.is_directory;
+    if (!isDirectory) {
+      var url = window.location.origin + "/file_preview.html?file_path=" + data.node.data.path;
+      window.open(url);
+    }
+  });
+});
 </script>
 </head>
 <body>
@@ -17,31 +38,6 @@ input[type="text"] {
   <div id="jstree">
   </div>
 
-  <!-- 4 include the jQuery library -->
-  <script src="dist/libs/jquery.js"></script>
-  <!-- 5 include the minified jstree source -->
-  <script src="dist/jstree.min.js"></script>
-  <script>
-  $(function () {
-    $.jstree.defaults.core.data
-    // 6 create an instance when the DOM is ready
-    $('#jstree').jstree({
-      'core' : {
-        'data' :
-        %%TREE_DATA%%
-      }
-    }
-  );
-    // 7 bind to events triggered on the tree
-    $('#jstree').on("changed.jstree", function (e, data) {
-      var isDirectory = data.node.data.is_directory;
-      if (!isDirectory) {
-        var url = window.location.origin + "/file_preview.html?file_path=" + data.node.data.path;
-        window.open(url);
-      }
-    });
-  });
-  </script>
 
 </body>
 </html>
