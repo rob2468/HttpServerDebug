@@ -42,6 +42,34 @@ td {
 }
 .tab-pane .ctrl-head {
     margin: 15px 0;
+    padding: 0;
+    height: 20px;
+}
+.tab-pane .ctrl-head button {
+    color: #000;
+    border-width: 1px;
+    margin: 0;
+    padding: 0;
+    width: 40px;
+    height: 100%;
+}
+.tab-pane .ctrl-head button img,
+.tab-pane .ctrl-head button span {
+    width: 100%;
+    height: 100%;
+    vertical-align: middle;
+}
+.tab-pane .ctrl-head button.reload-normal img {
+    display: none;
+}
+.tab-pane .ctrl-head button.reload-loading img {
+    display: inline-block;
+}
+.tab-pane .ctrl-head button.reload-normal span {
+    display: inline-block;
+}
+.tab-pane .ctrl-head button.reload-loading span {
+    display: none;
 }
 .tab-pane .table {
     overflow-x: scroll;
@@ -78,6 +106,11 @@ function inactiveNavAndTabElement(navEle) {
     tabEle.classList.remove('active');
 }
 function onDatabaseTableReload() {
+    // update reload button to loading state
+    var reloadBtnEle = document.getElementById('browse-data-reload-button');
+    reloadBtnEle.classList.remove('reload-normal');
+    reloadBtnEle.classList.add('reload-loading');
+
     // request parameters
     var dbPathEle = document.getElementById('db-path');
     var dbPath = dbPathEle.innerText;
@@ -86,7 +119,8 @@ function onDatabaseTableReload() {
 
     // request
     var resultSetXHR = new XMLHttpRequest();
-    var requestURL = document.location.protocol + '//' + document.location.host + '/database_inspect?db_path=' + dbPath + '&table_name=' + tableName;
+    var requestURL = document.location.protocol + '//' + document.location.host
+    + '/database_inspect?db_path=' + dbPath + '&table_name=' + tableName;
     resultSetXHR.open('GET', requestURL);
     resultSetXHR.onreadystatechange = function () {
         if (resultSetXHR.readyState === 4) {
@@ -97,11 +131,15 @@ function onDatabaseTableReload() {
                 generateTableHTML(responseJSON);
             }
         }
+        // update reload button to normal state
+        reloadBtnEle.classList.remove('reload-loading');
+        reloadBtnEle.classList.add('reload-normal');
     };
     resultSetXHR.send(null);
 }
 function generateTableHTML(tableData) {
-    var i, j;
+    var i;
+    var j;
     // thead
     var theadData = tableData[0];
     var theadHTML = '<thead><tr>';
@@ -142,13 +180,15 @@ function generateTableHTML(tableData) {
     <!-- browse data -->
     <div class="tab-pane active" id="browse-data-tab">
         <div class="ctrl-head">
-        <select id='table-name-select' onchange="onDatabaseTableReload()">%%SELECT_HTML%%</select>
-        <button onclick="onDatabaseTableReload()">刷新</button>
+        <select id="table-name-select" onchange="onDatabaseTableReload()">%%SELECT_HTML%%</select>
+        <button type="button" id="browse-data-reload-button" class="reload reload-normal" onclick="onDatabaseTableReload()">
+            <img src="resources/loading-bubbles.svg" alt="loading"><span>刷新</span>
+        </button>
         </div>
         <div class="table">
         <table id="browse-data-table" border="1">
             <!-- generate by ajax -->
-            <thead><tr><th>...</th></tr><thead>
+            <thead><tr><th>...</th></tr></thead>
         </table>
         </div>
     </div>

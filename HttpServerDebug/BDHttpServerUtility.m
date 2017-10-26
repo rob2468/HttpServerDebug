@@ -69,4 +69,17 @@
     return address;
 }
 
++ (NSString *)fetchContentTypeWithFilePathExtension:(NSString *)pathExtension {
+    NSString *contentType = @"text/plain;charset=utf-8";
+    if ([pathExtension isEqualToString:@"png"]) {
+        contentType = @"image/png";
+    } else if ([pathExtension isEqualToString:@"jpg"] ||
+               [pathExtension isEqualToString:@"jpeg"]) {
+        contentType = @"image/jpeg";
+    } else if ([pathExtension isEqualToString:@"svg"]) {
+        contentType = @"image/svg+xml";
+    }
+    return contentType;
+}
+
 @end

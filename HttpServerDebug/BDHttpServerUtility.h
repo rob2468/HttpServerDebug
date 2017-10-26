@@ -11,8 +11,13 @@
 @interface BDHttpServerUtility : NSObject
 
 /**
- *  获取本机IP地址
+ *  local ip address
  */
 + (NSString *)fetchLocalIPAddress;
+
+/**
+ *  Content-Type according to file extension, default return value text/plain;charset=utf-8
+ */
++ (NSString *)fetchContentTypeWithFilePathExtension:(NSString *)pathExtension;
 
 @end

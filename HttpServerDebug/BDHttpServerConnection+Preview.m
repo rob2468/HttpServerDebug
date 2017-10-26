@@ -8,34 +8,7 @@
 
 #import "BDHttpServerConnection+Preview.h"
 #import "HTTPDataResponse.h"
-
-@interface BDHttpServerDataResponse : HTTPDataResponse
-
-@property (nonatomic, copy) NSString *contentType;
-
-- (instancetype)initWithData:(NSData *)data contentType:(NSString *)type;
-
-@end
-
-@implementation BDHttpServerDataResponse
-
-- (instancetype)initWithData:(NSData *)data contentType:(NSString *)type;
-{
-    self = [super initWithData:data];
-    if (self) {
-        self.contentType = type;
-    }
-    return self;
-}
-
-- (NSDictionary *)httpHeaders
-{
-    NSString *type = self.contentType;
-    type = type.length > 0? type: @"";
-    return @{@"Content-Type": type};
-}
-
-@end
+#import "BDHttpServerUtility.h"
 
 @implementation BDHttpServerConnection (Preview)
 
@@ -55,12 +28,7 @@
             NSString *extension = filePath.pathExtension;
             
             data = [[NSData alloc] initWithContentsOfFile:filePath];
-            if ([extension isEqualToString:@"png"]) {
-                contentType = @"image/png";
-            } else if ([extension isEqualToString:@"jpg"] ||
-                       [extension isEqualToString:@"jpeg"]) {
-                contentType = @"image/jpeg";
-            }
+            contentType = [BDHttpServerUtility fetchContentTypeWithFilePathExtension:extension];
         }
         if (data) {
             response = [[BDHttpServerDataResponse alloc] initWithData:data contentType:contentType];

@@ -8,7 +8,6 @@
 
 #import "BDHttpServerConnection.h"
 #import "BDHttpServerDefine.h"
-#import "HTTPDataResponse.h"
 #import "HTTPFileResponse.h"
 #import "BDHttpServerConnection+Explorer.h"
 #import "BDHttpServerConnection+Database.h"
@@ -18,6 +17,7 @@
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
 #import "BDHttpServerManager.h"
+#import "BDHttpServerUtility.h"
 
 @interface BDHttpServerConnection ()
 
@@ -26,6 +26,8 @@
 @end
 
 @implementation BDHttpServerConnection
+
+#pragma mark -- override methods
 
 - (BOOL)supportsMethod:(NSString *)method atPath:(NSString *)path
 {
@@ -134,22 +136,54 @@
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": [BDHttpServerManager fetchDatabaseFilePath]};
         response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
+    } else if ([firstPath isEqualToString:@"resources"]) {
+        // set resources Content-Type manually
+        NSString *pathExtension = [[pathComps lastObject] pathExtension];
+        NSString *contentType = [BDHttpServerUtility fetchContentTypeWithFilePathExtension:pathExtension];
+        NSString *dataPath = [[config documentRoot] stringByAppendingPathComponent:path];
+        NSData *data = [[NSData alloc] initWithContentsOfFile:dataPath];
+        response = [[BDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
     } else {
         response = [super httpResponseForMethod:method URI:path];
     }
     return response;
 }
 
-- (void)prepareForBodyWithSize:(UInt64)contentLength
-{
+- (void)prepareForBodyWithSize:(UInt64)contentLength {
     NSString *boundary = [request headerField:@"boundary"];
     self.parser = [[MultipartFormDataParser alloc] initWithBoundary:boundary formEncoding:NSUTF8StringEncoding];
     self.parser.delegate = self;
 }
 
-- (void)processBodyData:(NSData *)postDataChunk
-{
+- (void)processBodyData:(NSData *)postDataChunk {
     [self.parser appendData:postDataChunk];
 }
 
+#pragma mark --
+
 @end
+
+@interface BDHttpServerDataResponse ()
+
+@property (nonatomic, copy) NSString *contentType;
+
+@end
+
+@implementation BDHttpServerDataResponse
+
+- (instancetype)initWithData:(NSData *)data contentType:(NSString *)type {
+    self = [super initWithData:data];
+    if (self) {
+        self.contentType = type;
+    }
+    return self;
+}
+
+- (NSDictionary *)httpHeaders {
+    NSString *type = self.contentType;
+    type = type.length > 0? type: @"";
+    return @{@"Content-Type": type};
+}
+
+@end
+
