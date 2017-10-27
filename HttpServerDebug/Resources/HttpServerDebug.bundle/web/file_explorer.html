@@ -13,31 +13,40 @@ input[type="text"] {
 </style>
 <script type="text/javascript">
 $(function () {
-  $.jstree.defaults.core.data
-  // create an instance when the DOM is ready
-  $('#jstree').jstree({
-    'core' : {
-      'data' :
-      %%TREE_DATA%%
-    }
-  }
-);
-  // bind to events triggered on the tree
-  $('#jstree').on("changed.jstree", function (e, data) {
-    var isDirectory = data.node.data.is_directory;
-    if (!isDirectory) {
-      var url = window.location.origin + "/file_preview.html?file_path=" + data.node.data.path;
-      window.open(url);
-    }
-  });
+    $.jstree.defaults.core.data
+    // create an instance when the DOM is ready
+    $('#jstree').jstree({
+        'core' : {
+            'data' :
+            %%TREE_DATA%%
+        }
+    });
+    // bind to events triggered on the tree
+    $('#jstree').on("changed.jstree", function (e, data) {
+        var isDirectory = data.node.data.is_directory;
+        if (!isDirectory) {
+            var filePath = data.node.data.path;
+            var fileExtension =  filePath.split('/').pop().split('.').pop();
+            var url;
+            if (fileExtension === 'db'
+            || fileExtension === 'rdb'
+            || fileExtension === 'sqlite'
+            || fileExtension === 'sqlite3') {
+                // database inspect
+                url = window.location.origin + '/database_inspect.html?db_path=' + filePath;
+            } else {
+                // file preview
+                url = window.location.origin + '/file_preview.html?file_path=' + filePath;
+            }
+            window.open(url);
+        }
+    });
 });
 </script>
 </head>
 <body>
-  <!-- 3 setup a container element -->
-  <div id="jstree">
-  </div>
-
-
+    <!-- setup a container element -->
+    <div id="jstree">
+    </div>
 </body>
 </html>
