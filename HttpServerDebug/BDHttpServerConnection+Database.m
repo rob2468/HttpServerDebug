@@ -18,18 +18,18 @@
 - (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params {
     NSObject<HTTPResponse> *response;
     NSString *dbPath = [params objectForKey:@"db_path"];
-    NSString *tableName = [params objectForKey:@"table_name"];
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     if (dbPath.length > 0 && [database open]) {
         // all tables
-        NSMutableString *selectHtml = [[NSMutableString alloc] initWithString:@"<option></option>"];
+        NSMutableString *selectHtml = [[NSMutableString alloc] init];
         NSString *stat = [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type='table';"];
         FMResultSet *rs = [database executeQuery:stat];
         while ([rs next]) {
             NSString *tblName = [rs stringForColumn:@"tbl_name"];
             tblName = tblName.length > 0? tblName: @"";
             NSString *optionHtml = @"<option value='%@' %@>%@</option>";
-            if ([tableName isEqualToString:tblName]) {
+            if (selectHtml.length == 0) {
+                // default select first table
                 optionHtml = [NSString stringWithFormat:optionHtml, tblName, @"selected='selected'", tblName];
             } else {
                 optionHtml = [NSString stringWithFormat:optionHtml, tblName, @"", tblName];
