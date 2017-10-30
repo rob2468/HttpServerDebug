@@ -47,3 +47,7 @@ if [ "${CONFIGURATION}" == "Debug" ]; then
   cp -r "${PROJECT_DIR}/HttpServerDebug.bundle" "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app"
 fi
 ```
+
+## Acknowledgments
+
+[FLEX](https://github.com/Flipboard/FLEX)

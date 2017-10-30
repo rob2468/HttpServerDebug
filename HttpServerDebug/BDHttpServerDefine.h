@@ -8,12 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-// 请求路径
+// http request path
 extern NSString *const kBDHttpServerFileExplorer;
 extern NSString *const kBDHttpServerDBInspect;
 extern NSString *const kBDHttpServerOpenURL;
 extern NSString *const kBDHttpServerWebUpload;
 extern NSString *const kBDHttpServerFilePreview;
+extern NSString *const kBDHttpServerViewDebug;
 
 extern NSString *const kBDHttpServerTemplateSeparator;
 

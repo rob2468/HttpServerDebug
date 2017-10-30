@@ -13,6 +13,7 @@
 #import "BDHttpServerConnection+Database.h"
 #import "BDHttpServerConnection+Upload.h"
 #import "BDHttpServerConnection+Preview.h"
+#import "BDHttpServerConnection+View.h"
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
@@ -85,8 +86,7 @@
     return isExpect;
 }
 
-- (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path
-{
+- (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path {
     id response;
     NSArray *comps = [path componentsSeparatedByString:@"?"];
     NSString *p = [comps firstObject];
@@ -130,6 +130,12 @@
         response = [self fetchWebUploadResponse:params forMethod:method URI:path];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerFilePreview]]) {
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerViewDebug]]) {
+        // view_debug.html
+        response = [self fetchViewDebugResponseForMethod:method URI:path];
+    } else if ([firstPath isEqualToString:kBDHttpServerViewDebug]) {
+        // view_debug api
+        response = [self fetchViewDebugAPIResponse:params];
     } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
         // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];

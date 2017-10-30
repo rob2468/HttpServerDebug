@@ -1,0 +1,40 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>视图调试</title>
+<style type="text/css">
+</style>
+<script type="text/javascript">
+</script>
+</head>
+<body>
+<div class="navigation-sidebar">
+    <div class="view-hierarchy-list">
+        <ul>
+            <li>UIView</li>
+        </ul>
+    </div>
+    <div class="split-handler"></div>
+</div>
+<div class="view-hierarchy-area"></div>
+<div class="property-sidebar"></div>
+
+<script type="text/javascript">
+var viewXHR = new XMLHttpRequest();
+var requestURL = document.location.protocol + '//' + document.location.host
++ '/view_debug';
+viewXHR.open('GET', requestURL);
+viewXHR.onreadystatechange = function () {
+    if (viewXHR.readyState === 4) {
+        if (viewXHR.status === 200) {
+            var responseText = viewXHR.responseText;
+            var responseJSON = JSON.parse(responseText);
+
+        }
+    }
+};
+viewXHR.send(null);
+</script>
+</body>
+</html>

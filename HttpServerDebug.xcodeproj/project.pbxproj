@@ -26,6 +26,7 @@
 		8F704BB81F3D52DD002E1FAF /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704BA11F3D5275002E1FAF /* FMDatabaseQueue.m */; };
 		8F704BB91F3D52DD002E1FAF /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704BA41F3D5275002E1FAF /* FMResultSet.m */; };
 		8F704BC01F3D57B0002E1FAF /* HttpServerDebug.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704BBA1F3D533B002E1FAF /* HttpServerDebug.h */; };
+		8FA70C831FA6D29700908C34 /* BDHttpServerConnection+View.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FA70C821FA6D29700908C34 /* BDHttpServerConnection+View.m */; };
 		8FEFE7421F3F4F1100D841E0 /* BDHttpServerManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8FAC0A211F3C84F600D329B1 /* BDHttpServerManager.h */; };
 		8FEFE7441F3F4F5700D841E0 /* FMDatabase.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9A1F3D5275002E1FAF /* FMDatabase.h */; };
 		8FEFE7451F3F4F5700D841E0 /* FMDatabaseAdditions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9C1F3D5275002E1FAF /* FMDatabaseAdditions.h */; };
@@ -148,6 +149,9 @@
 		8F704BA41F3D5275002E1FAF /* FMResultSet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		8F704BA91F3D529E002E1FAF /* libFMDB.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFMDB.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F704BBA1F3D533B002E1FAF /* HttpServerDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HttpServerDebug.h; sourceTree = "<group>"; };
+		8FA70C811FA6D29700908C34 /* BDHttpServerConnection+View.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BDHttpServerConnection+View.h"; sourceTree = "<group>"; };
+		8FA70C821FA6D29700908C34 /* BDHttpServerConnection+View.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BDHttpServerConnection+View.m"; sourceTree = "<group>"; };
+		8FA70C841FA6E82500908C34 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		8FAC09A81F3C84E400D329B1 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
 		8FAC09A91F3C84E400D329B1 /* GCDAsyncSocket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
 		8FAC09AA1F3C84E400D329B1 /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDAsyncUdpSocket.h; sourceTree = "<group>"; };
@@ -286,6 +290,7 @@
 		8F13E2A91F3C7B4500FF8881 = {
 			isa = PBXGroup;
 			children = (
+				8FA70C841FA6E82500908C34 /* README.md */,
 				8F13E2B41F3C7B4500FF8881 /* HttpServerDebug */,
 				8FAC09A61F3C84E400D329B1 /* ThirdParties */,
 				8F13E2B31F3C7B4500FF8881 /* Products */,
@@ -319,6 +324,8 @@
 				8FAC0A1D1F3C84F600D329B1 /* BDHttpServerConnection+Preview.m */,
 				8FAC0A1B1F3C84F600D329B1 /* BDHttpServerConnection+Upload.h */,
 				8FAC0A101F3C84F600D329B1 /* BDHttpServerConnection+Upload.m */,
+				8FA70C811FA6D29700908C34 /* BDHttpServerConnection+View.h */,
+				8FA70C821FA6D29700908C34 /* BDHttpServerConnection+View.m */,
 				8FAC0A121F3C84F600D329B1 /* BDHttpServerControlPannelController.h */,
 				8FAC0A1F1F3C84F600D329B1 /* BDHttpServerControlPannelController.m */,
 				8FAC0A231F3C84F600D329B1 /* BDHttpServerDefine.h */,
@@ -712,6 +719,7 @@
 				8F16DD3A1F3CA5EE00A2BFBF /* BDHttpServerConnection+Explorer.m in Sources */,
 				8F16DD3C1F3CA5EE00A2BFBF /* BDHttpServerConnection+Preview.m in Sources */,
 				8F16DD3E1F3CA5EE00A2BFBF /* BDHttpServerConnection+Upload.m in Sources */,
+				8FA70C831FA6D29700908C34 /* BDHttpServerConnection+View.m in Sources */,
 				8F16DD401F3CA5EE00A2BFBF /* BDHttpServerControlPannelController.m in Sources */,
 				8F16DD421F3CA5EE00A2BFBF /* BDHttpServerDefine.m in Sources */,
 				8F16DD441F3CA5EE00A2BFBF /* BDHttpServerManager.m in Sources */,

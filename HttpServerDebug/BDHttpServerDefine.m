@@ -13,6 +13,7 @@ NSString *const kBDHttpServerDBInspect = @"database_inspect";
 NSString *const kBDHttpServerOpenURL = @"open_url";
 NSString *const kBDHttpServerWebUpload = @"web_upload";
 NSString *const kBDHttpServerFilePreview = @"file_preview";
+NSString *const kBDHttpServerViewDebug = @"view_debug";
 
 NSString *const kBDHttpServerTemplateSeparator = @"%%";
 
