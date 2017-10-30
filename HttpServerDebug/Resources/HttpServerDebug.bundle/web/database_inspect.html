@@ -75,102 +75,6 @@ td {
     overflow-x: scroll;
 }
 </style>
-<script type="text/javascript">
-function onNavBarItemClick(id) {
-    var id0 = 'browse-data';
-    var id1 = 'execute-sql';
-    var id2 = 'db-structure';
-    var selectedItem = document.getElementById(id);
-    if (!selectedItem.classList.contains('active')) {
-        activeNavAndTabElement(selectedItem);
-        if (selectedItem.id === id0) {
-            inactiveNavAndTabElement(document.getElementById(id1));
-            inactiveNavAndTabElement(document.getElementById(id2));
-        } else if (selectedItem.id === id1) {
-            inactiveNavAndTabElement(document.getElementById(id0));
-            inactiveNavAndTabElement(document.getElementById(id2));
-        } else {
-            inactiveNavAndTabElement(document.getElementById(id0));
-            inactiveNavAndTabElement(document.getElementById(id1));
-        }
-    }
-}
-function activeNavAndTabElement(navEle) {
-    navEle.classList.add('active');
-    var tabEle = document.getElementById(navEle.id + '-tab');
-    tabEle.classList.add('active');
-}
-function inactiveNavAndTabElement(navEle) {
-    navEle.classList.remove('active');
-    var tabEle = document.getElementById(navEle.id + '-tab');
-    tabEle.classList.remove('active');
-}
-function onDatabaseTableReload() {
-    // update reload button to loading state
-    var reloadBtnEle = document.getElementById('browse-data-reload-button');
-    reloadBtnEle.classList.remove('reload-normal');
-    reloadBtnEle.classList.add('reload-loading');
-
-    // request parameters
-    var dbPathEle = document.getElementById('db-path');
-    var dbPath = dbPathEle.innerText;
-    var tableNamesEle = document.getElementById('table-name-select');
-    var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
-
-    // request
-    var resultSetXHR = new XMLHttpRequest();
-    var requestURL = document.location.protocol + '//' + document.location.host
-    + '/database_inspect?db_path=' + dbPath + '&table_name=' + tableName;
-    resultSetXHR.open('GET', requestURL);
-    resultSetXHR.onreadystatechange = function () {
-        if (resultSetXHR.readyState === 4) {
-            if (resultSetXHR.status === 200) {
-                var responseText = resultSetXHR.responseText;
-                var responseJSON = JSON.parse(responseText);
-                // generate table html with table information
-                generateTableHTML(responseJSON);
-            }
-        }
-        // update reload button to normal state
-        reloadBtnEle.classList.remove('reload-loading');
-        reloadBtnEle.classList.add('reload-normal');
-    };
-    resultSetXHR.send(null);
-}
-function generateTableHTML(tableData) {
-    var tableHTML;
-    if (tableData.length > 0) {
-        var i;
-        var j;
-        // thead
-        var theadData = tableData[0];
-        var theadHTML = '<thead><tr>';
-        for (var i = 0; i < theadData.length; i++) {
-            theadHTML += '<th>' + theadData[i] + '</th>';
-        }
-        theadHTML += '</tr></thead>';
-
-        // tbody
-        var tbodyHTML = '<tbody>';
-        for (i = 1; i < tableData.length; i++) {
-            var trData = tableData[i];
-            var trHTML = '<tr>';
-            for (j = 0; j < trData.length; j++) {
-                trHTML += '<td>' + trData[j] + '</td>';
-            }
-            trHTML += '</tr>';
-            tbodyHTML += trHTML;
-        }
-        tbodyHTML += '</tbody>';
-        tableHTML = theadHTML + tbodyHTML;
-    } else {
-        // default html
-        tableHTML = '<thead><tr><th>...</th></tr></thead>';
-    }
-    var tableEle = document.getElementById('browse-data-table');
-    tableEle.innerHTML = tableHTML;
-}
-</script>
 </head>
 <body>
     <!-- db file path -->
@@ -204,6 +108,100 @@ function generateTableHTML(tableData) {
     <div class="tab-pane" id="db-structure-tab">db structure</div>
 
     <script type="text/javascript">
+    function onNavBarItemClick(id) {
+        var id0 = 'browse-data';
+        var id1 = 'execute-sql';
+        var id2 = 'db-structure';
+        var selectedItem = document.getElementById(id);
+        if (!selectedItem.classList.contains('active')) {
+            activeNavAndTabElement(selectedItem);
+            if (selectedItem.id === id0) {
+                inactiveNavAndTabElement(document.getElementById(id1));
+                inactiveNavAndTabElement(document.getElementById(id2));
+            } else if (selectedItem.id === id1) {
+                inactiveNavAndTabElement(document.getElementById(id0));
+                inactiveNavAndTabElement(document.getElementById(id2));
+            } else {
+                inactiveNavAndTabElement(document.getElementById(id0));
+                inactiveNavAndTabElement(document.getElementById(id1));
+            }
+        }
+    }
+    function activeNavAndTabElement(navEle) {
+        navEle.classList.add('active');
+        var tabEle = document.getElementById(navEle.id + '-tab');
+        tabEle.classList.add('active');
+    }
+    function inactiveNavAndTabElement(navEle) {
+        navEle.classList.remove('active');
+        var tabEle = document.getElementById(navEle.id + '-tab');
+        tabEle.classList.remove('active');
+    }
+    function onDatabaseTableReload() {
+        // update reload button to loading state
+        var reloadBtnEle = document.getElementById('browse-data-reload-button');
+        reloadBtnEle.classList.remove('reload-normal');
+        reloadBtnEle.classList.add('reload-loading');
+
+        // request parameters
+        var dbPathEle = document.getElementById('db-path');
+        var dbPath = dbPathEle.innerText;
+        var tableNamesEle = document.getElementById('table-name-select');
+        var tableName = tableNamesEle.options[tableNamesEle.selectedIndex].value;
+
+        // request
+        var resultSetXHR = new XMLHttpRequest();
+        var requestURL = document.location.protocol + '//' + document.location.host
+        + '/database_inspect?db_path=' + dbPath + '&table_name=' + tableName;
+        resultSetXHR.open('GET', requestURL);
+        resultSetXHR.onreadystatechange = function () {
+            if (resultSetXHR.readyState === 4) {
+                if (resultSetXHR.status === 200) {
+                    var responseText = resultSetXHR.responseText;
+                    var responseJSON = JSON.parse(responseText);
+                    // generate table html with table information
+                    generateTableHTML(responseJSON);
+                }
+            }
+            // update reload button to normal state
+            reloadBtnEle.classList.remove('reload-loading');
+            reloadBtnEle.classList.add('reload-normal');
+        };
+        resultSetXHR.send(null);
+    }
+    function generateTableHTML(tableData) {
+        var tableHTML;
+        if (tableData.length > 0) {
+            var i;
+            var j;
+            // thead
+            var theadData = tableData[0];
+            var theadHTML = '<thead><tr>';
+            for (var i = 0; i < theadData.length; i++) {
+                theadHTML += '<th>' + theadData[i] + '</th>';
+            }
+            theadHTML += '</tr></thead>';
+
+            // tbody
+            var tbodyHTML = '<tbody>';
+            for (i = 1; i < tableData.length; i++) {
+                var trData = tableData[i];
+                var trHTML = '<tr>';
+                for (j = 0; j < trData.length; j++) {
+                    trHTML += '<td>' + trData[j] + '</td>';
+                }
+                trHTML += '</tr>';
+                tbodyHTML += trHTML;
+            }
+            tbodyHTML += '</tbody>';
+            tableHTML = theadHTML + tbodyHTML;
+        } else {
+            // default html
+            tableHTML = '<thead><tr><th>...</th></tr></thead>';
+        }
+        var tableEle = document.getElementById('browse-data-table');
+        tableEle.innerHTML = tableHTML;
+    }
     // refresh database data
     onDatabaseTableReload();
     </script>
