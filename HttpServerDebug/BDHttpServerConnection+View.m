@@ -61,9 +61,10 @@
 
 /**
  *  {
- *  "name": ,
+ *  "description": ,
  *  "class_name": ,
  *  "memory_adress: ,
+ *  "hierarchy_depth: ": ,      // view hierarchy depth num, 0 indexed
  *  }
  */
 - (NSDictionary *)fetchViewData:(UIView *)view {
@@ -71,10 +72,18 @@
     NSString *description = [[view class] description];
     NSString *className = NSStringFromClass([view class]);
     NSString *memoryAddress = [NSString stringWithFormat:@"%p", view];
-
-    [viewData setObject:description forKey:@"name"];
+    // hierarchy depth
+    NSInteger depth = 0;
+    UIView *tryView = view;
+    while (tryView.superview) {
+        tryView = tryView.superview;
+        depth++;
+    }
+    
+    [viewData setObject:description forKey:@"description"];
     [viewData setObject:className forKey:@"class_name"];
     [viewData setObject:memoryAddress forKey:@"memory_address"];
+    [viewData setObject:[NSNumber numberWithInteger:depth] forKey:@"hierarchy_depth"];
     return viewData;
 }
 

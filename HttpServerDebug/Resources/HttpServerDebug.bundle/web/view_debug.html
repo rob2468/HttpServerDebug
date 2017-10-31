@@ -5,37 +5,101 @@
 <title>视图调试</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style type="text/css">
+.sidebar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 350px;
+}
+.sidebar.navigation-sidebar {
+    left: 0;
+}
+.sidebar.property-sidebar {
+    right: 0;
+}
+.sidebar .container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    overflow: scroll;
+}
+.sidebar .split-handler {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: #848484;
+    height: 100%;
+}
+.navigation-sidebar .split-handler {
+    right: 0;
+}
+#view-hierarchy-list ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 0 0 10px;
+}
+#view-hierarchy-list li {
+    white-space: nowrap;
+    line-height: 40px;
+}
+#view-hierarchy-list li span {
+    border-left: 1px solid;
+    padding-left: 4px;
+    display: inline-block;
+}
 </style>
 <script type="text/javascript">
 </script>
 </head>
 <body>
-<div class="navigation-sidebar">
-    <div class="view-hierarchy-list">
-        <ul>
-            <li>UIView</li>
-        </ul>
+<div class="sidebar navigation-sidebar">
+    <div class="container">
+        <div id="view-hierarchy-list">
+            <!-- <ul><li>UIView</li></ul> -->
+        </div>
     </div>
     <div class="split-handler"></div>
 </div>
 <div class="view-hierarchy-area"></div>
-<div class="property-sidebar"></div>
+<div class="sidebar property-sidebar">
+    <div class="split-handler"></div>
+</div>
 
 <script type="text/javascript">
-var viewXHR = new XMLHttpRequest();
-var requestURL = document.location.protocol + '//' + document.location.host
-+ '/view_debug';
-viewXHR.open('GET', requestURL);
-viewXHR.onreadystatechange = function () {
-    if (viewXHR.readyState === 4) {
-        if (viewXHR.status === 200) {
-            var responseText = viewXHR.responseText;
-            var responseJSON = JSON.parse(responseText);
-
+function requestViewHierarchyData() {
+    var viewXHR = new XMLHttpRequest();
+    var requestURL = document.location.protocol + '//' + document.location.host
+    + '/view_debug';
+    viewXHR.open('GET', requestURL);
+    viewXHR.onreadystatechange = function () {
+        if (viewXHR.readyState === 4) {
+            if (viewXHR.status === 200) {
+                var responseText = viewXHR.responseText;
+                var responseJSON = JSON.parse(responseText);
+                generateViewHierarchyListHTML(responseJSON);
+            }
         }
+    };
+    viewXHR.send(null);
+}
+function generateViewHierarchyListHTML(allViewsData) {
+    var ulStr = '<ul>';
+    for (var i = 0; i < allViewsData.length; i++) {
+        var viewData = allViewsData[i];
+        var title = viewData['description'];
+        var depth = viewData['hierarchy_depth'];
+        ulStr += '<li>'
+        + Array(depth + 1).join('<span>')
+        + title + Array(depth + 1).join('</span>')
+        + '</li>';
     }
-};
-viewXHR.send(null);
+    ulStr += '</ul>'
+    var listEle = document.getElementById('view-hierarchy-list');
+    listEle.innerHTML = ulStr;
+}
+requestViewHierarchyData();
 </script>
 </body>
 </html>
