@@ -23,8 +23,15 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 100%;
     overflow: scroll;
+}
+.navigation-sidebar .container {
+    left: 0;
+    right: 3px;
+}
+.property-sidebar .container {
+    left: 3px;
+    right: 0;
 }
 .sidebar .split-handler {
     position: absolute;
@@ -37,9 +44,14 @@
 .navigation-sidebar .split-handler {
     right: 0;
 }
-#view-hierarchy-list ul {
+.property-sidebar .split-handler {
+    left: 0;
+}
+.sidebar ul {
     list-style-type: none;
     margin: 0;
+}
+#view-hierarchy-list ul {
     padding: 0 0 0 10px;
 }
 #view-hierarchy-list li {
@@ -58,6 +70,15 @@
     padding-left: 4px;
     display: inline-block;
 }
+#view-property-list ul {
+    padding: 0;
+}
+#view-property-list img {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
 </style>
 <script type="text/javascript">
 </script>
@@ -75,7 +96,12 @@
 <div class="sidebar property-sidebar">
     <div class="container">
         <div id="view-property-list">
-            <img id="view-property-snapshot" src="">
+            <ul>
+            <li>
+                <div>视图快照：</div>
+                <div><img id="view-property-snapshot" alt=""></div>
+            </li>
+            </ul>
         </div>
     </div>
     <div class="split-handler"></div>
@@ -91,7 +117,7 @@ var SNAPSHOTPATH = 'snapshot';
 function requestViewHierarchyData() {
     var viewXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/' + ROOTPATH + '/' + ALLVIEWSPATH +'?';
+    + '/' + ROOTPATH + '/' + ALLVIEWSPATH + '?';
     viewXHR.open('GET', requestURL);
     viewXHR.onreadystatechange = function () {
         if (viewXHR.readyState === 4) {
@@ -112,12 +138,12 @@ function generateViewHierarchyListHTML() {
         var title = viewData['description'];
         var depth = viewData['hierarchy_depth'];
         // append id, onclick, span
-        ulStr += '<li id="'+ i +'th-view" onclick=onViewHierarchyNavigationItemClick(this.id)>'
+        ulStr += '<li id="' + i + 'th-view" onclick=onViewHierarchyNavigationItemClick(this.id)>'
         + Array(depth + 1).join('<span>')
         + title + Array(depth + 1).join('</span>')
         + '</li>';
     }
-    ulStr += '</ul>'
+    ulStr += '</ul>';
     // update list
     var listEle = document.getElementById('view-hierarchy-list');
     listEle.innerHTML = ulStr;
@@ -136,7 +162,7 @@ function onViewHierarchyNavigationItemClick(id) {
     selectedID = id;
 
     // parse data
-    var index = parseInt(id);
+    var index = parseInt(id, 10);
     var viewData = allViewsData[index];
     var memoryAddress = viewData['memory_address'];
     var className = viewData['class_name'];
