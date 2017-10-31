@@ -135,7 +135,7 @@
         response = [self fetchViewDebugResponseForMethod:method URI:path];
     } else if ([firstPath isEqualToString:kBDHttpServerViewDebug]) {
         // view_debug api
-        response = [self fetchViewDebugAPIResponse:params];
+        response = [self fetchViewDebugAPIResponsePath:pathComps parameters:params];
     } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
         // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];

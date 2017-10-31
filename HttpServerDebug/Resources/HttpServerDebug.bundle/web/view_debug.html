@@ -13,9 +13,11 @@
 }
 .sidebar.navigation-sidebar {
     left: 0;
+    background-color: #f6f6f6;
 }
 .sidebar.property-sidebar {
     right: 0;
+    background-color: #f2f2f2;
 }
 .sidebar .container {
     position: absolute;
@@ -43,6 +45,10 @@
 #view-hierarchy-list li {
     white-space: nowrap;
     line-height: 40px;
+    cursor: pointer;
+}
+#view-hierarchy-list li:hover {
+    background: #dad5d5;
 }
 #view-hierarchy-list li span {
     border-left: 1px solid;
@@ -64,40 +70,83 @@
 </div>
 <div class="view-hierarchy-area"></div>
 <div class="sidebar property-sidebar">
+    <div class="container">
+        <div id="view-property-list">
+            <img id="view-property-snapshot" src="">
+        </div>
+    </div>
     <div class="split-handler"></div>
 </div>
 
 <script type="text/javascript">
+var allViewsData;
+var ROOTPATH = 'view_debug';
+var ALLVIEWSPATH = 'all_views';
+var SELECTVIEWPATH = 'select_view';
+var SNAPSHOTPATH = 'snapshot';
 function requestViewHierarchyData() {
     var viewXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/view_debug';
+    + '/' + ROOTPATH + '/' + ALLVIEWSPATH +'?';
+    viewXHR.open('GET', requestURL);
+    viewXHR.onreadystatechange = function () {
+        if (viewXHR.readyState === 4) {
+            if (viewXHR.status === 200) {
+                var responseText = viewXHR.responseText;
+                allViewsData = JSON.parse(responseText);
+                generateViewHierarchyListHTML();
+            }
+        }
+    };
+    viewXHR.send(null);
+}
+function generateViewHierarchyListHTML() {
+    var ulStr = '<ul>';
+    for (var i = 0; i < allViewsData.length; i++) {
+        // create li element
+        var viewData = allViewsData[i];
+        var title = viewData['description'];
+        var depth = viewData['hierarchy_depth'];
+        // append id, onclick, span
+        ulStr += '<li id="'+ i +'th-view" onclick=onViewHierarchyNavigationItemClick(this.id)>'
+        + Array(depth + 1).join('<span>')
+        + title + Array(depth + 1).join('</span>')
+        + '</li>';
+    }
+    ulStr += '</ul>'
+    // update list
+    var listEle = document.getElementById('view-hierarchy-list');
+    listEle.innerHTML = ulStr;
+}
+function onViewHierarchyNavigationItemClick(id) {
+    // parse data
+    var index = parseInt(id);
+    var viewData = allViewsData[index];
+    var memoryAddress = viewData['memory_address'];
+    var className = viewData['class_name'];
+
+    // reqeust view snapshot
+    var imgEle = document.getElementById('view-property-snapshot');
+    var imgURL = document.location.protocol + '//' + document.location.host
+    + '/' + ROOTPATH + '/' + SELECTVIEWPATH + '/' + SNAPSHOTPATH
+    + '?memory_address=' + memoryAddress + '&class_name=' + className;
+    imgEle.src = imgURL;
+
+    // request
+    var viewXHR = new XMLHttpRequest();
+    var requestURL = document.location.protocol + '//' + document.location.host
+    + '/' + ROOTPATH + '/' + SELECTVIEWPATH
+    + '?memory_address=' + memoryAddress + '&class_name=' + className;
     viewXHR.open('GET', requestURL);
     viewXHR.onreadystatechange = function () {
         if (viewXHR.readyState === 4) {
             if (viewXHR.status === 200) {
                 var responseText = viewXHR.responseText;
                 var responseJSON = JSON.parse(responseText);
-                generateViewHierarchyListHTML(responseJSON);
             }
         }
     };
-    viewXHR.send(null);
-}
-function generateViewHierarchyListHTML(allViewsData) {
-    var ulStr = '<ul>';
-    for (var i = 0; i < allViewsData.length; i++) {
-        var viewData = allViewsData[i];
-        var title = viewData['description'];
-        var depth = viewData['hierarchy_depth'];
-        ulStr += '<li>'
-        + Array(depth + 1).join('<span>')
-        + title + Array(depth + 1).join('</span>')
-        + '</li>';
-    }
-    ulStr += '</ul>'
-    var listEle = document.getElementById('view-hierarchy-list');
-    listEle.innerHTML = ulStr;
+    // viewXHR.send(null);
 }
 requestViewHierarchyData();
 </script>

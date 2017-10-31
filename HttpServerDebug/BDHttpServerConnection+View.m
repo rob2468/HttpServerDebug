@@ -12,28 +12,82 @@
 
 @implementation BDHttpServerConnection (View)
 
+#pragma mark - create http response
+
 - (NSObject<HTTPResponse> *)fetchViewDebugResponseForMethod:(NSString *)method URI:(NSString *)path {    
     return [super httpResponseForMethod:method URI:path];
 }
 
-- (NSObject<HTTPResponse> *)fetchViewDebugAPIResponse:(NSDictionary *)params {
+- (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params {
     NSObject<HTTPResponse> *response;
-    if ([params count] == 0) {
-        NSArray *allViewsData = [self fetchAllViewsDataInHierarchy];
-        NSData *data = [NSJSONSerialization dataWithJSONObject:allViewsData options:0 error:nil];
-        response = [[HTTPDataResponse alloc] initWithData:data];
-    } else {
-        NSString *memoryAddress = [params objectForKey:@"memory_address"];
-        unsigned long long addressPtr = ULONG_LONG_MAX;
-        [[NSScanner scannerWithString:memoryAddress] scanHexLongLong:&addressPtr];
-        void *rawObj = (void *)(intptr_t)addressPtr;
-        id obj = (__bridge id)rawObj;
-        UIView *view = (UIView *)obj;
-        NSString *str = NSStringFromCGRect(view.frame);
-        NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-        response = [[HTTPDataResponse alloc] initWithData:data];
+    NSString *subModule;
+    if ([paths count] > 1) {
+        subModule = [paths objectAtIndex:1];
+    }
+    if (subModule.length > 0) {
+        if ([subModule isEqualToString:@"all_views"]) {
+            // get all views data
+            NSArray *allViewsData = [self fetchAllViewsDataInHierarchy];
+            NSData *data = [NSJSONSerialization dataWithJSONObject:allViewsData options:0 error:nil];
+            response = [[HTTPDataResponse alloc] initWithData:data];
+        } else if ([subModule isEqualToString:@"select_view"]) {
+            NSString *memoryAddress = [params objectForKey:@"memory_address"];
+            NSString *className = [params objectForKey:@"class_name"];
+            UIView *view;
+            
+            unsigned long long addressPtr = ULONG_LONG_MAX;
+            [[NSScanner scannerWithString:memoryAddress] scanHexLongLong:&addressPtr];
+            if (addressPtr != ULONG_LONG_MAX && className.length > 0) {
+                // get oc object according to memory address
+                void *rawObj = (void *)(intptr_t)addressPtr;
+                id obj = (__bridge id)rawObj;
+                
+                // type casting
+                if ([obj isKindOfClass:NSClassFromString(className)]) {
+                    view = (UIView *)obj;
+                }
+            }
+
+            NSString *thirdModule;
+            if ([paths count] > 2) {
+                thirdModule = [paths objectAtIndex:2];
+            }
+            if (view) {
+                if ([thirdModule isEqualToString:@"snapshot"]) {
+                    // get view snapshot
+                    NSData *data = [self fetchViewSnapshotImageData:view];
+                    response = [[HTTPDataResponse alloc] initWithData:data];
+                } else {
+                    
+                }
+
+            }
+        }
     }
     return response;
+}
+
+#pragma mark -
+
+- (NSData *)fetchViewSnapshotImageData:(UIView *)view {
+    NSData *(^MainThreadBlock)(void) = ^{
+        // get view snapshot
+        UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0);
+        [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+        UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        NSData *data = UIImagePNGRepresentation(snapshot);
+        return data;
+    };
+    __block NSData *imageData;
+    if ([NSThread isMainThread]) {
+        imageData = MainThreadBlock();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            imageData = MainThreadBlock();
+        });
+    }
+    return imageData;
 }
 
 - (NSArray *)fetchAllViewsDataInHierarchy {
