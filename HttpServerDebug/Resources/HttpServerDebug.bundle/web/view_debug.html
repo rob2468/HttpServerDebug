@@ -47,8 +47,11 @@
     line-height: 40px;
     cursor: pointer;
 }
+#view-hierarchy-list li.active {
+    background-color: #dad5d5;
+}
 #view-hierarchy-list li:hover {
-    background: #dad5d5;
+    background-color: #dad5d5;
 }
 #view-hierarchy-list li span {
     border-left: 1px solid;
@@ -80,6 +83,7 @@
 
 <script type="text/javascript">
 var allViewsData;
+var selectedID; // view-hierarchy-list active list item id
 var ROOTPATH = 'view_debug';
 var ALLVIEWSPATH = 'all_views';
 var SELECTVIEWPATH = 'select_view';
@@ -119,6 +123,18 @@ function generateViewHierarchyListHTML() {
     listEle.innerHTML = ulStr;
 }
 function onViewHierarchyNavigationItemClick(id) {
+    if (selectedID === id) {
+        return;
+    }
+    // update selected state
+    if (selectedID) {
+        var oldEle = document.getElementById(selectedID);
+        oldEle.classList.remove('active');
+    }
+    var curEle = document.getElementById(id);
+    curEle.classList.add('active');
+    selectedID = id;
+
     // parse data
     var index = parseInt(id);
     var viewData = allViewsData[index];
