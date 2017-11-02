@@ -50,4 +50,6 @@ fi
 
 ## Acknowledgments
 
+[CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer)
+
 [FLEX](https://github.com/Flipboard/FLEX)
