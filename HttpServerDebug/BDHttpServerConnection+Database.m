@@ -18,6 +18,7 @@
 - (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params {
     NSObject<HTTPResponse> *response;
     NSString *dbPath = [params objectForKey:@"db_path"];
+    dbPath = [dbPath stringByRemovingPercentEncoding];
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     if (dbPath.length > 0 && [database open]) {
         // all tables

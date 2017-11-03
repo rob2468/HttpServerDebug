@@ -24,6 +24,7 @@ $(function () {
     // bind to events triggered on the tree
     $('#jstree').on("changed.jstree", function (e, data) {
         var isDirectory = data.node.data.is_directory;
+        var href = data.node.a_attr.href;
         if (!isDirectory) {
             var filePath = data.node.data.path;
             var fileExtension =  filePath.split('/').pop().split('.').pop();
@@ -36,7 +37,8 @@ $(function () {
                 url = window.location.origin + '/database_inspect.html?db_path=' + filePath;
             } else {
                 // file preview
-                url = window.location.origin + '/file_preview.html?file_path=' + filePath;
+                var text = data.node.text;
+                url = window.location.origin + '/file_preview/' + text + '?file_path=' + filePath;
             }
             window.open(url);
         }

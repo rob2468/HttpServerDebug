@@ -128,7 +128,8 @@
         response = [self fetchDatabaseAPIResponse:params];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerWebUpload]]) {
         response = [self fetchWebUploadResponse:params forMethod:method URI:path];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerFilePreview]]) {
+    } else if ([firstPath isEqualToString:kBDHttpServerFilePreview]) {
+        // file_preview
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerViewDebug]]) {
         // view_debug.html
