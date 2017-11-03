@@ -9,6 +9,7 @@
 #import "BDHttpServerConnection+Explorer.h"
 #import "HTTPDynamicFileResponse.h"
 #import "BDHttpServerDefine.h"
+#import "BDHttpServerManager.h"
 
 @interface BDHttpServerJSTreeNode : NSObject
 
@@ -17,6 +18,7 @@
 @property (nonatomic, copy) NSString *icon;
 @property (nonatomic, strong) NSMutableDictionary *data;
 @property (nonatomic, strong) NSMutableDictionary *state;
+@property (nonatomic, strong) NSMutableDictionary *a_attr;
 @property (nonatomic, strong) NSMutableArray *children;
 
 @end
@@ -29,6 +31,7 @@
     if (self) {
         self.data = [[NSMutableDictionary alloc] init];
         self.state = [[NSMutableDictionary alloc] init];
+        self.a_attr = [[NSMutableDictionary alloc] init];
         self.children = [[NSMutableArray alloc] init];
     }
     return self;
@@ -41,6 +44,7 @@
     NSString *icon = self.icon.length > 0? self.icon: @"";
     NSDictionary *data = self.data;
     NSDictionary *state = self.state;
+    NSDictionary *a_attr = self.a_attr;
     NSMutableArray *children = [[NSMutableArray alloc] init];
     for (BDHttpServerJSTreeNode *node in self.children) {
         NSDictionary *dict = [node serialize];
@@ -53,6 +57,7 @@
       @"icon": icon,
       @"data": data,
       @"state": state,
+      @"a_attr": a_attr,
       @"children": children,
       };
     return node;
@@ -103,10 +108,14 @@
         path = path.length > 0? path: @"";
         NSString *text = path.lastPathComponent;
         text = text.length > 0? text: @"";
+        NSString *href = kBDHttpServerFilePreview;
+        href = [href stringByAppendingPathComponent:text];
+        href = [href stringByAppendingFormat:@"?file_path=%@", path];
         
         node = [[BDHttpServerJSTreeNode alloc] init];
         node.text = text;
         [node.data setObject:path forKey:@"path"];
+        [node.a_attr setObject:href forKey:@"href"];
 
         if (isDir) {
             NSArray *fileNames = [fileManager contentsOfDirectoryAtPath:path error:nil];
