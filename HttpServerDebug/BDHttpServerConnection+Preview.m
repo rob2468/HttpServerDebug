@@ -16,19 +16,38 @@
 {
     BDHttpServerDataResponse *response;
     NSString *contentType = @"text/plain;charset=utf-8";
-    if (params) {
-        NSString *filePath = [params objectForKey:@"file_path"];
+    NSString *filePath = [params objectForKey:@"file_path"];
+    if (filePath.length > 0) {
+        filePath = [filePath stringByRemovingPercentEncoding];
         NSData *data;
         if ([filePath isEqualToString:@"standardUserDefaults"]) {
             NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
             NSString *str = [dict description];
             data = [str dataUsingEncoding:NSUTF8StringEncoding];
         } else {
-            filePath = [filePath stringByRemovingPercentEncoding];
+            // response content type
             NSString *extension = filePath.pathExtension;
-            
-            data = [[NSData alloc] initWithContentsOfFile:filePath];
             contentType = [BDHttpServerUtility fetchContentTypeWithFilePathExtension:extension];
+            
+            // generate response data
+            if (![filePath hasPrefix:@"/"]) {
+                // relative path, get full path
+                NSString *firstPathComp = [[filePath pathComponents] firstObject];
+                NSString *remainPath = [filePath substringFromIndex:firstPathComp.length];
+                if ([firstPathComp isEqualToString:@"Documents"]) {
+                    NSString *documents = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+                    filePath = [documents stringByAppendingPathComponent:remainPath];
+                } else if ([firstPathComp isEqualToString:@"Library"]) {
+                    NSString *library = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) firstObject];
+                    filePath = [library stringByAppendingPathComponent:remainPath];
+                } else if ([firstPathComp isEqualToString:@"tmp"]) {
+                    NSString *tmp = NSTemporaryDirectory();
+                    filePath = [tmp stringByAppendingPathComponent:remainPath];
+                } else {
+                    filePath = @"";
+                }
+            }
+            data = [[NSData alloc] initWithContentsOfFile:filePath];
         }
         if (data) {
             response = [[BDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
