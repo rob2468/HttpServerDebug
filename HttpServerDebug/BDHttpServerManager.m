@@ -41,25 +41,19 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 }
 
 + (void)startHttpServer:(NSString *)port {
-    // 将bundle中的web资源拷贝到服务器根目录中
-    NSString *webLocalPath = NSTemporaryDirectory();
-    webLocalPath = [webLocalPath stringByAppendingPathComponent:@"web"];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:webLocalPath]) {
-        [[NSFileManager defaultManager] removeItemAtPath:webLocalPath error:nil];
-    }
-
     NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
     NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
-    [[NSFileManager defaultManager] copyItemAtPath:webPath toPath:webLocalPath error:nil];
-        
+    
     BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
     manager.server = [[HTTPServer alloc] init];
     [manager.server setType:@"_http._tcp."];
     
+#ifdef Debug
     // develop web in simulator, use files in the project bundle directly
-    webLocalPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+#endif
     
-    [manager.server setDocumentRoot:webLocalPath];
+    [manager.server setDocumentRoot:webPath];
     if (port.length > 0) {
         [manager.server setPort:port.integerValue];
     }
@@ -68,7 +62,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     [manager.server start:&error];
     
     NSLog(@"http server started: %@", [self fetchServerSite]);
-    NSLog(@"http server root document: %@", webLocalPath);
+    NSLog(@"http server root document: %@", webPath);
 }
 
 + (void)stopHttpServer
