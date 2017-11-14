@@ -140,8 +140,10 @@
     } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
         // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
+        NSString *dbPath = [BDHttpServerManager fetchDatabaseFilePath];
+        dbPath = dbPath.length > 0? dbPath: @"";
         NSDictionary *replacementDict =
-        @{@"DB_FILE_PATH": [BDHttpServerManager fetchDatabaseFilePath]};
+        @{@"DB_FILE_PATH": dbPath};
         response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
     } else if ([firstPath isEqualToString:@"resources"]) {
         // set resources Content-Type manually

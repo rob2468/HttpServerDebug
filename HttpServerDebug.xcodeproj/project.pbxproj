@@ -29,8 +29,6 @@
 		8FA70C831FA6D29700908C34 /* BDHttpServerConnection+View.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FA70C821FA6D29700908C34 /* BDHttpServerConnection+View.m */; };
 		8FC544611FBAB40B00C1DAFC /* ZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544601FBAB3F500C1DAFC /* ZipArchive.m */; };
 		8FC544621FBAB41500C1DAFC /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544511FBAB3F500C1DAFC /* ioapi.c */; };
-		8FC544631FBAB41500C1DAFC /* miniunz.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544551FBAB3F500C1DAFC /* miniunz.c */; };
-		8FC544641FBAB41500C1DAFC /* minizip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544561FBAB3F500C1DAFC /* minizip.c */; };
 		8FC544651FBAB41500C1DAFC /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544591FBAB3F500C1DAFC /* mztools.c */; };
 		8FC544661FBAB41500C1DAFC /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445B1FBAB3F500C1DAFC /* unzip.c */; };
 		8FC544671FBAB41500C1DAFC /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445D1FBAB3F500C1DAFC /* zip.c */; };
@@ -258,16 +256,9 @@
 		8FAC0A211F3C84F600D329B1 /* BDHttpServerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDHttpServerManager.h; sourceTree = "<group>"; };
 		8FAC0A221F3C84F600D329B1 /* BDHttpServerConnection+Database.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BDHttpServerConnection+Database.m"; sourceTree = "<group>"; };
 		8FAC0A231F3C84F600D329B1 /* BDHttpServerDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDHttpServerDefine.h; sourceTree = "<group>"; };
-		8FC5444F1FBAB3F500C1DAFC /* ChangeLogUnzip */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChangeLogUnzip; sourceTree = "<group>"; };
 		8FC544501FBAB3F500C1DAFC /* crypt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		8FC544511FBAB3F500C1DAFC /* ioapi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		8FC544521FBAB3F500C1DAFC /* ioapi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
-		8FC544531FBAB3F500C1DAFC /* make_vms.com */ = {isa = PBXFileReference; lastKnownFileType = text; path = make_vms.com; sourceTree = "<group>"; };
-		8FC544541FBAB3F500C1DAFC /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		8FC544551FBAB3F500C1DAFC /* miniunz.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = miniunz.c; sourceTree = "<group>"; };
-		8FC544561FBAB3F500C1DAFC /* minizip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = minizip.c; sourceTree = "<group>"; };
-		8FC544571FBAB3F500C1DAFC /* MiniZip64_Changes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = MiniZip64_Changes.txt; sourceTree = "<group>"; };
-		8FC544581FBAB3F500C1DAFC /* MiniZip64_info.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = MiniZip64_info.txt; sourceTree = "<group>"; };
 		8FC544591FBAB3F500C1DAFC /* mztools.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
 		8FC5445A1FBAB3F500C1DAFC /* mztools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
 		8FC5445B1FBAB3F500C1DAFC /* unzip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
@@ -620,16 +611,9 @@
 		8FC5444E1FBAB3F500C1DAFC /* minizip */ = {
 			isa = PBXGroup;
 			children = (
-				8FC5444F1FBAB3F500C1DAFC /* ChangeLogUnzip */,
 				8FC544501FBAB3F500C1DAFC /* crypt.h */,
 				8FC544511FBAB3F500C1DAFC /* ioapi.c */,
 				8FC544521FBAB3F500C1DAFC /* ioapi.h */,
-				8FC544531FBAB3F500C1DAFC /* make_vms.com */,
-				8FC544541FBAB3F500C1DAFC /* Makefile */,
-				8FC544551FBAB3F500C1DAFC /* miniunz.c */,
-				8FC544561FBAB3F500C1DAFC /* minizip.c */,
-				8FC544571FBAB3F500C1DAFC /* MiniZip64_Changes.txt */,
-				8FC544581FBAB3F500C1DAFC /* MiniZip64_info.txt */,
 				8FC544591FBAB3F500C1DAFC /* mztools.c */,
 				8FC5445A1FBAB3F500C1DAFC /* mztools.h */,
 				8FC5445B1FBAB3F500C1DAFC /* unzip.c */,
@@ -846,8 +830,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FC544621FBAB41500C1DAFC /* ioapi.c in Sources */,
-				8FC544631FBAB41500C1DAFC /* miniunz.c in Sources */,
-				8FC544641FBAB41500C1DAFC /* minizip.c in Sources */,
 				8FC544651FBAB41500C1DAFC /* mztools.c in Sources */,
 				8FC544661FBAB41500C1DAFC /* unzip.c in Sources */,
 				8FC544671FBAB41500C1DAFC /* zip.c in Sources */,
