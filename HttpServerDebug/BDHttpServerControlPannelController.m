@@ -43,6 +43,7 @@
     
     // stopButton
     self.stopButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.stopButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.stopButton setTitle:@"关闭服务器" forState:(UIControlStateNormal)];
     [self.stopButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [self.stopButton addTarget:self action:@selector(stopHttpServer) forControlEvents:(UIControlEventTouchUpInside)];
