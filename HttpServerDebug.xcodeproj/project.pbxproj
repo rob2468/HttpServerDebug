@@ -27,6 +27,13 @@
 		8F704BB91F3D52DD002E1FAF /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704BA41F3D5275002E1FAF /* FMResultSet.m */; };
 		8F704BC01F3D57B0002E1FAF /* HttpServerDebug.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704BBA1F3D533B002E1FAF /* HttpServerDebug.h */; };
 		8FA70C831FA6D29700908C34 /* BDHttpServerConnection+View.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FA70C821FA6D29700908C34 /* BDHttpServerConnection+View.m */; };
+		8FC544611FBAB40B00C1DAFC /* ZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544601FBAB3F500C1DAFC /* ZipArchive.m */; };
+		8FC544621FBAB41500C1DAFC /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544511FBAB3F500C1DAFC /* ioapi.c */; };
+		8FC544631FBAB41500C1DAFC /* miniunz.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544551FBAB3F500C1DAFC /* miniunz.c */; };
+		8FC544641FBAB41500C1DAFC /* minizip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544561FBAB3F500C1DAFC /* minizip.c */; };
+		8FC544651FBAB41500C1DAFC /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544591FBAB3F500C1DAFC /* mztools.c */; };
+		8FC544661FBAB41500C1DAFC /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445B1FBAB3F500C1DAFC /* unzip.c */; };
+		8FC544671FBAB41500C1DAFC /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445D1FBAB3F500C1DAFC /* zip.c */; };
 		8FEFE7421F3F4F1100D841E0 /* BDHttpServerManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8FAC0A211F3C84F600D329B1 /* BDHttpServerManager.h */; };
 		8FEFE7441F3F4F5700D841E0 /* FMDatabase.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9A1F3D5275002E1FAF /* FMDatabase.h */; };
 		8FEFE7451F3F4F5700D841E0 /* FMDatabaseAdditions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9C1F3D5275002E1FAF /* FMDatabaseAdditions.h */; };
@@ -97,6 +104,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8F7E73F21FB9C3680044FD57 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8FF95F2C1F409D3700DDC97F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -149,6 +165,7 @@
 		8F704BA41F3D5275002E1FAF /* FMResultSet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		8F704BA91F3D529E002E1FAF /* libFMDB.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFMDB.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F704BBA1F3D533B002E1FAF /* HttpServerDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HttpServerDebug.h; sourceTree = "<group>"; };
+		8F7E73F41FB9C3680044FD57 /* libZipArchive.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZipArchive.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FA70C811FA6D29700908C34 /* BDHttpServerConnection+View.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BDHttpServerConnection+View.h"; sourceTree = "<group>"; };
 		8FA70C821FA6D29700908C34 /* BDHttpServerConnection+View.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BDHttpServerConnection+View.m"; sourceTree = "<group>"; };
 		8FA70C841FA6E82500908C34 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -241,6 +258,24 @@
 		8FAC0A211F3C84F600D329B1 /* BDHttpServerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDHttpServerManager.h; sourceTree = "<group>"; };
 		8FAC0A221F3C84F600D329B1 /* BDHttpServerConnection+Database.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BDHttpServerConnection+Database.m"; sourceTree = "<group>"; };
 		8FAC0A231F3C84F600D329B1 /* BDHttpServerDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDHttpServerDefine.h; sourceTree = "<group>"; };
+		8FC5444F1FBAB3F500C1DAFC /* ChangeLogUnzip */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChangeLogUnzip; sourceTree = "<group>"; };
+		8FC544501FBAB3F500C1DAFC /* crypt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		8FC544511FBAB3F500C1DAFC /* ioapi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		8FC544521FBAB3F500C1DAFC /* ioapi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		8FC544531FBAB3F500C1DAFC /* make_vms.com */ = {isa = PBXFileReference; lastKnownFileType = text; path = make_vms.com; sourceTree = "<group>"; };
+		8FC544541FBAB3F500C1DAFC /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		8FC544551FBAB3F500C1DAFC /* miniunz.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = miniunz.c; sourceTree = "<group>"; };
+		8FC544561FBAB3F500C1DAFC /* minizip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = minizip.c; sourceTree = "<group>"; };
+		8FC544571FBAB3F500C1DAFC /* MiniZip64_Changes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = MiniZip64_Changes.txt; sourceTree = "<group>"; };
+		8FC544581FBAB3F500C1DAFC /* MiniZip64_info.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = MiniZip64_info.txt; sourceTree = "<group>"; };
+		8FC544591FBAB3F500C1DAFC /* mztools.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		8FC5445A1FBAB3F500C1DAFC /* mztools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		8FC5445B1FBAB3F500C1DAFC /* unzip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		8FC5445C1FBAB3F500C1DAFC /* unzip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		8FC5445D1FBAB3F500C1DAFC /* zip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		8FC5445E1FBAB3F500C1DAFC /* zip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		8FC5445F1FBAB3F500C1DAFC /* ZipArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
+		8FC544601FBAB3F500C1DAFC /* ZipArchive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZipArchive.m; sourceTree = "<group>"; };
 		8FF95F2E1F409D3700DDC97F /* libCocoaLumberjack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaLumberjack.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F7B1F413C8100DDC97F /* libCocoaAsyncSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaAsyncSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F8C1F413D9600DDC97F /* libCocoaHttpServer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaHttpServer.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -256,6 +291,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		8F704BA61F3D529E002E1FAF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F7E73F11FB9C3680044FD57 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -306,6 +348,7 @@
 				8FF95F2E1F409D3700DDC97F /* libCocoaLumberjack.a */,
 				8FF95F7B1F413C8100DDC97F /* libCocoaAsyncSocket.a */,
 				8FF95F8C1F413D9600DDC97F /* libCocoaHttpServer.a */,
+				8F7E73F41FB9C3680044FD57 /* libZipArchive.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -411,6 +454,7 @@
 				8FAC09AC1F3C84E400D329B1 /* CocoaHttpServer */,
 				8FAC09DD1F3C84E500D329B1 /* CocoaLumberjack */,
 				8F704B8E1F3D5275002E1FAF /* FMDB */,
+				8FC5444D1FBAB3F500C1DAFC /* ZipArchive */,
 			);
 			path = ThirdParties;
 			sourceTree = "<group>";
@@ -563,6 +607,39 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		8FC5444D1FBAB3F500C1DAFC /* ZipArchive */ = {
+			isa = PBXGroup;
+			children = (
+				8FC5444E1FBAB3F500C1DAFC /* minizip */,
+				8FC5445F1FBAB3F500C1DAFC /* ZipArchive.h */,
+				8FC544601FBAB3F500C1DAFC /* ZipArchive.m */,
+			);
+			path = ZipArchive;
+			sourceTree = "<group>";
+		};
+		8FC5444E1FBAB3F500C1DAFC /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				8FC5444F1FBAB3F500C1DAFC /* ChangeLogUnzip */,
+				8FC544501FBAB3F500C1DAFC /* crypt.h */,
+				8FC544511FBAB3F500C1DAFC /* ioapi.c */,
+				8FC544521FBAB3F500C1DAFC /* ioapi.h */,
+				8FC544531FBAB3F500C1DAFC /* make_vms.com */,
+				8FC544541FBAB3F500C1DAFC /* Makefile */,
+				8FC544551FBAB3F500C1DAFC /* miniunz.c */,
+				8FC544561FBAB3F500C1DAFC /* minizip.c */,
+				8FC544571FBAB3F500C1DAFC /* MiniZip64_Changes.txt */,
+				8FC544581FBAB3F500C1DAFC /* MiniZip64_info.txt */,
+				8FC544591FBAB3F500C1DAFC /* mztools.c */,
+				8FC5445A1FBAB3F500C1DAFC /* mztools.h */,
+				8FC5445B1FBAB3F500C1DAFC /* unzip.c */,
+				8FC5445C1FBAB3F500C1DAFC /* unzip.h */,
+				8FC5445D1FBAB3F500C1DAFC /* zip.c */,
+				8FC5445E1FBAB3F500C1DAFC /* zip.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -599,6 +676,23 @@
 			name = FMDB;
 			productName = FMDB;
 			productReference = 8F704BA91F3D529E002E1FAF /* libFMDB.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		8F7E73F31FB9C3680044FD57 /* ZipArchive */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8F7E73FA1FB9C3690044FD57 /* Build configuration list for PBXNativeTarget "ZipArchive" */;
+			buildPhases = (
+				8F7E73F01FB9C3680044FD57 /* Sources */,
+				8F7E73F11FB9C3680044FD57 /* Frameworks */,
+				8F7E73F21FB9C3680044FD57 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ZipArchive;
+			productName = ZipArchive;
+			productReference = 8F7E73F41FB9C3680044FD57 /* libZipArchive.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		8FF95F2D1F409D3700DDC97F /* CocoaLumberjack */ = {
@@ -667,6 +761,10 @@
 					8F704BA81F3D529E002E1FAF = {
 						CreatedOnToolsVersion = 9.0;
 					};
+					8F7E73F31FB9C3680044FD57 = {
+						CreatedOnToolsVersion = 9.0;
+						ProvisioningStyle = Automatic;
+					};
 					8FF95F2D1F409D3700DDC97F = {
 						CreatedOnToolsVersion = 9.0;
 					};
@@ -695,6 +793,7 @@
 				8FF95F7A1F413C8100DDC97F /* CocoaAsyncSocket */,
 				8FF95F8B1F413D9600DDC97F /* CocoaHttpServer */,
 				8F704BA81F3D529E002E1FAF /* FMDB */,
+				8F7E73F31FB9C3680044FD57 /* ZipArchive */,
 			);
 		};
 /* End PBXProject section */
@@ -739,6 +838,20 @@
 				8F704BB51F3D52DD002E1FAF /* FMDatabase.m in Sources */,
 				8F704BB91F3D52DD002E1FAF /* FMResultSet.m in Sources */,
 				8F704BB61F3D52DD002E1FAF /* FMDatabaseAdditions.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F7E73F01FB9C3680044FD57 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8FC544621FBAB41500C1DAFC /* ioapi.c in Sources */,
+				8FC544631FBAB41500C1DAFC /* miniunz.c in Sources */,
+				8FC544641FBAB41500C1DAFC /* minizip.c in Sources */,
+				8FC544651FBAB41500C1DAFC /* mztools.c in Sources */,
+				8FC544661FBAB41500C1DAFC /* unzip.c in Sources */,
+				8FC544671FBAB41500C1DAFC /* zip.c in Sources */,
+				8FC544611FBAB40B00C1DAFC /* ZipArchive.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -954,6 +1067,32 @@
 			};
 			name = Release;
 		};
+		8F7E73FB1FB9C3690044FD57 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8F7E73FC1FB9C3690044FD57 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		8FF95F351F409D3700DDC97F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1048,6 +1187,15 @@
 			buildConfigurations = (
 				8F704BB01F3D529E002E1FAF /* Debug */,
 				8F704BB11F3D529E002E1FAF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8F7E73FA1FB9C3690044FD57 /* Build configuration list for PBXNativeTarget "ZipArchive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F7E73FB1FB9C3690044FD57 /* Debug */,
+				8F7E73FC1FB9C3690044FD57 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

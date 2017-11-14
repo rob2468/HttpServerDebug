@@ -9,6 +9,7 @@
 #import "BDHttpServerConnection+Preview.h"
 #import "HTTPDataResponse.h"
 #import "BDHttpServerUtility.h"
+#import "ZipArchive.h"
 
 @implementation BDHttpServerConnection (Preview)
 
@@ -47,7 +48,29 @@
                     filePath = @"";
                 }
             }
-            data = [[NSData alloc] initWithContentsOfFile:filePath];
+            
+            // file or directory
+            BOOL isDirectory;
+            BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
+
+            if (isExist) {
+                if (isDirectory) {
+                    // request directory, zip archive directory and response
+                    NSString *tmpFileName = [NSString stringWithFormat:@"hsd_file_preview_%@", filePath.lastPathComponent];
+                    NSString *tmpPath = [NSTemporaryDirectory() stringByAppendingPathComponent:tmpFileName];
+                    ZipArchive *zipFile = [[ZipArchive alloc] init];
+                    [zipFile CreateZipFile2:tmpPath];
+                    // add
+                    [self zip:zipFile baseDirectoryPath:filePath fromDirectoryPath:filePath];
+                    [zipFile CloseZipFile2];
+                    data = [[NSData alloc] initWithContentsOfFile:tmpPath];
+                    // clean tmp file
+                    [[NSFileManager defaultManager] removeItemAtPath:tmpPath error:nil];
+                } else {
+                    // request file
+                    data = [[NSData alloc] initWithContentsOfFile:filePath];
+                }
+            }
         }
         if (data) {
             response = [[BDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
@@ -59,6 +82,27 @@
         response = [[BDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
     }
     return response;
+}
+
+- (void)zip:(ZipArchive *)zipFile baseDirectoryPath:(NSString *)basePath fromDirectoryPath:(NSString *)directoryPath {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray<NSString *> *fileNames = [fileManager contentsOfDirectoryAtPath:directoryPath error:nil];
+    for (NSString *fileName in fileNames) {
+        NSString *fullPath = [directoryPath stringByAppendingPathComponent:fileName];
+        BOOL isDirectory;
+        [fileManager fileExistsAtPath:fullPath isDirectory:&isDirectory];
+        if (isDirectory) {
+            // zip recursively
+            [self zip:zipFile baseDirectoryPath:basePath fromDirectoryPath:fullPath];
+        } else {
+            NSInteger idx = basePath.length;
+            if (![basePath hasSuffix:@"/"]) {
+                idx++;
+            }
+            NSString *newName = [fullPath substringFromIndex:idx];
+            [zipFile addFileToZip:fullPath newname:newName];
+        }
+    }
 }
 
 @end

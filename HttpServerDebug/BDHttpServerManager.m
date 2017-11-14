@@ -22,6 +22,10 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
 @implementation BDHttpServerManager
 
+- (void)dealloc {
+    [self.server stop];
+}
+
 + (instancetype)sharedInstance
 {
     static BDHttpServerManager *instance;
@@ -48,10 +52,10 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     manager.server = [[HTTPServer alloc] init];
     [manager.server setType:@"_http._tcp."];
     
-#ifdef Debug
-    // develop web in simulator, use files in the project bundle directly
-    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
-#endif
+//#ifdef DEBUG
+//    // develop web in simulator, use files in the project bundle directly
+//    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+//#endif
     
     [manager.server setDocumentRoot:webPath];
     if (port.length > 0) {
@@ -59,10 +63,14 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     }
     [manager.server setConnectionClass:[BDHttpServerConnection class]];
     NSError *error;
-    [manager.server start:&error];
+    BOOL isSucc = [manager.server start:&error];
     
-    NSLog(@"http server started: %@", [self fetchServerSite]);
-    NSLog(@"http server root document: %@", webPath);
+    if (isSucc) {
+        NSLog(@"http server started: %@", [self fetchServerSite]);
+        NSLog(@"http server root document: %@", webPath);
+    } else {
+        NSLog(@"Error starting http server: %@", error);
+    }
 }
 
 + (void)stopHttpServer
