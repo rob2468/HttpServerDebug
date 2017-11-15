@@ -62,3 +62,6 @@ cp -R "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${IPHONEOS_SDK}/include/" "
 
 # Copy bundle
 cp -R "${PROJECT_NAME}/Resources/${PROJECT_NAME}.bundle" "${OUTPUT_FOLDER_NAME}/"
+
+# Copy documents
+cp -R "./Documents" "${OUTPUT_FOLDER_NAME}/"
