@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-CONFIGURATION_SETTING="Debug"
-# CONFIGURATION_SETTING="Release"
+# CONFIGURATION_SETTING="Debug"
+CONFIGURATION_SETTING="Release"
 
 # Dependencies onfiguration
 FMDB_INCLUDE=0
