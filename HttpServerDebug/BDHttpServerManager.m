@@ -52,10 +52,10 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     manager.server = [[HTTPServer alloc] init];
     [manager.server setType:@"_http._tcp."];
     
-//#ifdef DEBUG
-//    // develop web in simulator, use files in the project bundle directly
-//    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
-//#endif
+#ifdef DEBUG
+    // develop web in simulator, use files in the project bundle directly
+    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+#endif
     
     [manager.server setDocumentRoot:webPath];
     if (port.length > 0) {
