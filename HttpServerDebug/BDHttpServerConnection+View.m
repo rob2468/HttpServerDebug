@@ -95,10 +95,10 @@
         NSMutableArray *allViewsData = [[NSMutableArray alloc] init];
         NSArray *windows = [BDHttpServerConnection fetchAllWindows];
         for (UIWindow *window in windows) {
-            NSDictionary *viewData = [self fetchViewData:window];
+            NSDictionary *viewData = [self fetchViewData:window inWindow:window];
             [allViewsData addObject:viewData];
             
-            [allViewsData addObjectsFromArray:[self allRecursiveSubviewsInView:window]];
+            [allViewsData addObjectsFromArray:[self allRecursiveSubviewsInView:window inWindow:window]];
         }
         return allViewsData;
     };
@@ -119,9 +119,10 @@
  *  "class_name": ,
  *  "memory_adress: ,
  *  "hierarchy_depth: ": ,      // view hierarchy depth num, 0 indexed
+ *  "frame": ,                  // frame in window
  *  }
  */
-- (NSDictionary *)fetchViewData:(UIView *)view {
+- (NSDictionary *)fetchViewData:(UIView *)view inWindow:(UIWindow *)window {
     NSMutableDictionary *viewData = [[NSMutableDictionary alloc] init];
     NSString *description = [[view class] description];
     NSString *className = NSStringFromClass([view class]);
@@ -133,11 +134,20 @@
         tryView = tryView.superview;
         depth++;
     }
+    // frame
+    CGRect frame = [view convertRect:view.bounds toView:window];
+    NSDictionary *frameDict =
+  @{@"x": @(frame.origin.x),
+    @"y": @(frame.origin.y),
+    @"width": @(frame.size.width),
+    @"height": @(frame.size.height)
+    };
     
     [viewData setObject:description forKey:@"description"];
     [viewData setObject:className forKey:@"class_name"];
     [viewData setObject:memoryAddress forKey:@"memory_address"];
     [viewData setObject:[NSNumber numberWithInteger:depth] forKey:@"hierarchy_depth"];
+    [viewData setObject:frameDict forKey:@"frame"];
     return viewData;
 }
 
@@ -155,12 +165,12 @@
     return hierarchyDepths;
 }
 
-- (NSArray *)allRecursiveSubviewsInView:(UIView *)view {
+- (NSArray *)allRecursiveSubviewsInView:(UIView *)view  inWindow:(UIWindow *)window {
     NSMutableArray *subviews = [[NSMutableArray alloc] init];
     for (UIView *subview in view.subviews) {
-        NSDictionary *subviewData = [self fetchViewData:subview];
+        NSDictionary *subviewData = [self fetchViewData:subview inWindow:window];
         [subviews addObject:subviewData];
-        [subviews addObjectsFromArray:[self allRecursiveSubviewsInView:subview]];
+        [subviews addObjectsFromArray:[self allRecursiveSubviewsInView:subview inWindow:window]];
     }
     return subviews;
 }

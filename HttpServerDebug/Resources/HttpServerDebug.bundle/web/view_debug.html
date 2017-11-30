@@ -133,7 +133,11 @@ function requestViewHierarchyData() {
             if (viewXHR.status === 200) {
                 var responseText = viewXHR.responseText;
                 allViewsData = JSON.parse(responseText);
+
+                // construct h5 views with app views data
                 generateViewHierarchyListHTML();
+                initTHREE(0);
+                animateTHREE();
             }
         }
     };
@@ -208,13 +212,24 @@ var scene;
 var renderer;
 var controls;
 
-init(320, 480);
-animate();
+/**
+*  construct 3d view hierarchy display canvas
+*  @param startIdx
+*  use allViewsData array, rendering items in allViewsData, from the startIdx item to the first item with hierarchy_depth == 0 or the last item
+*/
+function initTHREE(startIdx) {
+    var viewItem = allViewsData[startIdx];
+    if (viewItem.hierarchy_depth !== 0) {
+        console.log('should render from root view');
+        return;
+    }
+    var appWidth = viewItem.frame.width;
+    var appHeight = viewItem.frame.height;
 
-function init(appWidth, appHeight) {
     var width = document.getElementById('canvas-frame').clientWidth;
     var height = document.getElementById('canvas-frame').clientHeight;
     var scale = 0.8 * height / appHeight;
+    var depthUnit = 50;     // distance between neighboring views
 
     // renderer
     renderer = new THREE.WebGLRenderer({antialias: true});
@@ -222,36 +237,70 @@ function init(appWidth, appHeight) {
     renderer.setClearColor(0xFFFFFF, 1.0);
     document.getElementById('canvas-frame').appendChild(renderer.domElement);
 
+    // scene
+    scene = new THREE.Scene();
+
     // camera
     camera = new THREE.OrthographicCamera(- width / 2, width / 2, height / 2, - height / 2, 0, 20000);
     camera.position.set(0, 0, 10000);
     camera.up.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-    // scene
-    scene = new THREE.Scene();
+    for (var i = startIdx; i < allViewsData.length; i++) {
+        viewItem = allViewsData[i];
+        var depth = viewItem.hierarchy_depth;
+        if (depth === 0 && i !== startIdx) {
+            break;
+        }
+        var x = viewItem.frame.x;
+        var y = viewItem.frame.y;
+        var width = viewItem.frame.width;
+        var height = viewItem.frame.height;
+        // mesh
+        var geometry = new THREE.BoxGeometry(width * scale, height * scale, 0);
+        var material = new THREE.MeshBasicMaterial({color: 0xFFFFFF, side: THREE.FrontSide, wireframe: false});
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set((x + width / 2 - appWidth / 2) * scale, (appHeight / 2 - (y + height / 2)) * scale, depth * depthUnit);
+        // wireframe
+        var geo = new THREE.EdgesGeometry(geometry);
+        var mat = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
+        var wireframe = new THREE.LineSegments(geo, mat);
+        mesh.add(wireframe);
 
-    // mesh
-    var material = new THREE.MeshBasicMaterial({color: 0xFFFFFF, side: THREE.DoubleSide, wireframe: false});
-    var geometry = new THREE.BoxGeometry(appWidth * scale, appHeight * scale, 0);
-    var mesh = new THREE.Mesh(geometry, material);
-    mesh.position = new THREE.Vector3(0, 0, 0);
-    // wireframe
-    var geo = new THREE.EdgesGeometry(geometry);
-    var mat = new THREE.LineBasicMaterial({color: 0x0000FF, linewidth: 1});
-    var wireframe = new THREE.LineSegments(geo, mat);
-    mesh.add(wireframe);
+        scene.add(mesh);
+    }
+    // // mesh
+    // var material = new THREE.MeshBasicMaterial({color: 0xFFFFFF, side: THREE.FrontSide, wireframe: false});
+    // var geometry = new THREE.BoxGeometry(400, 400, 0);
+    // var mesh = new THREE.Mesh(geometry, material);
+    // mesh.position.set(0, 0, 0);
+    // // wireframe
+    // var geo = new THREE.EdgesGeometry(geometry);
+    // var mat = new THREE.LineBasicMaterial({color: 0xFF0000, linewidth: 1});
+    // var wireframe = new THREE.LineSegments(geo, mat);
+    // mesh.add(wireframe);
+    // scene.add(mesh);
 
-    scene.add(mesh);
+    // // mesh
+    // var material = new THREE.MeshBasicMaterial({color: 0xFFFFFF, side: THREE.FrontSide, wireframe: false});
+    // var geometry = new THREE.BoxGeometry(100, 100, 0);
+    // var mesh = new THREE.Mesh(geometry, material);
+    // mesh.position.set(-150, 0, 50);
+    // // wireframe
+    // var geo = new THREE.EdgesGeometry(geometry);
+    // var mat = new THREE.LineBasicMaterial({color: 0xFF0000, linewidth: 1});
+    // var wireframe = new THREE.LineSegments(geo, mat);
+    // mesh.add(wireframe);
+    // scene.add(mesh);
 
     // OrbitControls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
 }
 
-function animate() {
-    requestAnimationFrame(animate);
-	// mesh.rotation.x += 0.01;
-	// mesh.rotation.y += 0.01;
+function animateTHREE() {
+    requestAnimationFrame(animateTHREE);
+    // mesh.rotation.x += 0.01;
+    // mesh.rotation.y += 0.01;
     controls.update();
     renderer.render(scene, camera);
 }
