@@ -120,6 +120,7 @@
  *  "memory_adress: ,
  *  "hierarchy_depth: ": ,      // view hierarchy depth num, 0 indexed
  *  "frame": ,                  // frame in window
+ *  "snapshot": ,               // snapshot without subviews
  *  }
  */
 - (NSDictionary *)fetchViewData:(UIView *)view inWindow:(UIWindow *)window {
@@ -142,12 +143,45 @@
     @"width": @(frame.size.width),
     @"height": @(frame.size.height)
     };
+    // snapshot without subviews
+    // base class (UIView) setHidden: method
+    Method baseSetHiddenMethod = class_getInstanceMethod([UIView class], @selector(setHidden:));
+    void (*baseSetHiddenIMP)(id, SEL, BOOL);
+    baseSetHiddenIMP = (void (*)(id, SEL, BOOL))method_getImplementation(baseSetHiddenMethod);
+    // base class (UIView) hidden method
+    Method baseIsHiddenMethod = class_getInstanceMethod([UIView class], @selector(isHidden));
+    BOOL (*baseIsHiddenIMP)(id, SEL);
+    baseIsHiddenIMP = (BOOL (*)(id, SEL))method_getImplementation(baseIsHiddenMethod);
+    // hide subviews
+    NSMutableSet *subviews = [[NSMutableSet alloc] init];
+    for (UIView *subview in view.subviews) {
+        BOOL isHidden = baseIsHiddenIMP(subview, @selector(isHidden));
+        if (!isHidden) {
+            // collect
+            [subviews addObject:subview];
+            // hide
+            baseSetHiddenIMP(subview, @selector(setHidden:), YES);
+        }
+    }
+    // get view snapshot
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0);
+    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    // show subviews
+    for (UIView *subview in subviews) {
+        baseSetHiddenIMP(subview, @selector(setHidden:), NO);
+    }
+    NSData *snapshotData = UIImagePNGRepresentation(snapshot);
+    NSString *snapshotDataStr = [snapshotData base64EncodedStringWithOptions:(NSDataBase64Encoding64CharacterLineLength)];
+    snapshotDataStr = snapshotDataStr.length > 0? snapshotDataStr: @"";
     
     [viewData setObject:description forKey:@"description"];
     [viewData setObject:className forKey:@"class_name"];
     [viewData setObject:memoryAddress forKey:@"memory_address"];
     [viewData setObject:[NSNumber numberWithInteger:depth] forKey:@"hierarchy_depth"];
     [viewData setObject:frameDict forKey:@"frame"];
+    [viewData setObject:snapshotDataStr forKey:@"snapshot"];
     return viewData;
 }
 

@@ -229,6 +229,7 @@ function initTHREE(startIdx) {
     var width = document.getElementById('canvas-frame').clientWidth;
     var height = document.getElementById('canvas-frame').clientHeight;
     var scale = 0.8 * height / appHeight;
+    scale = scale > 1 ? 1 : scale;
     var depthUnit = 50;     // distance between neighboring views
 
     // renderer
@@ -257,10 +258,22 @@ function initTHREE(startIdx) {
         var width = viewItem.frame.width;
         var height = viewItem.frame.height;
         // mesh
-        var geometry = new THREE.BoxGeometry(width * scale, height * scale, 0);
-        var material = new THREE.MeshBasicMaterial({color: 0xFFFFFF, side: THREE.FrontSide, wireframe: false});
+        // geometry
+        var geometry = new THREE.PlaneGeometry(width * scale, height * scale);
+        // material
+        var image = document.createElement('img');
+        image.src = 'data:image/png;base64,' + viewItem.snapshot;
+        var texture = new THREE.Texture(image);
+        texture.needsUpdate = true;
+        var material = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            side: THREE.DoubleSide,
+            wireframe: false});
         var mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set((x + width / 2 - appWidth / 2) * scale, (appHeight / 2 - (y + height / 2)) * scale, depth * depthUnit);
+        mesh.position.set((x + width / 2 - appWidth / 2) * scale,
+            (appHeight / 2 - (y + height / 2)) * scale,
+            depth * depthUnit);
         // wireframe
         var geo = new THREE.EdgesGeometry(geometry);
         var mat = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
