@@ -247,6 +247,7 @@ function initTHREE(startIdx) {
     camera.up.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
+    var currentDepth = 0; // current mesh z axis unit value
     for (var i = startIdx; i < allViewsData.length; i++) {
         viewItem = allViewsData[i];
         var depth = viewItem.hierarchy_depth;
@@ -273,38 +274,24 @@ function initTHREE(startIdx) {
         var mesh = new THREE.Mesh(geometry, material);
         mesh.position.set((x + width / 2 - appWidth / 2) * scale,
             (appHeight / 2 - (y + height / 2)) * scale,
-            depth * depthUnit);
+            currentDepth * depthUnit);
         // wireframe
         var geo = new THREE.EdgesGeometry(geometry);
         var mat = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
         var wireframe = new THREE.LineSegments(geo, mat);
         mesh.add(wireframe);
+        // callback
+        mesh.callback = (function(idx) {
+            return function() {
+                onViewHierarchyNavigationItemClick(idx + 'th-view');
+            };
+        })(i);
 
         scene.add(mesh);
-    }
-    // // mesh
-    // var material = new THREE.MeshBasicMaterial({color: 0xFFFFFF, side: THREE.FrontSide, wireframe: false});
-    // var geometry = new THREE.BoxGeometry(400, 400, 0);
-    // var mesh = new THREE.Mesh(geometry, material);
-    // mesh.position.set(0, 0, 0);
-    // // wireframe
-    // var geo = new THREE.EdgesGeometry(geometry);
-    // var mat = new THREE.LineBasicMaterial({color: 0xFF0000, linewidth: 1});
-    // var wireframe = new THREE.LineSegments(geo, mat);
-    // mesh.add(wireframe);
-    // scene.add(mesh);
 
-    // // mesh
-    // var material = new THREE.MeshBasicMaterial({color: 0xFFFFFF, side: THREE.FrontSide, wireframe: false});
-    // var geometry = new THREE.BoxGeometry(100, 100, 0);
-    // var mesh = new THREE.Mesh(geometry, material);
-    // mesh.position.set(-150, 0, 50);
-    // // wireframe
-    // var geo = new THREE.EdgesGeometry(geometry);
-    // var mat = new THREE.LineBasicMaterial({color: 0xFF0000, linewidth: 1});
-    // var wireframe = new THREE.LineSegments(geo, mat);
-    // mesh.add(wireframe);
-    // scene.add(mesh);
+        // depth +1
+        currentDepth++;
+    }
 
     // OrbitControls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -317,6 +304,25 @@ function animateTHREE() {
     controls.update();
     renderer.render(scene, camera);
 }
+
+// select mesh
+document.addEventListener('click', onDocumentMouseClick, false);
+
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+function onDocumentMouseClick(event) {
+    event.preventDefault();
+
+    mouse.x = (event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children);
+    if ( intersects.length > 0 ) {
+        intersects[0].object.callback();
+    }
+}
+
 </script>
 </body>
 </html>
