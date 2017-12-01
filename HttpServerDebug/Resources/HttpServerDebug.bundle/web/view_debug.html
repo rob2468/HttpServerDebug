@@ -123,6 +123,8 @@ var ROOTPATH = 'view_debug';
 var ALLVIEWSPATH = 'all_views';
 var SELECTVIEWPATH = 'select_view';
 var SNAPSHOTPATH = 'snapshot';
+var MESHBORDERDEFAULTCOLOR = 0x000000;      // mesh border default color
+var MESHBORDERSELECTEDCOLOR = 0xFF0000;     // mesh border selected color
 function requestViewHierarchyData() {
     var viewXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
@@ -167,8 +169,13 @@ function onViewHierarchyNavigationItemClick(id) {
     }
     // update selected state
     if (selectedID) {
+        // update navigation
         var oldEle = document.getElementById(selectedID);
         oldEle.classList.remove('active');
+        // update canvas
+        var oldIdx = parseInt(selectedID, 10);
+        var oldViewData = allViewsData[oldIdx];
+        oldViewData.three.wireframe.material.color.setHex(MESHBORDERDEFAULTCOLOR);
     }
     var curEle = document.getElementById(id);
     curEle.classList.add('active');
@@ -179,6 +186,9 @@ function onViewHierarchyNavigationItemClick(id) {
     var viewData = allViewsData[index];
     var memoryAddress = viewData['memory_address'];
     var className = viewData['class_name'];
+
+    // update canvas
+    viewData.three.wireframe.material.color.setHex(MESHBORDERSELECTEDCOLOR);
 
     // reqeust view snapshot
     var imgEle = document.getElementById('view-property-snapshot');
@@ -277,18 +287,21 @@ function initTHREE(startIdx) {
             currentDepth * depthUnit);
         // wireframe
         var geo = new THREE.EdgesGeometry(geometry);
-        var mat = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1});
+        var mat = new THREE.LineBasicMaterial({color: MESHBORDERDEFAULTCOLOR, linewidth: 1});
         var wireframe = new THREE.LineSegments(geo, mat);
         mesh.add(wireframe);
         // callback
-        mesh.callback = (function(idx) {
-            return function() {
+        mesh.callback = (function (idx) {
+            return function () {
                 onViewHierarchyNavigationItemClick(idx + 'th-view');
             };
         })(i);
 
         scene.add(mesh);
 
+        // add THREE objects to allVIewsData
+        var three = {'mesh': mesh, 'wireframe': wireframe};
+        viewItem.three = three;
         // depth +1
         currentDepth++;
     }
@@ -313,12 +326,12 @@ var mouse = new THREE.Vector2();
 function onDocumentMouseClick(event) {
     event.preventDefault();
 
-    mouse.x = (event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
     var intersects = raycaster.intersectObjects(scene.children);
-    if ( intersects.length > 0 ) {
+    if (intersects.length > 0) {
         intersects[0].object.callback();
     }
 }

@@ -121,6 +121,7 @@
  *  "hierarchy_depth: ": ,      // view hierarchy depth num, 0 indexed
  *  "frame": ,                  // frame in window
  *  "snapshot": ,               // snapshot without subviews
+ *  "three": {"mesh": , "wireframe": }, // webgl elements, set in js context
  *  }
  */
 - (NSDictionary *)fetchViewData:(UIView *)view inWindow:(UIWindow *)window {
