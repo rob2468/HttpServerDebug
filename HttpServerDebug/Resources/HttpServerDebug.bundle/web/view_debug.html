@@ -82,19 +82,43 @@
     display: block;
 }
 /* Middle Area */
-#canvas-frame {
+div.view-hierarchy-area {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
 }
+#canvas-frame {
+    width: 100%;
+    height: 100%;
+}
+#canvas-toolbar {
+    position: absolute;
+    height: 35px;
+    bottom: 0;
+    left: 30%;
+    right: 30%;
+    background-color: #F0F0F0;
+}
+#depth-unit-text {
+    width: 50px;
+    text-align: center;
+}
 </style>
 <script type="text/javascript">
 </script>
 </head>
 <body>
-<div class="view-hierarchy-area" id="canvas-frame"></div>
+<div class="view-hierarchy-area">
+    <div id="canvas-frame"></div>
+    <div id="canvas-toolbar">
+        <button type="button" class="depth-unit" onclick="onDepthUnitClick('-')">-</button>
+        <label><input type="text" name="depth-unit" id="depth-unit-text" onchange="onDepthUnitChange()"></label>
+        <button type="button" class="depth-unit" onclick="onDepthUnitClick('+')">+</button>
+    </div>
+</div>
+
 <div class="sidebar navigation-sidebar">
     <div class="container">
         <div id="view-hierarchy-list">
@@ -123,8 +147,8 @@ var ROOTPATH = 'view_debug';
 var ALLVIEWSPATH = 'all_views';
 var SELECTVIEWPATH = 'select_view';
 var SNAPSHOTPATH = 'snapshot';
-var MESHBORDERDEFAULTCOLOR = 0x000000;      // mesh border default color
-var MESHBORDERSELECTEDCOLOR = 0xFF0000;     // mesh border selected color
+var MESHBORDERDEFAULTCOLOR = 0xA9A9A9;      // mesh border default color
+var MESHBORDERSELECTEDCOLOR = 0x457CD3;     // mesh border selected color
 function requestViewHierarchyData() {
     var viewXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
@@ -221,6 +245,7 @@ var camera;
 var scene;
 var renderer;
 var controls;
+var depthUnit = 50;     // distance between neighboring views
 
 /**
 *  construct 3d view hierarchy display canvas
@@ -240,7 +265,6 @@ function initTHREE(startIdx) {
     var height = document.getElementById('canvas-frame').clientHeight;
     var scale = 0.8 * height / appHeight;
     scale = scale > 1 ? 1 : scale;
-    var depthUnit = 50;     // distance between neighboring views
 
     // renderer
     renderer = new THREE.WebGLRenderer({antialias: true});
@@ -308,6 +332,10 @@ function initTHREE(startIdx) {
 
     // OrbitControls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    // update input html
+    var textEle = document.getElementById('depth-unit-text');
+    textEle.value = depthUnit;
 }
 
 function animateTHREE() {
@@ -334,6 +362,48 @@ function onDocumentMouseClick(event) {
     if (intersects.length > 0) {
         intersects[0].object.callback();
     }
+}
+
+/* canvas toolbar control */
+// click increase or decrease button
+function onDepthUnitClick(action) {
+    var newDepthUnit = depthUnit;
+    if (action === '-') {
+        newDepthUnit -= 5;
+    } else if (action === '+') {
+        newDepthUnit += 5;
+    }
+
+    updateMeshDepthUnit(newDepthUnit);
+}
+// change text input
+function onDepthUnitChange() {
+    var textEle = document.getElementById('depth-unit-text');
+    var newDepthUnit = textEle.value;
+    newDepthUnit = parseInt(newDepthUnit, 10);
+    if (isNaN(newDepthUnit)) {
+        newDepthUnit = depthUnit;
+    }
+    updateMeshDepthUnit(newDepthUnit);
+}
+
+function updateMeshDepthUnit(newDepthUnit) {
+    if (newDepthUnit !== depthUnit) {
+        newDepthUnit = newDepthUnit < 5 ? 5 : newDepthUnit;
+        for (var i = allViewsData.length - 1; i >= 0; i--) {
+            var viewItem = allViewsData[i];
+            if (viewItem.hasOwnProperty('three')) {
+                var mesh = viewItem.three.mesh;
+                var tmp = mesh.position.z;
+                mesh.position.setZ(newDepthUnit * tmp / depthUnit);
+            }
+        }
+    }
+    depthUnit = newDepthUnit;
+
+    // update input html
+    var textEle = document.getElementById('depth-unit-text');
+    textEle.value = depthUnit;
 }
 
 </script>
