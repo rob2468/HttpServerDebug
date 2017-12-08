@@ -64,9 +64,6 @@
 #view-hierarchy-list li.active {
     background-color: #dad5d5;
 }
-#view-hierarchy-list li:hover {
-    background-color: #dad5d5;
-}
 #view-hierarchy-list li span {
     border-left: 1px solid;
     padding-left: 4px;
@@ -199,7 +196,9 @@ function onViewHierarchyNavigationItemClick(id) {
         // update canvas
         var oldIdx = parseInt(selectedID, 10);
         var oldViewData = allViewsData[oldIdx];
-        oldViewData.three.wireframe.material.color.setHex(MESHBORDERDEFAULTCOLOR);
+        if (oldViewData.hasOwnProperty('three')) {
+            oldViewData.three.wireframe.material.color.setHex(MESHBORDERDEFAULTCOLOR);
+        }
     }
     var curEle = document.getElementById(id);
     curEle.classList.add('active');
@@ -212,7 +211,9 @@ function onViewHierarchyNavigationItemClick(id) {
     var className = viewData['class_name'];
 
     // update canvas
-    viewData.three.wireframe.material.color.setHex(MESHBORDERSELECTEDCOLOR);
+    if (viewData.hasOwnProperty('three')) {
+        viewData.three.wireframe.material.color.setHex(MESHBORDERSELECTEDCOLOR);
+    }
 
     // reqeust view snapshot
     var imgEle = document.getElementById('view-property-snapshot');
@@ -276,8 +277,8 @@ function initTHREE(startIdx) {
     scene = new THREE.Scene();
 
     // camera
-    camera = new THREE.OrthographicCamera(- width / 2, width / 2, height / 2, - height / 2, 0, 20000);
-    camera.position.set(0, 0, 10000);
+    camera = new THREE.OrthographicCamera(- width / 2, width / 2, height / 2, - height / 2, 0, 2000000);
+    camera.position.set(0, 0, 1000000);
     camera.up.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
