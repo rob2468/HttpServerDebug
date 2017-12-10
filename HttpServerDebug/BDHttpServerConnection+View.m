@@ -116,11 +116,22 @@
 /**
  *  {
  *  "description": ,
- *  "class_name": ,
- *  "memory_adress: ,
- *  "hierarchy_depth: ": ,      // view hierarchy depth num, 0 indexed
- *  "frame": ,                  // frame in window
- *  "snapshot": ,               // snapshot without subviews
+ *  "className": ,
+ *  "memoryAdress: ,
+ *  "hierarchyDepth: ": ,      // view hierarchy depth num, 0 indexed
+ *  "frameRoot":{"x":"","y":"","width":"","height":""},// frame in window
+ *  "snapshotNosub": ,         // snapshot without subviews
+ *  "frame":{"x":"","y":"","width":"","height":""},
+ *  "bounds":{"x":"","y":"","width":"","height":""},
+ *  "position":{"x":"","y":""},
+ *  "zPosition": ,
+ *  "contentMode": ,
+ *  "tag": ,
+ *  "isUserInteractionEnabled": ,
+ *  "isMultipleTouchEnabled": ,
+ *  "isHidden": ,
+ *  "isOpaque": ,
+ *  "clipsToBounds": ,
  *  "three": {"mesh": , "wireframe": }, // webgl elements, set in js context
  *  }
  */
@@ -129,39 +140,31 @@
     NSString *description = [[view class] description];
     NSString *className = NSStringFromClass([view class]);
     NSString *memoryAddress = [NSString stringWithFormat:@"%p", view];
-    // hierarchy depth
+    // hierarchyDepth
     NSInteger depth = 0;
     UIView *tryView = view;
     while (tryView.superview) {
         tryView = tryView.superview;
         depth++;
     }
-    // frame
-    CGRect frame = [view convertRect:view.bounds toView:window];
-    NSDictionary *frameDict =
-  @{@"x": @(frame.origin.x),
-    @"y": @(frame.origin.y),
-    @"width": @(frame.size.width),
-    @"height": @(frame.size.height)
+    // frameRoot
+    CGRect frameRoot = [view convertRect:view.bounds toView:window];
+    NSDictionary *frameRootDict =
+  @{@"x": @(frameRoot.origin.x),
+    @"y": @(frameRoot.origin.y),
+    @"width": @(frameRoot.size.width),
+    @"height": @(frameRoot.size.height)
     };
     // snapshot without subviews
-    // base class (UIView) setHidden: method
-    Method baseSetHiddenMethod = class_getInstanceMethod([UIView class], @selector(setHidden:));
-    void (*baseSetHiddenIMP)(id, SEL, BOOL);
-    baseSetHiddenIMP = (void (*)(id, SEL, BOOL))method_getImplementation(baseSetHiddenMethod);
-    // base class (UIView) hidden method
-    Method baseIsHiddenMethod = class_getInstanceMethod([UIView class], @selector(isHidden));
-    BOOL (*baseIsHiddenIMP)(id, SEL);
-    baseIsHiddenIMP = (BOOL (*)(id, SEL))method_getImplementation(baseIsHiddenMethod);
     // hide subviews
     NSMutableSet *subviews = [[NSMutableSet alloc] init];
     for (UIView *subview in view.subviews) {
-        BOOL isHidden = baseIsHiddenIMP(subview, @selector(isHidden));
+        BOOL isHidden = [[self class] viewBaseClassIsHidden:subview];
         if (!isHidden) {
             // collect
             [subviews addObject:subview];
             // hide
-            baseSetHiddenIMP(subview, @selector(setHidden:), YES);
+            [[self class] view:subview baseClassSetHidden:YES];
         }
     }
     // get view snapshot
@@ -171,18 +174,117 @@
     UIGraphicsEndImageContext();
     // show subviews
     for (UIView *subview in subviews) {
-        baseSetHiddenIMP(subview, @selector(setHidden:), NO);
+        [[self class] view:subview baseClassSetHidden:NO];
     }
     NSData *snapshotData = UIImagePNGRepresentation(snapshot);
     NSString *snapshotDataStr = [snapshotData base64EncodedStringWithOptions:(NSDataBase64Encoding64CharacterLineLength)];
     snapshotDataStr = snapshotDataStr.length > 0? snapshotDataStr: @"";
+    // frame
+    CGRect frame = view.frame;
+    NSDictionary *frameDict =
+    @{@"x": @(frame.origin.x),
+      @"y": @(frame.origin.y),
+      @"width": @(frame.size.width),
+      @"height": @(frame.size.height)
+      };
+    // bounds
+    CGRect bounds = view.bounds;
+    NSDictionary *boundsDict =
+    @{@"x": @(bounds.origin.x),
+      @"y": @(bounds.origin.y),
+      @"width": @(bounds.size.width),
+      @"height": @(bounds.size.height)
+      };
+    // position
+    CGPoint position = view.layer.position;
+    NSDictionary *positionDict =
+    @{@"x": @(position.x),
+      @"y": @(position.y)
+      };
+    // zPosition
+    CGFloat zPosition = view.layer.zPosition;
+    // contentMode
+    NSString *contentMode = @"";
+    NSArray<NSString *> *contentModeArr =
+  @[@"UIViewContentModeScaleToFill",
+    @"UIViewContentModeScaleAspectFit",
+    @"UIViewContentModeScaleAspectFill",
+    @"UIViewContentModeRedraw",
+    @"UIViewContentModeCenter",
+    @"UIViewContentModeTop",
+    @"UIViewContentModeBottom",
+    @"UIViewContentModeLeft",
+    @"UIViewContentModeRight",
+    @"UIViewContentModeTopLeft",
+    @"UIViewContentModeTopRight",
+    @"UIViewContentModeBottomLeft",
+    @"UIViewContentModeBottomRight"];
+    if (view.contentMode >= 0 && view.contentMode < [contentModeArr count]) {
+         contentMode = [contentModeArr objectAtIndex:view.contentMode];
+    }
+    // Tag
+    NSInteger tag = view.tag;
+    // isUserInteractionEnabled
+    BOOL isUserInteractionEnabled = view.isUserInteractionEnabled;
+    // isMultipleTouchEnabled
+    BOOL isMultipleTouchEnabled = view.isMultipleTouchEnabled;
+    // isHidden
+    BOOL isHidden = [[self class] viewBaseClassIsHidden:view];
+    // isOpaque
+    BOOL isOpaque = view.isOpaque;
+    // clipsToBounds
+    BOOL clipsToBounds = view.clipsToBounds;
+    // autoresizesSubviews
+    BOOL autoresizesSubviews = view.autoresizesSubviews;
+    // layer
+    NSString *layerMemoryAddress = @"";
+    NSString *layerClassName = @"";
+    id layer = view.layer;
+    if (layer) {
+        layerMemoryAddress = [NSString stringWithFormat:@"%p", layer];
+        layerClassName = NSStringFromClass([layer class]);
+    }
+    // alpha
+    CGFloat alpha = view.alpha;
+    // backgroundColor
+    UIColor *backgroundColor = view.backgroundColor;
+    CGFloat red, green, blue, a;
+    BOOL suc = [backgroundColor getRed:&red green:&green blue:&blue alpha:&a];
+    NSDictionary *backgroundColorDict = [[NSDictionary alloc] init];
+    if (suc) {
+        backgroundColorDict =
+        @{
+          @"r": @(red * 255),
+          @"g": @(green * 255),
+          @"b": @(blue * 255),
+          @"a": @(a)
+          };
+    }
     
+    // construct data
     [viewData setObject:description forKey:@"description"];
-    [viewData setObject:className forKey:@"class_name"];
-    [viewData setObject:memoryAddress forKey:@"memory_address"];
-    [viewData setObject:[NSNumber numberWithInteger:depth] forKey:@"hierarchy_depth"];
+    [viewData setObject:className forKey:@"className"];
+    [viewData setObject:memoryAddress forKey:@"memoryAddress"];
+    [viewData setObject:[NSNumber numberWithInteger:depth] forKey:@"hierarchyDepth"];
+    [viewData setObject:frameRootDict forKey:@"frameRoot"];
+    [viewData setObject:snapshotDataStr forKey:@"snapshotNosub"];
     [viewData setObject:frameDict forKey:@"frame"];
-    [viewData setObject:snapshotDataStr forKey:@"snapshot"];
+    [viewData setObject:boundsDict forKey:@"bounds"];
+    [viewData setObject:positionDict forKey:@"position"];
+    [viewData setObject:@(zPosition) forKey:@"zPosition"];
+    [viewData setObject:contentMode forKey:@"contentMode"];
+    [viewData setObject:@(tag) forKey:@"tag"];
+    [viewData setObject:@(isUserInteractionEnabled) forKey:@"isUserInteractionEnabled"];
+    [viewData setObject:@(isMultipleTouchEnabled) forKey:@"isMultipleTouchEnabled"];
+    [viewData setObject:@(isHidden) forKey:@"isHidden"];
+    [viewData setObject:@(isOpaque) forKey:@"isOpaque"];
+    [viewData setObject:@(clipsToBounds) forKey:@"clipsToBounds"];
+    [viewData setObject:@(autoresizesSubviews) forKey:@"autoresizesSubviews"];
+    [viewData setObject:layerMemoryAddress forKey:@"layerMemoryAddress"];
+    [viewData setObject:layerClassName forKey:@"layerClassName"];
+    [viewData setObject:@(alpha) forKey:@"alpha"];
+    [viewData setObject:backgroundColorDict forKey:@"backgroundColor"];
+    
     return viewData;
 }
 
@@ -230,6 +332,28 @@
     __unsafe_unretained NSArray *windows = nil;
     [invocation getReturnValue:&windows];
     return windows;
+}
+
+static BOOL (*baseClassIsHiddenIMP)(id, SEL);
+static void (*baseClassSetHiddenIMP)(id, SEL, BOOL);
+
++ (BOOL)viewBaseClassIsHidden:(UIView *)view {
+    if (!baseClassIsHiddenIMP) {
+        // base class (UIView) hidden method
+        Method baseClassIsHiddenMethod = class_getInstanceMethod([UIView class], @selector(isHidden));
+        baseClassIsHiddenIMP = (BOOL (*)(id, SEL))method_getImplementation(baseClassIsHiddenMethod);
+    }
+    BOOL isHidden = baseClassIsHiddenIMP(view, @selector(isHidden));
+    return isHidden;
+}
+
++ (void)view:(UIView *)view baseClassSetHidden:(BOOL)isHidden {
+    if (!baseClassSetHiddenIMP) {
+        // base class (UIView) setHidden: method
+        Method baseClassSetHiddenMethod = class_getInstanceMethod([UIView class], @selector(setHidden:));
+        baseClassSetHiddenIMP = (void (*)(id, SEL, BOOL))method_getImplementation(baseClassSetHiddenMethod);
+    }
+    baseClassSetHiddenIMP(view, @selector(setHidden:), isHidden);
 }
 
 @end

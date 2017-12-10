@@ -7,11 +7,18 @@
 <script src="libs/three.min.js"></script>
 <script src="libs/OrbitControls.min.js"></script>
 <style type="text/css">
+body {
+    font-size: 12px;
+}
 .sidebar {
     position: absolute;
     top: 0;
     bottom: 0;
     width: 350px;
+}
+.sidebar ul {
+    list-style-type: none;
+    margin: 0;
 }
 .sidebar.navigation-sidebar {
     left: 0;
@@ -49,16 +56,12 @@
 .property-sidebar .split-handler {
     left: 0;
 }
-.sidebar ul {
-    list-style-type: none;
-    margin: 0;
-}
 #view-hierarchy-list ul {
     padding: 0 0 0 10px;
 }
 #view-hierarchy-list li {
     white-space: nowrap;
-    line-height: 40px;
+    line-height: 35px;
     cursor: pointer;
 }
 #view-hierarchy-list li.active {
@@ -126,12 +129,6 @@ div.view-hierarchy-area {
 <div class="sidebar property-sidebar">
     <div class="container">
         <div id="view-property-list">
-            <ul>
-            <li>
-                <div>视图快照：</div>
-                <div><img id="view-property-snapshot" alt=""></div>
-            </li>
-            </ul>
         </div>
     </div>
     <div class="split-handler"></div>
@@ -166,24 +163,6 @@ function requestViewHierarchyData() {
     };
     viewXHR.send(null);
 }
-function generateViewHierarchyListHTML() {
-    var ulStr = '<ul>';
-    for (var i = 0; i < allViewsData.length; i++) {
-        // create li element
-        var viewData = allViewsData[i];
-        var title = viewData['description'];
-        var depth = viewData['hierarchy_depth'];
-        // append id, onclick, span
-        ulStr += '<li id="' + i + 'th-view" onclick=onViewHierarchyNavigationItemClick(this.id)>'
-        + Array(depth + 1).join('<span>')
-        + title + Array(depth + 1).join('</span>')
-        + '</li>';
-    }
-    ulStr += '</ul>';
-    // update list
-    var listEle = document.getElementById('view-hierarchy-list');
-    listEle.innerHTML = ulStr;
-}
 function onViewHierarchyNavigationItemClick(id) {
     if (selectedID === id) {
         return;
@@ -207,36 +186,125 @@ function onViewHierarchyNavigationItemClick(id) {
     // parse data
     var index = parseInt(id, 10);
     var viewData = allViewsData[index];
-    var memoryAddress = viewData['memory_address'];
-    var className = viewData['class_name'];
 
     // update canvas
     if (viewData.hasOwnProperty('three')) {
         viewData.three.wireframe.material.color.setHex(MESHBORDERSELECTEDCOLOR);
     }
 
-    // reqeust view snapshot
-    var imgEle = document.getElementById('view-property-snapshot');
+    // update property list
+    generateViewPropertyListHTML(viewData);
+}
+function generateViewHierarchyListHTML() {
+    var ulStr = '<ul>';
+    for (var i = 0; i < allViewsData.length; i++) {
+        // create li element
+        var viewData = allViewsData[i];
+        var title = viewData['description'];
+        var depth = viewData['hierarchyDepth'];
+        // append id, onclick, span
+        ulStr += '<li id="' + i + 'th-view" onclick=onViewHierarchyNavigationItemClick(this.id)>'
+        + Array(depth + 1).join('<span>')
+        + title + Array(depth + 1).join('</span>')
+        + '</li>';
+    }
+    ulStr += '</ul>';
+    // update list
+    var listEle = document.getElementById('view-hierarchy-list');
+    listEle.innerHTML = ulStr;
+}
+function generateViewPropertyListHTML(viewData) {
+    var ulStr = '<ul>';
+
+    // parse data
+    var memoryAddress = viewData['memoryAddress'];
+    var className = viewData['className'];
+    var frame = viewData['frame'];
+    var bounds = viewData['bounds'];
+    var position = viewData['position'];
+    var zPosition = viewData['zPosition'];
+    var contentMode = viewData['contentMode'];
+    var tag = viewData['tag'];
+    var isUserInteractionEnabled = viewData['isUserInteractionEnabled'];
+    var isMultipleTouchEnabled = viewData['isMultipleTouchEnabled'];
+    var isHidden = viewData['isHidden'];
+    var isOpaque = viewData['isOpaque'];
+    var clipsToBounds = viewData['clipsToBounds'];
+    var autoresizesSubviews = viewData['autoresizesSubviews'];
+    var layerMemoryAddress = viewData['layerMemoryAddress'];
+    var layerClassName = viewData['layerClassName'];
+    var alpha = viewData['alpha'];
+    var backgroundColor = viewData['backgroundColor'];
+
+    // Class Name
+    ulStr += '<li>Class Name: ' + className + '</li>';
+    // Address
+    ulStr += '<li>Address: ' + memoryAddress + '</li>';
+
+    ulStr += '<hr>';
+    // layerMemoryAddress
+    ulStr += '<li>Layer: ' + layerMemoryAddress + '</li>';
+    // layerClassName
+    ulStr += '<li>Layer Class: ' + layerClassName + '</li>';
+
+    ulStr += '<hr>';
+    // Content Mode
+    ulStr += '<li>Content Mode: ' + contentMode + '</li>';
+    // Tag
+    ulStr += '<li>Tag: ' + tag + '</li>';
+    // isUserInteractionEnabled
+    ulStr += '<li>isUserInteractionEnabled: ' + (isUserInteractionEnabled ? 'YES' : 'NO') + '</li>';
+    // isMultipleTouchEnabled
+    ulStr += '<li>isMultipleTouchEnabled: ' + (isMultipleTouchEnabled ? 'YES' : 'NO') + '</li>';
+    // alpha
+    ulStr += '<li>Alpha: ' + alpha + '</li>';
+    // backgroundColor
+    if (backgroundColor.hasOwnProperty('r')) {
+        var red = backgroundColor['r'];
+        var green = backgroundColor['g'];
+        var blue = backgroundColor['b'];
+        var alpha = backgroundColor['a'];
+        var rgba = 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
+        ulStr += '<li>Background: ' + rgba + '</li>';
+        var sampleDiv = '<div style="display:inline-block;width:80px;height:17px;'
+        + 'background-color:' + rgba + ';"></div>';
+        ulStr += '<li>' + sampleDiv + '</li>';
+    }
+
+    ulStr += '<hr>';
+    // isHidden
+    ulStr += '<li>isHidden: ' + (isHidden ? 'YES' : 'NO') + '</li>';
+    // isOpaque
+    ulStr += '<li>isOpaque: ' + (isOpaque ? 'YES' : 'NO') + '</li>';
+    // clipsToBounds
+    ulStr += '<li>clipsToBounds: ' + (clipsToBounds ? 'YES' : 'NO') + '</li>';
+    // autoresizesSubviews
+    ulStr += '<li>autoresizesSubviews: ' + (autoresizesSubviews ? 'YES' : 'NO') + '</li>';
+
+    ulStr += '<hr>';
+    // Frame
+    ulStr += '<li>Frame: {{' + frame.x + ', ' + frame.y
+    + '}, {' + frame.width + ', ' + frame.height + '}}';
+    // Bounds
+    ulStr += '<li>Bounds: {{' + bounds.x + ', ' + bounds.y
+    + '}, {' + bounds.width + ', ' + bounds.height + '}}';
+    // Position
+    ulStr += '<li>Position: {' + position.x + ', ' + position.y + '}</li>';
+    // Z Position
+    ulStr += '<li>Z Position: ' + zPosition + '</li>';
+
+    ulStr += '<hr>';
+    // Snapshot
     var imgURL = document.location.protocol + '//' + document.location.host
     + '/' + ROOTPATH + '/' + SELECTVIEWPATH + '/' + SNAPSHOTPATH
     + '?memory_address=' + memoryAddress + '&class_name=' + className;
-    imgEle.src = imgURL;
+    ulStr += '<li><div>Snapshot: </div><div>'
+    + '<img id="view-property-snapshot" alt="" src="' + imgURL + '"></div></li>';
+    ulStr += '</ul>';
 
-    // request
-    var viewXHR = new XMLHttpRequest();
-    var requestURL = document.location.protocol + '//' + document.location.host
-    + '/' + ROOTPATH + '/' + SELECTVIEWPATH
-    + '?memory_address=' + memoryAddress + '&class_name=' + className;
-    viewXHR.open('GET', requestURL);
-    viewXHR.onreadystatechange = function () {
-        if (viewXHR.readyState === 4) {
-            if (viewXHR.status === 200) {
-                var responseText = viewXHR.responseText;
-                var responseJSON = JSON.parse(responseText);
-            }
-        }
-    };
-    // viewXHR.send(null);
+    // update list
+    var listEle = document.getElementById('view-property-list');
+    listEle.innerHTML = ulStr;
 }
 requestViewHierarchyData();
 
@@ -251,16 +319,16 @@ var depthUnit = 50;     // distance between neighboring views
 /**
 *  construct 3d view hierarchy display canvas
 *  @param startIdx
-*  use allViewsData array, rendering items in allViewsData, from the startIdx item to the first item with hierarchy_depth == 0 or the last item
+*  use allViewsData array, rendering items in allViewsData, from the startIdx item to the first item with hierarchyDepth == 0 or the last item
 */
 function initTHREE(startIdx) {
     var viewItem = allViewsData[startIdx];
-    if (viewItem.hierarchy_depth !== 0) {
+    if (viewItem.hierarchyDepth !== 0) {
         console.log('should render from root view');
         return;
     }
-    var appWidth = viewItem.frame.width;
-    var appHeight = viewItem.frame.height;
+    var appWidth = viewItem.frameRoot.width;
+    var appHeight = viewItem.frameRoot.height;
 
     var width = document.getElementById('canvas-frame').clientWidth;
     var height = document.getElementById('canvas-frame').clientHeight;
@@ -285,20 +353,20 @@ function initTHREE(startIdx) {
     var currentDepth = 0; // current mesh z axis unit value
     for (var i = startIdx; i < allViewsData.length; i++) {
         viewItem = allViewsData[i];
-        var depth = viewItem.hierarchy_depth;
+        var depth = viewItem.hierarchyDepth;
         if (depth === 0 && i !== startIdx) {
             break;
         }
-        var x = viewItem.frame.x;
-        var y = viewItem.frame.y;
-        var width = viewItem.frame.width;
-        var height = viewItem.frame.height;
+        var x = viewItem.frameRoot.x;
+        var y = viewItem.frameRoot.y;
+        var width = viewItem.frameRoot.width;
+        var height = viewItem.frameRoot.height;
         // mesh
         // geometry
         var geometry = new THREE.PlaneGeometry(width * scale, height * scale);
         // material
         var image = document.createElement('img');
-        image.src = 'data:image/png;base64,' + viewItem.snapshot;
+        image.src = 'data:image/png;base64,' + viewItem.snapshotNosub;
         var texture = new THREE.Texture(image);
         texture.needsUpdate = true;
         var material = new THREE.MeshBasicMaterial({
