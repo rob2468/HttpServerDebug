@@ -350,8 +350,9 @@ function initTHREE(startIdx) {
     camera.up.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-    var currentDepth = 0; // current mesh z axis unit value
-    for (var i = startIdx; i < allViewsData.length; i++) {
+    var allViewsDataLength = allViewsData.length;
+    var currentDepth = - allViewsDataLength / 2; // current mesh z axis unit value
+    for (var i = startIdx; i < allViewsDataLength; i++) {
         viewItem = allViewsData[i];
         var depth = viewItem.hierarchyDepth;
         if (depth === 0 && i !== startIdx) {
