@@ -51,6 +51,22 @@
 }
 
 - (NSObject<HTTPResponse> *)fetchDatabaseAPIResponse:(NSDictionary *)params {
+    NSString *type = [params objectForKey:@"type"];
+    NSData *data;
+    if ([type isEqualToString:@"schema"]) {
+        data = [self queryDatabaseSchema:params];
+    } else {
+        data = [self queryTableData:params];
+    }
+    
+    HTTPDataResponse *response;
+    if (data) {
+        response = [[HTTPDataResponse alloc] initWithData:data];
+    }
+    return response;
+}
+
+- (NSData *)queryTableData:(NSDictionary *)params {
     NSString *dbPath = [params objectForKey:@"db_path"];
     NSString *tableName = [params objectForKey:@"table_name"];
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
@@ -86,8 +102,62 @@
     }
     
     NSData *data = [NSJSONSerialization dataWithJSONObject:allData options:0 error:nil];
-    HTTPDataResponse *response = [[HTTPDataResponse alloc] initWithData:data];
-    return response;
+    return data;
+}
+
+- (NSData *)queryDatabaseSchema:(NSDictionary *)params {
+    NSString *dbPath = [params objectForKey:@"db_path"];
+    FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
+    NSMutableDictionary *allData = [[NSMutableDictionary alloc] init];
+    if (dbPath.length > 0 && [database open]) {
+        FMResultSet *rs = [database getSchema];
+        
+        // entities
+        NSMutableArray *tableArr = [[NSMutableArray alloc] init];
+        NSMutableArray *indexArr = [[NSMutableArray alloc] init];
+        NSMutableArray *viewArr = [[NSMutableArray alloc] init];
+        NSMutableArray *triggerArr = [[NSMutableArray alloc] init];
+        NSString *tableType = @"table";
+        NSString *indexType = @"index";
+        NSString *viewType = @"view";
+        NSString *triggerType = @"trigger";
+        while ([rs next]) {
+            NSString *type = [rs stringForColumn:@"type"];
+            NSString *name = [rs stringForColumn:@"name"];
+            name = name.length > 0? name: @"";
+            NSString *tbl_name = [rs stringForColumn:@"tbl_name"];
+            tbl_name = tbl_name.length > 0? tbl_name: @"";
+            NSString *sql = [rs stringForColumn:@"sql"];
+            sql = sql.length > 0? sql: @"";
+            NSDictionary *dict =
+            @{
+              @"name": name,
+              @"tbl_name": tbl_name,
+              @"sql": sql
+              };
+            
+            if ([type isEqualToString:tableType]) {
+                [tableArr addObject:dict];
+            } else if ([type isEqualToString:indexType]) {
+                [indexArr addObject:dict];
+            } else if ([type isEqualToString:viewType]) {
+                [viewArr addObject:dict];
+            } else if ([type isEqualToString:triggerType]) {
+                [triggerArr addObject:dict];
+            }
+        }
+        
+        [allData setObject:tableArr forKey:tableType];
+        [allData setObject:indexArr forKey:indexType];
+        [allData setObject:viewArr forKey:viewType];
+        [allData setObject:triggerArr forKey:triggerType];
+        
+        [rs close];
+        [database close];
+    }
+    
+    NSData *data = [NSJSONSerialization dataWithJSONObject:allData options:0 error:nil];
+    return data;
 }
 
 @end

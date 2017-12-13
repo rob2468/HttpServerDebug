@@ -105,7 +105,10 @@ td {
     <!-- execute SQL -->
     <div class="tab-pane" id="execute-sql-tab">execute SQL</div>
     <!-- db structure -->
-    <div class="tab-pane" id="db-structure-tab">db structure</div>
+    <div class="tab-pane" id="db-structure-tab">
+        <div id="database-schema">
+        </div>
+    </div>
 
     <script type="text/javascript">
     function onNavBarItemClick(id) {
@@ -204,6 +207,72 @@ td {
     }
     // refresh database data
     onDatabaseTableReload();
+
+    // database schema
+    function requestDatabaseSchema() {
+        // request parameters
+        var dbPathEle = document.getElementById('db-path');
+        var dbPath = dbPathEle.innerText;
+
+        // request
+        var resultSetXHR = new XMLHttpRequest();
+        var requestURL = document.location.protocol + '//' + document.location.host
+        + '/database_inspect?db_path=' + dbPath + '&type=schema';
+        resultSetXHR.open('GET', requestURL);
+        resultSetXHR.onreadystatechange = function () {
+            if (resultSetXHR.readyState === 4) {
+                if (resultSetXHR.status === 200) {
+                    var responseText = resultSetXHR.responseText;
+                    var responseJSON = JSON.parse(responseText);
+                    generateDatabaseSchemaHTML(responseJSON);
+                }
+            }
+        };
+        resultSetXHR.send(null);
+    }
+    function generateDatabaseSchemaHTML(schemaData) {
+        var tableArr = schemaData['table'];
+        var indexArr = schemaData['index'];
+        var viewArr = schemaData['view'];
+        var triggerArr = schemaData['trigger'];
+
+        var htmlStr = '';
+
+        // Tables
+        htmlStr += '<p>Tables(' + tableArr.length + ')</p>';
+        for (var i = tableArr.length - 1; i >= 0; i--) {
+            var tableItem = tableArr[i];
+            htmlStr += '<p>' + tableItem['name'] + ': ' + tableItem['sql'] + '</p>';
+        }
+
+        htmlStr += '<br>';
+        // Indices
+        htmlStr += '<p>Indices(' + indexArr.length + ')</p>';
+        for (var i = indexArr.length - 1; i >= 0; i--) {
+            var indexItem = indexArr[i];
+            htmlStr += '<p>' + indexItem['name'] + ': ' + indexItem['sql'] + '</p>';
+        }
+
+        htmlStr += '<br>';
+        // Views
+        htmlStr += '<p>Views(' + viewArr.length + ')</p>';
+        for (var i = viewArr.length - 1; i >= 0; i--) {
+            var viewItem = viewArr[i];
+            htmlStr += '<p>' + viewItem['name'] + ': ' + viewItem['sql'] + '</p>';
+        }
+
+        htmlStr += '<br>';
+        // Triggers
+        htmlStr += '<p>Triggers(' + triggerArr.length + ')</p>';
+        for (var i = triggerArr.length - 1; i >= 0; i--) {
+            var triggerItem = triggerArr[i];
+            htmlStr += '<p>' + triggerItem['name'] + ': ' + triggerItem['sql'] + '</p>';
+        }
+
+        var databaseSchemaEle = document.getElementById('database-schema');
+        databaseSchemaEle.innerHTML = htmlStr;
+    }
+    requestDatabaseSchema();
     </script>
 </body>
 </html>
