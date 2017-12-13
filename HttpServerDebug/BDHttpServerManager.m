@@ -45,6 +45,11 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 }
 
 + (void)startHttpServer:(NSString *)port {
+    if ([self isHttpServerRunning]) {
+        NSLog(@"http server has already started: %@", [self fetchServerSite]);
+        return;
+    }
+    
     NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
     NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
     
