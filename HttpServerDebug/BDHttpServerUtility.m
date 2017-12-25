@@ -19,8 +19,7 @@
 
 @implementation BDHttpServerUtility
 
-+ (NSString *)fetchLocalIPAddress
-{
++ (NSArray *)fetchLocalAlternateIPAddresses {
     NSMutableDictionary *addresses = [NSMutableDictionary dictionaryWithCapacity:8];
     
     // retrieve the current interfaces - returns 0 on success
@@ -57,15 +56,13 @@
         freeifaddrs(interfaces);
     }
     
-    NSString *address = @"";
+    NSMutableArray *address = [[NSMutableArray alloc] init];
     for (NSString *key in addresses) {
         NSArray *comps = [key componentsSeparatedByString:@"/"];
+        NSString *interface = comps.firstObject;
         NSString *type = comps.lastObject;
-        if ([type isEqualToString:IP_ADDR_IPv4]) {
-            address = [addresses objectForKey:key];
-            if (![address isEqualToString:@"127.0.0.1"]) {
-                break;
-            }
+        if ([interface hasPrefix:@"en"] && [type isEqualToString:IP_ADDR_IPv4]) {
+            [address addObject:[addresses objectForKey:key]];
         }
     }
     return address;

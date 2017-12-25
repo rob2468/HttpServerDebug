@@ -21,7 +21,7 @@
 
 + (void)stopHttpServer;
 
-+ (NSString *)fetchServerSite;
++ (NSString *)fetchAlternateServerSites;
 
 + (NSString *)fetchWebUploadDirectoryPath;
 

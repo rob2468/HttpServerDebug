@@ -13,7 +13,7 @@
 /**
  *  local ip address
  */
-+ (NSString *)fetchLocalIPAddress;
++ (NSArray *)fetchLocalAlternateIPAddresses;
 
 /**
  *  Content-Type according to file extension, default return value text/plain;charset=utf-8

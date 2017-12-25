@@ -46,7 +46,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
 + (void)startHttpServer:(NSString *)port {
     if ([self isHttpServerRunning]) {
-        NSLog(@"http server has already started: %@", [self fetchServerSite]);
+        NSLog(@"http server has already started: %@", [self fetchAlternateServerSites]);
         return;
     }
     
@@ -71,7 +71,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     BOOL isSucc = [manager.server start:&error];
     
     if (isSucc) {
-        NSLog(@"http server started: %@", [self fetchServerSite]);
+        NSLog(@"http server started:\n%@", [self fetchAlternateServerSites]);
         NSLog(@"http server root document: %@", webPath);
     } else {
         NSLog(@"Error starting http server: %@", error);
@@ -95,13 +95,22 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return [BDHttpServerManager sharedInstance].dbFilePath;
 }
 
-+ (NSString *)fetchServerSite
++ (NSString *)fetchAlternateServerSites
 {
-    NSString *localIP = [BDHttpServerUtility fetchLocalIPAddress];
+    NSArray *ipAddresses = [BDHttpServerUtility fetchLocalAlternateIPAddresses];
     BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
     UInt16 port = manager.server.listeningPort;
-    NSString *serverSite = [NSString stringWithFormat:@"http://%@:%d", localIP, port];
-    return serverSite;
+    
+    NSString *serverSites = @"";
+    if ([ipAddresses count] > 0) {
+        serverSites = [NSString stringWithFormat:@"http://%@:%d", ipAddresses.firstObject, port];
+        for (NSUInteger i = 1; i < [ipAddresses count]; i++) {
+            NSString *tmp = [NSString stringWithFormat:@"\nhttp://%@:%d", [ipAddresses objectAtIndex:i], port];
+            serverSites = [serverSites stringByAppendingString:tmp];
+        }
+    }
+    
+    return serverSites;
 }
 
 + (NSString *)fetchWebUploadDirectoryPath

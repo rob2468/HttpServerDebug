@@ -37,7 +37,7 @@
     self.siteLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.siteLabel.textColor = [UIColor blackColor];
     if ([BDHttpServerManager isHttpServerRunning]) {
-        self.siteLabel.text = [BDHttpServerManager fetchServerSite];
+        self.siteLabel.text = [BDHttpServerManager fetchAlternateServerSites];
     }
     [self.view addSubview:self.siteLabel];
     
@@ -64,7 +64,7 @@
 {
     [BDHttpServerManager startHttpServer:nil];
     
-    self.siteLabel.text = [BDHttpServerManager fetchServerSite];
+    self.siteLabel.text = [BDHttpServerManager fetchAlternateServerSites];
 }
 
 - (void)stopHttpServer
