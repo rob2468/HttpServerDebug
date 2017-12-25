@@ -63,7 +63,9 @@
         NSString *type = comps.lastObject;
         if ([type isEqualToString:IP_ADDR_IPv4]) {
             address = [addresses objectForKey:key];
-            break;
+            if (![address isEqualToString:@"127.0.0.1"]) {
+                break;
+            }
         }
     }
     return address;
