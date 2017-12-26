@@ -11,5 +11,6 @@
 
 #import "BDHttpServerManager.h"
 #import "BDHttpServerControlPannelController.h"
+#import "BDHttpServerDebugDelegate.h"
 
 #endif /* HttpServerDebug_h */

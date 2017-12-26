@@ -17,6 +17,7 @@
 		8F16DD441F3CA5EE00A2BFBF /* BDHttpServerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC0A131F3C84F600D329B1 /* BDHttpServerManager.m */; };
 		8F16DD461F3CA5EE00A2BFBF /* BDHttpServerUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC0A161F3C84F600D329B1 /* BDHttpServerUtility.m */; };
 		8F1FAB091F42922C00BA2E14 /* BDHttpServerControlPannelController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8FAC0A121F3C84F600D329B1 /* BDHttpServerControlPannelController.h */; };
+		8F5A37AD1FF244A70013974F /* BDHttpServerConnection+Info.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F5A37AC1FF244A70013974F /* BDHttpServerConnection+Info.m */; };
 		8F704BB21F3D52CC002E1FAF /* FMDatabase+FTS3.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B921F3D5275002E1FAF /* FMDatabase+FTS3.m */; };
 		8F704BB31F3D52DD002E1FAF /* FMTokenizers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B941F3D5275002E1FAF /* FMTokenizers.m */; };
 		8F704BB41F3D52DD002E1FAF /* FMDatabase+InMemoryOnDiskIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B981F3D5275002E1FAF /* FMDatabase+InMemoryOnDiskIO.m */; };
@@ -32,6 +33,7 @@
 		8FC544651FBAB41500C1DAFC /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544591FBAB3F500C1DAFC /* mztools.c */; };
 		8FC544661FBAB41500C1DAFC /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445B1FBAB3F500C1DAFC /* unzip.c */; };
 		8FC544671FBAB41500C1DAFC /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445D1FBAB3F500C1DAFC /* zip.c */; };
+		8FEBBD011FF25E4F0019B4FD /* BDHttpServerDebugDelegate.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8FEBBD001FF259D00019B4FD /* BDHttpServerDebugDelegate.h */; };
 		8FEFE7421F3F4F1100D841E0 /* BDHttpServerManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8FAC0A211F3C84F600D329B1 /* BDHttpServerManager.h */; };
 		8FEFE7441F3F4F5700D841E0 /* FMDatabase.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9A1F3D5275002E1FAF /* FMDatabase.h */; };
 		8FEFE7451F3F4F5700D841E0 /* FMDatabaseAdditions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9C1F3D5275002E1FAF /* FMDatabaseAdditions.h */; };
@@ -81,6 +83,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				8FEBBD011FF25E4F0019B4FD /* BDHttpServerDebugDelegate.h in CopyFiles */,
 				8F1FAB091F42922C00BA2E14 /* BDHttpServerControlPannelController.h in CopyFiles */,
 				8FEFE7421F3F4F1100D841E0 /* BDHttpServerManager.h in CopyFiles */,
 				8F704BC01F3D57B0002E1FAF /* HttpServerDebug.h in CopyFiles */,
@@ -143,6 +146,8 @@
 /* Begin PBXFileReference section */
 		8F13E2B21F3C7B4500FF8881 /* libHttpServerDebug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHttpServerDebug.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F16DD711F3CABD200A2BFBF /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = ../../../../../usr/lib/libxml2.dylib; sourceTree = "<group>"; };
+		8F5A37AB1FF244A70013974F /* BDHttpServerConnection+Info.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BDHttpServerConnection+Info.h"; sourceTree = "<group>"; };
+		8F5A37AC1FF244A70013974F /* BDHttpServerConnection+Info.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "BDHttpServerConnection+Info.m"; sourceTree = "<group>"; };
 		8F704B911F3D5275002E1FAF /* FMDatabase+FTS3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FMDatabase+FTS3.h"; sourceTree = "<group>"; };
 		8F704B921F3D5275002E1FAF /* FMDatabase+FTS3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "FMDatabase+FTS3.m"; sourceTree = "<group>"; };
 		8F704B931F3D5275002E1FAF /* FMTokenizers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FMTokenizers.h; sourceTree = "<group>"; };
@@ -267,6 +272,7 @@
 		8FC5445E1FBAB3F500C1DAFC /* zip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		8FC5445F1FBAB3F500C1DAFC /* ZipArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
 		8FC544601FBAB3F500C1DAFC /* ZipArchive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZipArchive.m; sourceTree = "<group>"; };
+		8FEBBD001FF259D00019B4FD /* BDHttpServerDebugDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BDHttpServerDebugDelegate.h; sourceTree = "<group>"; };
 		8FF95F2E1F409D3700DDC97F /* libCocoaLumberjack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaLumberjack.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F7B1F413C8100DDC97F /* libCocoaAsyncSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaAsyncSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F8C1F413D9600DDC97F /* libCocoaHttpServer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaHttpServer.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -360,10 +366,13 @@
 				8FAC0A101F3C84F600D329B1 /* BDHttpServerConnection+Upload.m */,
 				8FA70C811FA6D29700908C34 /* BDHttpServerConnection+View.h */,
 				8FA70C821FA6D29700908C34 /* BDHttpServerConnection+View.m */,
+				8F5A37AB1FF244A70013974F /* BDHttpServerConnection+Info.h */,
+				8F5A37AC1FF244A70013974F /* BDHttpServerConnection+Info.m */,
 				8FAC0A121F3C84F600D329B1 /* BDHttpServerControlPannelController.h */,
 				8FAC0A1F1F3C84F600D329B1 /* BDHttpServerControlPannelController.m */,
 				8FAC0A231F3C84F600D329B1 /* BDHttpServerDefine.h */,
 				8FAC0A0F1F3C84F600D329B1 /* BDHttpServerDefine.m */,
+				8FEBBD001FF259D00019B4FD /* BDHttpServerDebugDelegate.h */,
 				8FAC0A211F3C84F600D329B1 /* BDHttpServerManager.h */,
 				8FAC0A131F3C84F600D329B1 /* BDHttpServerManager.m */,
 				8FAC0A151F3C84F600D329B1 /* BDHttpServerUtility.h */,
@@ -805,6 +814,7 @@
 				8FA70C831FA6D29700908C34 /* BDHttpServerConnection+View.m in Sources */,
 				8F16DD401F3CA5EE00A2BFBF /* BDHttpServerControlPannelController.m in Sources */,
 				8F16DD421F3CA5EE00A2BFBF /* BDHttpServerDefine.m in Sources */,
+				8F5A37AD1FF244A70013974F /* BDHttpServerConnection+Info.m in Sources */,
 				8F16DD441F3CA5EE00A2BFBF /* BDHttpServerManager.m in Sources */,
 				8F16DD461F3CA5EE00A2BFBF /* BDHttpServerUtility.m in Sources */,
 			);

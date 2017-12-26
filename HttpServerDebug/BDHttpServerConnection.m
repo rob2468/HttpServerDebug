@@ -14,6 +14,7 @@
 #import "BDHttpServerConnection+Upload.h"
 #import "BDHttpServerConnection+Preview.h"
 #import "BDHttpServerConnection+View.h"
+#import "BDHttpServerConnection+Info.h"
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
@@ -137,6 +138,12 @@
     } else if ([firstPath isEqualToString:kBDHttpServerViewDebug]) {
         // view_debug api
         response = [self fetchViewDebugAPIResponsePath:pathComps parameters:params];
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerSendInfo]]) {
+        // send_info.html
+        response = [self fetchSendInfoResponseForMethod:method URI:path];
+    } else if ([firstPath isEqualToString:kBDHttpServerSendInfo]) {
+        // send_info api
+        response = [self fetchSendInfoAPIResponsePath:pathComps parameters:params];
     } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
         // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];

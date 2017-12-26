@@ -10,6 +10,7 @@
 #import "HTTPServer.h"
 #import "BDHttpServerUtility.h"
 #import "BDHttpServerConnection.h"
+#import "BDHttpServerDebugDelegate.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
@@ -17,6 +18,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
 @property (strong, nonatomic) HTTPServer *server;
 @property (copy, nonatomic) NSString *dbFilePath;   // default inspect db file path
+@property (weak, nonatomic) id<BDHttpServerDebugDelegate> delegate;
 
 @end
 
@@ -93,6 +95,16 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
 + (NSString *)fetchDatabaseFilePath {
     return [BDHttpServerManager sharedInstance].dbFilePath;
+}
+
++ (void)updateHSDDelegate:(id<BDHttpServerDebugDelegate>)delegate {
+    BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
+    manager.delegate = delegate;
+}
+
++ (id<BDHttpServerDebugDelegate>)fetchHSDDelegate {
+    BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
+    return manager.delegate;
 }
 
 + (NSString *)fetchAlternateServerSites

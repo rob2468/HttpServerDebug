@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+@protocol BDHttpServerDebugDelegate;
 
 @interface BDHttpServerManager : NSObject
 
@@ -28,5 +29,9 @@
 + (void)updateDefaultInspectDBFilePath:(NSString *)path;
 
 + (NSString *)fetchDatabaseFilePath;
+
++ (void)updateHSDDelegate:(id<BDHttpServerDebugDelegate>)delegate;
+
++ (id<BDHttpServerDebugDelegate>)fetchHSDDelegate;
 
 @end
