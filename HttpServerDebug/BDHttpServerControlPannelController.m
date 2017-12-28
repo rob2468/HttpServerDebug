@@ -36,6 +36,7 @@
     self.siteLabel = [[UILabel alloc] init];
     self.siteLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.siteLabel.textColor = [UIColor blackColor];
+    self.siteLabel.numberOfLines = 0;
     if ([BDHttpServerManager isHttpServerRunning]) {
         self.siteLabel.text = [BDHttpServerManager fetchAlternateServerSites];
     }
@@ -51,7 +52,7 @@
 
     [self.view addConstraints:
   @[[NSLayoutConstraint constraintWithItem:self.startButton attribute:NSLayoutAttributeCenterX relatedBy:(NSLayoutRelationEqual) toItem:self.view attribute:(NSLayoutAttributeCenterX) multiplier:1 constant:0],
-    [NSLayoutConstraint constraintWithItem:self.startButton attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:self.view attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
+    [NSLayoutConstraint constraintWithItem:self.startButton attribute:(NSLayoutAttributeTop) relatedBy:(NSLayoutRelationEqual) toItem:self.view attribute:(NSLayoutAttributeTop) multiplier:1 constant:80]]];
     [self.view addConstraints:
   @[[NSLayoutConstraint constraintWithItem:self.siteLabel attribute:(NSLayoutAttributeCenterX) relatedBy:(NSLayoutRelationEqual) toItem:self.view attribute:(NSLayoutAttributeCenterX) multiplier:1 constant:0],
     [NSLayoutConstraint constraintWithItem:self.siteLabel attribute:(NSLayoutAttributeTop) relatedBy:(NSLayoutRelationEqual) toItem:self.startButton attribute:(NSLayoutAttributeBottom) multiplier:1 constant:20]]];
