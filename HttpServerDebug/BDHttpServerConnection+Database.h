@@ -16,8 +16,8 @@
 - (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params;
 
 /**
- *  request table data
+ *  request table data, database schema; execute sql
  */
-- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponse:(NSDictionary *)params;
+- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params;
 
 @end

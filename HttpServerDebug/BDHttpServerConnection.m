@@ -126,7 +126,7 @@
         response = [self fetchDatabaseHTMLResponse:params];
     } else if ([firstPath isEqualToString:kBDHttpServerDBInspect]) {
         // database_inspect api
-        response = [self fetchDatabaseAPIResponse:params];
+        response = [self fetchDatabaseAPIResponsePath:pathComps parameters:params];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerWebUpload]]) {
         response = [self fetchWebUploadResponse:params forMethod:method URI:path];
     } else if ([firstPath isEqualToString:kBDHttpServerFilePreview]) {

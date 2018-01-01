@@ -50,13 +50,45 @@
     return response;
 }
 
-- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponse:(NSDictionary *)params {
-    NSString *type = [params objectForKey:@"type"];
+- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params {
+    NSString *subModule;
+    if ([paths count] > 1) {
+        subModule = [paths objectAtIndex:1];
+    }
+
     NSData *data;
-    if ([type isEqualToString:@"schema"]) {
-        data = [self queryDatabaseSchema:params];
-    } else {
-        data = [self queryTableData:params];
+    if (subModule.length == 0) {
+        // query
+        NSString *type = [params objectForKey:@"type"];
+        if ([type isEqualToString:@"schema"]) {
+            data = [self queryDatabaseSchema:params];
+        } else {
+            data = [self queryTableData:params];
+        }
+    } else if ([subModule isEqualToString:@"execute_sql"]) {
+        // execute sql
+        NSString *dbPath = [params objectForKey:@"db_path"];
+        NSString *sqlStr = [params objectForKey:@"sql"];
+        sqlStr = [sqlStr stringByRemovingPercentEncoding];
+        FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
+        BOOL res = NO;
+        NSString *errMsg = @"";
+        if (dbPath.length > 0 && sqlStr.length > 0 && [database open]) {
+            res = [database executeStatements:sqlStr withResultBlock:^int(NSDictionary * _Nonnull resultsDictionary) {
+                
+                return 0;
+            }];
+            errMsg = database.lastErrorMessage;
+            [database close];
+        }
+        // construct response json
+        errMsg = errMsg.length > 0? errMsg: @"";
+        NSDictionary *resDict =
+        @{
+          @"status": @(res),
+          @"errMsg": errMsg
+          };
+        data = [NSJSONSerialization dataWithJSONObject:resDict options:0 error:nil];
     }
     
     HTTPDataResponse *response;
@@ -65,6 +97,8 @@
     }
     return response;
 }
+
+#pragma mark -
 
 - (NSData *)queryTableData:(NSDictionary *)params {
     NSString *dbPath = [params objectForKey:@"db_path"];

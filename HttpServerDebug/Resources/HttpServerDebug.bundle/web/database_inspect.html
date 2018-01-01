@@ -1,8 +1,8 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="UTF-8">
+<title>数据库</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>数据库查看</title>
 <style type="text/css">
 body,
 table {
@@ -74,6 +74,11 @@ td {
 .tab-pane .table {
     overflow-x: scroll;
 }
+.tab-pane textarea {
+    width: 100%;
+    height: 145px;
+    resize: vertical;
+}
 </style>
 </head>
 <body>
@@ -103,7 +108,20 @@ td {
         </div>
     </div>
     <!-- execute SQL -->
-    <div class="tab-pane" id="execute-sql-tab">execute SQL</div>
+    <div class="tab-pane" id="execute-sql-tab">
+        <div class="ctrl-head">
+        <button type="button" id="execute-sql-reload-button" class="reload reload-normal" onclick="onDatabaseExecuteSQL()">
+        <img src="resources/loading-bubbles.svg" alt="loading"><span>执行</span>
+        </button>
+        </div>
+        <div class="execute-sql-result">
+            <div>
+                <textarea name="content" class="input" id="sql-textarea" placeholder="输入SQL语句"></textarea>
+            </div>
+            <div id="execute-sql-result-msg"></div>
+            <div></div>
+        </div>
+    </div>
     <!-- db structure -->
     <div class="tab-pane" id="db-structure-tab">
         <div id="database-schema">
@@ -140,6 +158,8 @@ td {
         var tabEle = document.getElementById(navEle.id + '-tab');
         tabEle.classList.remove('active');
     }
+
+    /* browse data */
     function onDatabaseTableReload() {
         // update reload button to loading state
         var reloadBtnEle = document.getElementById('browse-data-reload-button');
@@ -207,6 +227,59 @@ td {
     }
     // refresh database data
     onDatabaseTableReload();
+
+    /* execute SQL */
+    function onDatabaseExecuteSQL() {
+        var msgEle = document.getElementById('execute-sql-result-msg');
+        msgEle.innerHTML = '';
+        var resultEle = document.createElement('p');
+        resultEle.style.fontStyle = 'italic';
+        msgEle.appendChild(resultEle);
+
+        // request parameters
+        var dbPathEle = document.getElementById('db-path');
+        var dbPath = dbPathEle.innerText;
+        var textareaEle = document.getElementById('sql-textarea');
+        var sql = textareaEle.value.trim();
+
+        if (sql.length === 0) {
+            resultEle.innerText = 'SQL语句为空';
+            return;
+        }
+
+        // update reload button to loading state
+        var reloadBtnEle = document.getElementById('execute-sql-reload-button');
+        reloadBtnEle.classList.remove('reload-normal');
+        reloadBtnEle.classList.add('reload-loading');
+
+        // request
+        var resultSetXHR = new XMLHttpRequest();
+        var requestURL = document.location.protocol + '//' + document.location.host
+        + '/database_inspect/execute_sql?db_path=' + dbPath + '&sql=' + encodeURIComponent(sql);
+        resultSetXHR.open('GET', requestURL);
+        resultSetXHR.onreadystatechange = function () {
+            if (resultSetXHR.readyState === 4) {
+                if (resultSetXHR.status === 200) {
+                    var responseText = resultSetXHR.responseText;
+                    var responseJSON = JSON.parse(responseText);
+
+                    var resMsg;
+                    var status = responseJSON.status;
+                    var errMsg = responseJSON.errMsg;
+                    if (status) {
+                        resMsg = 'success';
+                    } else {
+                        resMsg = 'failure, ' + errMsg;
+                    }
+                    resultEle.innerText = resMsg;
+                }
+            }
+            // update reload button to normal state
+            reloadBtnEle.classList.remove('reload-loading');
+            reloadBtnEle.classList.add('reload-normal');
+        };
+        resultSetXHR.send(null);
+    }
 
     // database schema
     function requestDatabaseSchema() {
