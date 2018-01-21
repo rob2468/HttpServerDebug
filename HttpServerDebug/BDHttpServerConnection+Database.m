@@ -73,9 +73,28 @@
         FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
         BOOL res = NO;
         NSString *errMsg = @"";
+        NSMutableArray *allData = [[NSMutableArray alloc] init];
         if (dbPath.length > 0 && sqlStr.length > 0 && [database open]) {
             res = [database executeStatements:sqlStr withResultBlock:^int(NSDictionary * _Nonnull resultsDictionary) {
-                
+                // field names
+                NSArray *fields;
+                if ([allData count] > 0) {
+                    fields = [allData firstObject];
+                } else {
+                    fields = [resultsDictionary allKeys];
+                    [allData addObject:fields];
+                }
+                // result set
+                NSMutableArray *record = [[NSMutableArray alloc] init];
+                for (NSString *field in fields) {
+                    id tmp = [resultsDictionary objectForKey:field];
+                    NSString *valueStr = @"";
+                    if ([tmp isKindOfClass:[NSString class]]) {
+                        valueStr = (NSString *)tmp;
+                    }
+                    [record addObject:valueStr];
+                }
+                [allData addObject:record];
                 return 0;
             }];
             errMsg = database.lastErrorMessage;
@@ -86,7 +105,8 @@
         NSDictionary *resDict =
         @{
           @"status": @(res),
-          @"errMsg": errMsg
+          @"errMsg": errMsg,
+          @"resultSet": allData
           };
         data = [NSJSONSerialization dataWithJSONObject:resDict options:0 error:nil];
     }

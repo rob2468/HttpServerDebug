@@ -8,6 +8,12 @@ body,
 table {
     font-size: 12px;
 }
+table {
+    border-collapse: collapse;
+}
+table, th, td {
+    border: 1px solid black;
+}
 td {
   text-align: center;
 }
@@ -100,11 +106,8 @@ td {
             <img src="resources/loading-bubbles.svg" alt="loading"><span>刷新</span>
         </button>
         </div>
-        <div class="table">
-        <table id="browse-data-table" border="1">
+        <div class="table" id="browse-data-table">
             <!-- generate by ajax -->
-            <thead><tr><th>...</th></tr></thead>
-        </table>
         </div>
     </div>
     <!-- execute SQL -->
@@ -119,7 +122,9 @@ td {
                 <textarea name="content" class="input" id="sql-textarea" placeholder="输入SQL语句"></textarea>
             </div>
             <div id="execute-sql-result-msg"></div>
-            <div></div>
+            <div class="table" id="execute-sql-table">
+                <!-- generate by ajax -->
+            </div>
         </div>
     </div>
     <!-- db structure -->
@@ -159,6 +164,36 @@ td {
         tabEle.classList.remove('active');
     }
 
+    function createTableHTML(tableData) {
+        var tableHTML = '';
+        if (tableData.length > 0) {
+            var i;
+            var j;
+            // thead
+            var theadData = tableData[0];
+            var theadHTML = '<thead><tr>';
+            for (var i = 0; i < theadData.length; i++) {
+                theadHTML += '<th>' + theadData[i] + '</th>';
+            }
+            theadHTML += '</tr></thead>';
+
+            // tbody
+            var tbodyHTML = '<tbody>';
+            for (i = 1; i < tableData.length; i++) {
+                var trData = tableData[i];
+                var trHTML = '<tr>';
+                for (j = 0; j < trData.length; j++) {
+                    trHTML += '<td>' + trData[j] + '</td>';
+                }
+                trHTML += '</tr>';
+                tbodyHTML += trHTML;
+            }
+            tbodyHTML += '</tbody>';
+            tableHTML = '<table>' + theadHTML + tbodyHTML + '</table>';
+        }
+        return tableHTML;
+    }
+
     /* browse data */
     function onDatabaseTableReload() {
         // update reload button to loading state
@@ -183,7 +218,9 @@ td {
                     var responseText = resultSetXHR.responseText;
                     var responseJSON = JSON.parse(responseText);
                     // generate table html with table information
-                    generateTableHTML(responseJSON);
+                    var tableHTML = createTableHTML(responseJSON);
+                    var tableEle = document.getElementById('browse-data-table');
+                    tableEle.innerHTML = tableHTML;
                 }
             }
             // update reload button to normal state
@@ -191,39 +228,6 @@ td {
             reloadBtnEle.classList.add('reload-normal');
         };
         resultSetXHR.send(null);
-    }
-    function generateTableHTML(tableData) {
-        var tableHTML;
-        if (tableData.length > 0) {
-            var i;
-            var j;
-            // thead
-            var theadData = tableData[0];
-            var theadHTML = '<thead><tr>';
-            for (var i = 0; i < theadData.length; i++) {
-                theadHTML += '<th>' + theadData[i] + '</th>';
-            }
-            theadHTML += '</tr></thead>';
-
-            // tbody
-            var tbodyHTML = '<tbody>';
-            for (i = 1; i < tableData.length; i++) {
-                var trData = tableData[i];
-                var trHTML = '<tr>';
-                for (j = 0; j < trData.length; j++) {
-                    trHTML += '<td>' + trData[j] + '</td>';
-                }
-                trHTML += '</tr>';
-                tbodyHTML += trHTML;
-            }
-            tbodyHTML += '</tbody>';
-            tableHTML = theadHTML + tbodyHTML;
-        } else {
-            // default html
-            tableHTML = '<thead><tr><th>...</th></tr></thead>';
-        }
-        var tableEle = document.getElementById('browse-data-table');
-        tableEle.innerHTML = tableHTML;
     }
     // refresh database data
     onDatabaseTableReload();
@@ -262,16 +266,28 @@ td {
                 if (resultSetXHR.status === 200) {
                     var responseText = resultSetXHR.responseText;
                     var responseJSON = JSON.parse(responseText);
-
+                    // parse data
                     var resMsg;
+                    var tableHTML = '';
+                    var tableEle = document.getElementById('execute-sql-table');
                     var status = responseJSON.status;
                     var errMsg = responseJSON.errMsg;
+                    var tableData = responseJSON.resultSet;
+                    // status message
                     if (status) {
                         resMsg = 'success';
                     } else {
-                        resMsg = 'failure, ' + errMsg;
+                        resMsg = 'failure';
+                    }
+                    if (errMsg.length > 0) {
+                        resMsg += ', ' + errMsg;
                     }
                     resultEle.innerText = resMsg;
+                    // result set
+                    if (tableData.length > 0) {
+                        tableHTML = createTableHTML(tableData);
+                    }
+                    tableEle.innerHTML = tableHTML;
                 }
             }
             // update reload button to normal state
