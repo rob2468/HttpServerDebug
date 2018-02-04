@@ -14,7 +14,6 @@ body {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 350px;
 }
 .sidebar ul {
     list-style-type: none;
@@ -22,10 +21,12 @@ body {
 }
 .sidebar.navigation-sidebar {
     left: 0;
+    width: 350px;
     background-color: #f6f6f6;
 }
 .sidebar.property-sidebar {
     right: 0;
+    width: 350px;
     background-color: #f2f2f2;
 }
 .sidebar .container {
@@ -49,6 +50,7 @@ body {
     width: 3px;
     background-color: #848484;
     height: 100%;
+    cursor: ew-resize;
 }
 .navigation-sidebar .split-handler {
     right: 0;
@@ -135,6 +137,46 @@ div.view-hierarchy-area {
 </div>
 
 <script type="text/javascript">
+(function sideBarAdjust() {
+    var navSideBarEle = document.getElementsByClassName('navigation-sidebar')[0];
+    var navSplitHandlerEle = navSideBarEle.getElementsByClassName('split-handler')[0];
+    var propertySideBarEle = document.getElementsByClassName('property-sidebar')[0];
+    var propertySplitHandlerEle = propertySideBarEle.getElementsByClassName('split-handler')[0];
+
+    navSplitHandlerEle.addEventListener('mousedown', initDrag, false);
+    propertySplitHandlerEle.addEventListener('mousedown', initDrag, false);
+
+    var startX;
+    var startWidth;
+    var sideBarEle;
+    var splitHandlerEle;
+    function initDrag(e) {
+        splitHandlerEle = e.currentTarget;
+        if (splitHandlerEle === navSplitHandlerEle) {
+            sideBarEle = navSideBarEle;
+        } else {
+            sideBarEle = propertySideBarEle;
+        }
+        startX = e.clientX;
+        startWidth = parseInt(document.defaultView.getComputedStyle(sideBarEle).width, 10);
+        document.documentElement.addEventListener('mousemove', doDrag, false);
+        document.documentElement.addEventListener('mouseup', stopDrag, false);
+    }
+
+    function doDrag(e) {
+        if (sideBarEle === navSideBarEle) {
+            sideBarEle.style.width = (startWidth + e.clientX - startX) + 'px';
+        } else {
+            sideBarEle.style.width = (startWidth - e.clientX + startX) + 'px';
+        }
+    }
+
+    function stopDrag(e) {
+        document.documentElement.removeEventListener('mousemove', doDrag, false);
+        document.documentElement.removeEventListener('mouseup', stopDrag, false);
+    }
+})();
+
 var allViewsData;
 var selectedID; // view-hierarchy-list active list item id
 var ROOTPATH = 'view_debug';
