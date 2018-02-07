@@ -4,6 +4,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>发送信息</title>
 <style type="text/css">
+body {
+    font-size: 12px;
+}
 textarea {
     width: 500px;
     height: 200px;
@@ -16,6 +19,10 @@ textarea {
         <!-- <input type="text" id="invoke_link_input" name="invoke_link" placeholder="调起链接"></input> -->
         <button type="button" class="submit" onclick=submitForm()><span>发送</span></button>
     </form>
+    <div>
+        <p>Response Data:</p>
+        <p id="response_data"></p>
+    </div>
 <!--   <div>
     <p>百度浏览器示例链接：</p>
     <p>首页：bdbrowser://bdhome/params</p>
@@ -43,8 +50,8 @@ function submitForm() {
         if (infoXHR.readyState === 4) {
             if (infoXHR.status === 200) {
                 var responseText = infoXHR.responseText;
-                allViewsData = JSON.parse(responseText);
-
+                var responseEle = document.getElementById('response_data');
+                responseEle.innerText = responseText;
             }
         }
     };

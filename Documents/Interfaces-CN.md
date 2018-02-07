@@ -24,7 +24,7 @@ tmp：NSTemporaryDirectory()，以该目录为根目录。
 
 ## send_info
 
-向app发送信息。
+向app发送信息，并将处理结果在responseData中返回。
 
 ### /send_info?info=%@
 

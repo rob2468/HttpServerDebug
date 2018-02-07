@@ -13,8 +13,10 @@
 @optional
 
 /**
- *  
+ *  send information to app
+ *  @param info  information
+ *  @return results, returned in response data
  */
-- (void)onHSDReceiveInfo:(NSString *)info;
+- (NSDictionary *)onHSDReceiveInfo:(NSString *)info;
 
 @end

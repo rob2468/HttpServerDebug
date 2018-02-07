@@ -17,15 +17,28 @@
 }
 
 - (NSObject<HTTPResponse> *)fetchSendInfoAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params {
+    NSDictionary *responseDict;
     if (params) {
         NSString *info = [params objectForKey:@"info"];
         info = [info stringByRemovingPercentEncoding];
         id<BDHttpServerDebugDelegate> delegate = [BDHttpServerManager fetchHSDDelegate];
         if ([delegate respondsToSelector:@selector(onHSDReceiveInfo:)]) {
-            [delegate onHSDReceiveInfo:info];
+            NSDictionary *result = [delegate onHSDReceiveInfo:info];
+            if (result) {
+                // construct response data
+                responseDict = @{@"data": result};
+            }
         }
     }
-    NSObject<HTTPResponse> *response = [[HTTPDataResponse alloc] initWithData:[@"1" dataUsingEncoding:NSUTF8StringEncoding]];
+    // serialization
+    NSData *responseData;
+    if (responseDict) {
+        responseData = [NSJSONSerialization dataWithJSONObject:responseDict options:0 error:nil];
+    }
+    if (!responseData) {
+        responseData = [@"1" dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    NSObject<HTTPResponse> *response = [[HTTPDataResponse alloc] initWithData:responseData];
     return response;
 }
 
