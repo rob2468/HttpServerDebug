@@ -103,6 +103,9 @@ div.view-hierarchy-area {
     right: 30%;
     background-color: #F0F0F0;
 }
+#canvas-toolbar .control-tool {
+    display: inline-block;
+}
 #depth-unit-text {
     width: 50px;
     text-align: center;
@@ -115,9 +118,14 @@ div.view-hierarchy-area {
 <div class="view-hierarchy-area">
     <div id="canvas-frame"></div>
     <div id="canvas-toolbar">
+        <div class="control-tool" title="Adjust the spacing between views">
         <button type="button" class="depth-unit" onclick="onDepthUnitClick('-')">-</button>
         <label><input type="text" name="depth-unit" id="depth-unit-text" onchange="onDepthUnitChange()"></label>
         <button type="button" class="depth-unit" onclick="onDepthUnitClick('+')">+</button>
+        </div>
+        <div class="control-tool" title="Orient to 2D">
+        <button type="button" onclick="onOrientTo2DClick()">R</button>
+        </div>
     </div>
 </div>
 
@@ -452,8 +460,6 @@ function initTHREE(startIdx) {
 
 function animateTHREE() {
     requestAnimationFrame(animateTHREE);
-    // mesh.rotation.x += 0.01;
-    // mesh.rotation.y += 0.01;
     controls.update();
     renderer.render(scene, camera);
 }
@@ -518,6 +524,9 @@ function updateMeshDepthUnit(newDepthUnit) {
     textEle.value = depthUnit;
 }
 
+function onOrientTo2DClick() {
+    controls.reset();
+}
 </script>
 </body>
 </html>
