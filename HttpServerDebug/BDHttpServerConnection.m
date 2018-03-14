@@ -11,7 +11,6 @@
 #import "HTTPFileResponse.h"
 #import "BDHttpServerConnection+Explorer.h"
 #import "BDHttpServerConnection+Database.h"
-#import "BDHttpServerConnection+Upload.h"
 #import "BDHttpServerConnection+Preview.h"
 #import "BDHttpServerConnection+View.h"
 #import "BDHttpServerConnection+Info.h"
@@ -31,11 +30,11 @@
 
 #pragma mark -- override methods
 
-- (BOOL)supportsMethod:(NSString *)method atPath:(NSString *)path
-{
+- (BOOL)supportsMethod:(NSString *)method atPath:(NSString *)path {
     BOOL isSupported = [super supportsMethod:method atPath:path];
     if ([method isEqualToString:@"POST"]) {
-        if ([path isEqualToString:[NSString stringWithFormat:@"/%@.html", kBDHttpServerWebUpload]]) {
+        if ([path isEqualToString:[NSString stringWithFormat:@"/%@", kBDHttpServerSendInfo]]) {
+            // "/send_info"
             isSupported = YES;
         }
     }
@@ -44,46 +43,6 @@
 
 - (BOOL)expectsRequestBodyFromMethod:(NSString *)method atPath:(NSString *)path {
     BOOL isExpect = [super expectsRequestBodyFromMethod:method atPath:path];
-    if([method isEqualToString:@"POST"] && [path isEqualToString:[NSString stringWithFormat:@"/%@.html", kBDHttpServerWebUpload]]) {
-        BOOL isExpectTmp = YES;
-        // 确保头中存在boundary字段
-        NSString *contentType = [request headerField:@"Content-Type"];
-        NSUInteger paramsSeparator = [contentType rangeOfString:@";"].location;
-        if (NSNotFound == paramsSeparator) {
-            isExpectTmp = NO;
-        } else if (paramsSeparator >= contentType.length - 1) {
-            isExpectTmp = NO;
-        } else {
-            NSString *type = [contentType substringToIndex:paramsSeparator];
-            if (![type isEqualToString:@"multipart/form-data"]) {
-                // content type应该为multipart/form-data
-                isExpectTmp = NO;
-            }
-        }
-        if (isExpectTmp) {
-            // 遍历content-type，寻找boundary字段
-            NSArray *params = [[contentType substringFromIndex:paramsSeparator + 1] componentsSeparatedByString:@";"];
-            for (NSString *param in params) {
-                paramsSeparator = [param rangeOfString:@"="].location;
-                if ((NSNotFound == paramsSeparator) || paramsSeparator >= param.length - 1) {
-                    continue;
-                }
-                NSString *paramName = [param substringWithRange:NSMakeRange(1, paramsSeparator - 1)];
-                NSString *paramValue = [param substringFromIndex:paramsSeparator + 1];
-                
-                if ([paramName isEqualToString:@"boundary"]) {
-                    // 将boundary字段直接设置到头中，以方便处理
-                    [request setHeaderField:@"boundary" value:paramValue];
-                }
-            }
-            if (![request headerField:@"boundary"])  {
-                isExpectTmp = NO;
-            } else {
-                isExpectTmp = YES;
-            }
-            isExpect = isExpectTmp;
-        }
-    }
     return isExpect;
 }
 
@@ -127,8 +86,6 @@
     } else if ([firstPath isEqualToString:kBDHttpServerDBInspect]) {
         // database_inspect api
         response = [self fetchDatabaseAPIResponsePath:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerWebUpload]]) {
-        response = [self fetchWebUploadResponse:params forMethod:method URI:path];
     } else if ([firstPath isEqualToString:kBDHttpServerFilePreview]) {
         // file_preview
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
@@ -143,7 +100,7 @@
         response = [self fetchSendInfoResponseForMethod:method URI:path];
     } else if ([firstPath isEqualToString:kBDHttpServerSendInfo]) {
         // send_info api
-        response = [self fetchSendInfoAPIResponsePath:pathComps parameters:params];
+        response = [self fetchSendInfoAPIResponseForMethod:method paths:pathComps parameters:params];
     } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
         // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
@@ -166,16 +123,13 @@
 }
 
 - (void)prepareForBodyWithSize:(UInt64)contentLength {
-    NSString *boundary = [request headerField:@"boundary"];
-    self.parser = [[MultipartFormDataParser alloc] initWithBoundary:boundary formEncoding:NSUTF8StringEncoding];
-    self.parser.delegate = self;
+
 }
 
 - (void)processBodyData:(NSData *)postDataChunk {
-    [self.parser appendData:postDataChunk];
+    // TODO: here, assuming only one data chunk
+    [request setBody:postDataChunk];
 }
-
-#pragma mark --
 
 @end
 
@@ -197,7 +151,7 @@
 
 - (NSDictionary *)httpHeaders {
     NSString *type = self.contentType;
-    type = type.length > 0? type: @"";
+    type = type.length > 0 ? type: @"";
     return @{@"Content-Type": type};
 }
 

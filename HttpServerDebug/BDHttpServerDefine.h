@@ -12,7 +12,6 @@
 extern NSString *const kBDHttpServerFileExplorer;
 extern NSString *const kBDHttpServerDBInspect;
 extern NSString *const kBDHttpServerSendInfo;
-extern NSString *const kBDHttpServerWebUpload;
 extern NSString *const kBDHttpServerFilePreview;
 extern NSString *const kBDHttpServerViewDebug;
 

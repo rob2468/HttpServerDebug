@@ -11,7 +11,6 @@
 NSString *const kBDHttpServerFileExplorer = @"file_explorer";
 NSString *const kBDHttpServerDBInspect = @"database_inspect";
 NSString *const kBDHttpServerSendInfo = @"send_info";
-NSString *const kBDHttpServerWebUpload = @"web_upload";
 NSString *const kBDHttpServerFilePreview = @"file_preview";
 NSString *const kBDHttpServerViewDebug = @"view_debug";
 

@@ -24,14 +24,18 @@ tmp：NSTemporaryDirectory()，以该目录为根目录。
 
 ## send_info
 
-向app发送信息，并将处理结果在responseData中返回。
+向app发送信息，HSD通过delegate将信息抛给宿主app，处理结果在responseData中返回。支持GET方法和POST方法。
 
 ### /send_info?info=%@
 
-向app发送字符串信息。HSD通过delegate将信息抛给宿主app。
+GET方法。向app发送字符串信息。
 
 #### 参数：
 
 info：
 
 发送给app的信息，字符串类型。注意：需进行编码，不能包含URI保留字符（如?&）。
+
+### /send_info
+
+POST方法。向app发送字符串信息，信息在HTTP body中传输，支持的Content-Type为text/plain。

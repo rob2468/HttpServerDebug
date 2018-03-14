@@ -44,8 +44,8 @@ function submitForm() {
 
     var infoXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/send_info?info=' + encodeURIComponent(infoStr);
-    infoXHR.open('GET', requestURL);
+    + '/send_info';
+    infoXHR.open('POST', requestURL);
     infoXHR.onreadystatechange = function () {
         if (infoXHR.readyState === 4) {
             if (infoXHR.status === 200) {
@@ -55,7 +55,7 @@ function submitForm() {
             }
         }
     };
-    infoXHR.send(null);
+    infoXHR.send(infoStr);
 }
 </script>
 </body>

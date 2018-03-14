@@ -9,6 +9,7 @@
 #import "BDHttpServerConnection+Info.h"
 #import "BDHttpServerManager.h"
 #import "BDHttpServerDebugDelegate.h"
+#import "HTTPMessage.h"
 
 @implementation BDHttpServerConnection (Info)
 
@@ -16,18 +17,29 @@
     return [super httpResponseForMethod:method URI:path];
 }
 
-- (NSObject<HTTPResponse> *)fetchSendInfoAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params {
+- (NSObject<HTTPResponse> *)fetchSendInfoAPIResponseForMethod:(NSString *)method paths:(NSArray *)paths parameters:(NSDictionary *)params {
     NSDictionary *responseDict;
-    if (params) {
-        NSString *info = [params objectForKey:@"info"];
-        info = [info stringByRemovingPercentEncoding];
-        id<BDHttpServerDebugDelegate> delegate = [BDHttpServerManager fetchHSDDelegate];
-        if ([delegate respondsToSelector:@selector(onHSDReceiveInfo:)]) {
-            NSDictionary *result = [delegate onHSDReceiveInfo:info];
-            if (result) {
-                // construct response data
-                responseDict = @{@"data": result};
-            }
+    NSString *info;
+    // parse info from request
+    if ([method isEqualToString:@"GET"]) {
+        if (params) {
+            info = [params objectForKey:@"info"];
+            info = [info stringByRemovingPercentEncoding];
+        }
+    } else if ([method isEqualToString:@"POST"]) {
+        NSString *contentType = [request headerField:@"Content-Type"];
+        if ([contentType hasPrefix:@"text/plain"]) {
+            NSData *infoData = [request body];
+            info = [[NSString alloc] initWithData:infoData encoding:NSUTF8StringEncoding];
+        }
+    }
+    // forward to the delegate
+    id<BDHttpServerDebugDelegate> delegate = [BDHttpServerManager fetchHSDDelegate];
+    if ([delegate respondsToSelector:@selector(onHSDReceiveInfo:)]) {
+        NSDictionary *result = [delegate onHSDReceiveInfo:info];
+        if (result) {
+            // construct response data
+            responseDict = @{@"data": result};
         }
     }
     // serialization

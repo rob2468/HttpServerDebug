@@ -12,6 +12,6 @@
 
 - (NSObject<HTTPResponse> *)fetchSendInfoResponseForMethod:(NSString *)method URI:(NSString *)path;
 
-- (NSObject<HTTPResponse> *)fetchSendInfoAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params;
+- (NSObject<HTTPResponse> *)fetchSendInfoAPIResponseForMethod:(NSString *)method paths:(NSArray *)paths parameters:(NSDictionary *)params;
 
 @end
