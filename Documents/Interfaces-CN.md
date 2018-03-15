@@ -38,4 +38,4 @@ info：
 
 ### /send_info
 
-POST方法。向app发送字符串信息，信息在HTTP body中传输，支持的Content-Type为text/plain。
+POST方法。向app发送字符串信息，信息在HTTP body中传输，支持的Content-Type为text/plain和application/x-www-form-urlencoded。

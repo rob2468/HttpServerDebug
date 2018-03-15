@@ -28,7 +28,8 @@
         }
     } else if ([method isEqualToString:@"POST"]) {
         NSString *contentType = [request headerField:@"Content-Type"];
-        if ([contentType hasPrefix:@"text/plain"]) {
+        if ([contentType hasPrefix:@"text/plain"]
+            || [contentType hasPrefix:@"application/x-www-form-urlencoded"]) {
             NSData *infoData = [request body];
             info = [[NSString alloc] initWithData:infoData encoding:NSUTF8StringEncoding];
         }
