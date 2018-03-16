@@ -132,6 +132,7 @@
  *  "isHidden": ,
  *  "isOpaque": ,
  *  "clipsToBounds": ,
+ *  "backgroundColor":{"r":,"g":,"b":,"a":} | {"r":"nil color"}
  *  "three": {"mesh": , "wireframe": }, // webgl elements, set in js context
  *  }
  */
@@ -250,7 +251,7 @@
     UIColor *backgroundColor = view.backgroundColor;
     CGFloat red, green, blue, a;
     BOOL suc = [backgroundColor getRed:&red green:&green blue:&blue alpha:&a];
-    NSDictionary *backgroundColorDict = [[NSDictionary alloc] init];
+    NSDictionary *backgroundColorDict;
     if (suc) {
         backgroundColorDict =
         @{
@@ -258,6 +259,11 @@
           @"g": @(green * 255),
           @"b": @(blue * 255),
           @"a": @(a)
+          };
+    } else {
+        backgroundColorDict =
+        @{
+          @"r": @"nil color"
           };
     }
     

@@ -309,8 +309,12 @@ function generateViewPropertyListHTML(viewData) {
     // alpha
     ulStr += '<li>Alpha: ' + alpha + '</li>';
     // backgroundColor
-    if (backgroundColor.hasOwnProperty('r')) {
-        var red = backgroundColor['r'];
+    var red = backgroundColor['r'];
+    if (typeof red === 'string') {
+        // nil color
+        ulStr += '<li>Background: ' + red + '</li>';
+    } else {
+        // rgba data
         var green = backgroundColor['g'];
         var blue = backgroundColor['b'];
         var alpha = backgroundColor['a'];
