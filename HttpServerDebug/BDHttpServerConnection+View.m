@@ -95,10 +95,12 @@
         NSMutableArray *allViewsData = [[NSMutableArray alloc] init];
         NSArray *windows = [BDHttpServerConnection fetchAllWindows];
         for (UIWindow *window in windows) {
-            NSDictionary *viewData = [self fetchViewData:window inWindow:window];
-            [allViewsData addObject:viewData];
-            
-            [allViewsData addObjectsFromArray:[self allRecursiveSubviewsInView:window inWindow:window]];
+            // generate all views data of displayed window
+            if (![[self class] viewBaseClassIsHidden:window]) {
+                NSDictionary *viewData = [self fetchViewData:window inWindow:window];
+                [allViewsData addObject:viewData];
+                [allViewsData addObjectsFromArray:[self allRecursiveSubviewsInView:window inWindow:window]];
+            }
         }
         return allViewsData;
     };
@@ -294,26 +296,15 @@
     return viewData;
 }
 
-- (NSDictionary *)fetchHierarchyDepthsForViews:(NSArray *)views {
-    NSMutableDictionary *hierarchyDepths = [[NSMutableDictionary alloc] init];
-    for (UIView *view in views) {
-        NSInteger depth = 0;
-        UIView *tryView = view;
-        while (tryView.superview) {
-            tryView = tryView.superview;
-            depth++;
-        }
-        [hierarchyDepths setObject:@(depth) forKey:[NSValue valueWithNonretainedObject:view]];
-    }
-    return hierarchyDepths;
-}
-
-- (NSArray *)allRecursiveSubviewsInView:(UIView *)view  inWindow:(UIWindow *)window {
+- (NSArray *)allRecursiveSubviewsInView:(UIView *)view inWindow:(UIWindow *)window {
     NSMutableArray *subviews = [[NSMutableArray alloc] init];
     for (UIView *subview in view.subviews) {
-        NSDictionary *subviewData = [self fetchViewData:subview inWindow:window];
-        [subviews addObject:subviewData];
-        [subviews addObjectsFromArray:[self allRecursiveSubviewsInView:subview inWindow:window]];
+        // generate data of displayed subview
+        if (![[self class] viewBaseClassIsHidden:subview]) {
+            NSDictionary *subviewData = [self fetchViewData:subview inWindow:window];
+            [subviews addObject:subviewData];
+            [subviews addObjectsFromArray:[self allRecursiveSubviewsInView:subview inWindow:window]];
+        }
     }
     return subviews;
 }
