@@ -177,6 +177,10 @@ div.view-hierarchy-area {
         } else {
             sideBarEle.style.width = (startWidth - e.clientX + startX) + 'px';
         }
+
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
     }
 
     function stopDrag(e) {
