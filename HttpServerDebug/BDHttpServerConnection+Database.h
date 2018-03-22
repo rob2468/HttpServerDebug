@@ -18,6 +18,6 @@
 /**
  *  request table data, database schema; execute sql
  */
-- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params;
+- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
 
 @end

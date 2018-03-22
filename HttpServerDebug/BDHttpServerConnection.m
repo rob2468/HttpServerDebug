@@ -80,21 +80,24 @@
     if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerFileExplorer]]) {
         // file_explorer.html
         response = [self fetchFileExplorerResponse:params forMethod:method URI:path];
+    } else if ([firstPath isEqualToString:kBDHttpServerFileExplorer]) {
+        // file_explorer api
+        response = [self fetchFileExplorerAPIResponsePaths:pathComps parameters:params];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerDBInspect]]) {
         // database_inspect.html
         response = [self fetchDatabaseHTMLResponse:params];
     } else if ([firstPath isEqualToString:kBDHttpServerDBInspect]) {
         // database_inspect api
-        response = [self fetchDatabaseAPIResponsePath:pathComps parameters:params];
+        response = [self fetchDatabaseAPIResponsePaths:pathComps parameters:params];
     } else if ([firstPath isEqualToString:kBDHttpServerFilePreview]) {
-        // file_preview
+        // file_preview api
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerViewDebug]]) {
         // view_debug.html
         response = [self fetchViewDebugResponseForMethod:method URI:path];
     } else if ([firstPath isEqualToString:kBDHttpServerViewDebug]) {
         // view_debug api
-        response = [self fetchViewDebugAPIResponsePath:pathComps parameters:params];
+        response = [self fetchViewDebugAPIResponsePaths:pathComps parameters:params];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerSendInfo]]) {
         // send_info.html
         response = [self fetchSendInfoResponseForMethod:method URI:path];

@@ -2,53 +2,163 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="dist/themes/default/style.min.css" />
-<script src="dist/libs/jquery.js"></script>
-<script src="dist/jstree.min.js"></script>
 <title>文件浏览</title>
 <style type="text/css">
-input[type="text"] {
-  width: 500px;
+body {
+    margin: 0px;
+    font-size: 14px;
+}
+#file-explorer,
+#property-sidebar {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+}
+#file-explorer {
+    left: 0px;
+    right: 0px;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+#property-sidebar {
+    right: 0px;
+    width: 0px;
+}
+.directory-container {
+    display: inline-block;
+    width: 200px;
+    height: 100%;
+    border-right: 1px solid red;
+    overflow-y: scroll;
+}
+.directory-container ul {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+.directory-container li {
+    display: block;
+    position: relative;
+    height: 26px;
+}
+.directory-container img.icon {
+    display: inline-block;
+    position: static;
+    vertical-align: middle;
+    width: 21px;
+    height: 20px;
+}
+.directory-container img.directory-icon {
+    content: url(resources/directory-icon.png);
+}
+.directory-container img.file-icon {
+    content: url(resources/file-icon.png);
+}
+.directory-container li span {
+    display: inline-block;
+    position: absolute;
+    vertical-align: middle;
+    line-height: 26px;
+    left: 21px;
+    right: 0px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 </style>
 <script type="text/javascript">
-$(function () {
-    $.jstree.defaults.core.data
-    // create an instance when the DOM is ready
-    $('#jstree').jstree({
-        'core' : {
-            'data' :
-            %%TREE_DATA%%
-        }
-    });
-    // bind to events triggered on the tree
-    $('#jstree').on("changed.jstree", function (e, data) {
-        var isDirectory = data.node.data.is_directory;
-        var href = data.node.a_attr.href;
-        if (!isDirectory) {
-            var filePath = data.node.data.path;
-            var fileExtension =  filePath.split('/').pop().split('.').pop();
-            var url;
-            if (fileExtension === 'db'
-            || fileExtension === 'rdb'
-            || fileExtension === 'sqlite'
-            || fileExtension === 'sqlite3') {
-                // database inspect
-                url = window.location.origin + '/database_inspect.html?db_path=' + filePath;
-            } else {
-                // file preview
-                var text = data.node.text;
-                url = window.location.origin + '/file_preview/' + text + '?file_path=' + filePath;
-            }
-            window.open(url);
-        }
-    });
-});
 </script>
 </head>
 <body>
-    <!-- setup a container element -->
-    <div id="jstree">
+<div id="file-explorer">
+    <!-- <div class="directory-container">
+    <ul>
+        <li><img class="icon directory-icon"><span>Library</span></li>
+        <li><img class="icon file-icon"><span>Documents</span></li>
+    </ul>
     </div>
+    <div class="directory-container">
+    <ul>
+        <li><img class="icon directory-icon"><span>Library2</span></li>
+        <li><img class="icon file-icon"><span>Documents2</span></li>
+    </ul>
+    </div>
+    <div class="directory-container">
+    <ul>
+        <li><img class="icon directory-icon"><span>Library</span></li>
+        <li><img class="icon file-icon"><span>Documents</span></li>
+    </ul>
+    </div> -->
+</div>
+<div id="property-sidebar">
+</div>
+<script type="text/javascript">
+(function init() {
+    var rootDirData;
+    var htmlStr;
+    var fileExpEle;
+    // request root directory
+    var rootDirXHR = new XMLHttpRequest();
+    var requestURL = document.location.protocol + '//' + document.location.host
+    + '/file_explorer';
+    rootDirXHR.open('GET', requestURL);
+    rootDirXHR.onreadystatechange = function () {
+        if (rootDirXHR.readyState === 4) {
+            if (rootDirXHR.status === 200) {
+                var responseText = rootDirXHR.responseText;
+                rootDirData = JSON.parse(responseText);
+                // construct html
+                htmlStr = constructDirectoryHTML(rootDirData);
+                fileExpEle = document.getElementById('file-explorer');
+                fileExpEle.insertAdjacentHTML('beforeend', htmlStr);
+            }
+        }
+    };
+    rootDirXHR.send(null);
+
+})();
+
+/**
+ *  @param dirData Array, items in the directory
+ *  @return String, html string
+ */
+function constructDirectoryHTML(dirData) {
+    var htmlStr;
+    var itemNum = dirData.length;
+    var item;       // an item in the directory
+    if (itemNum > 0) {
+        htmlStr = '<div class="directory-container"><ul>';
+        for (var i = 0; i < itemNum; i++) {
+            item = dirData[i];
+            if (item) {
+                htmlStr += constructDirectoryItemHTML(item);
+            }
+        }
+        htmlStr += '</ul></div>'
+    }
+    return htmlStr;
+}
+
+/**
+ *  @param item Dictionary, an item in the directory
+ *  @return String, html string
+ */
+function constructDirectoryItemHTML(item) {
+    // origin data
+    var isDir = item.is_directory;
+    var fileName = item.file_name;
+
+    var htmlStr = '<li><img class=';
+    // is directory
+    if (isDir) {
+        htmlStr += '"icon directory-icon"';
+    } else {
+        htmlStr += '"icon file-icon"';
+    }
+    // file name
+    htmlStr += '><span>' + fileName + '</span></li>'
+    return htmlStr;
+}
+</script>
 </body>
 </html>

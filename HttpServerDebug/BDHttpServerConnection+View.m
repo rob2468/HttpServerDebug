@@ -18,7 +18,7 @@
     return [super httpResponseForMethod:method URI:path];
 }
 
-- (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params {
+- (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
     NSObject<HTTPResponse> *response;
     NSString *subModule;
     if ([paths count] > 1) {

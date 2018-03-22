@@ -67,21 +67,52 @@
 
 @implementation BDHttpServerConnection (Explorer)
 
-- (NSObject<HTTPResponse> *)fetchFileExplorerResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path
-{
-    // 获取文件系统结构（按jstree要求组装）
-    NSArray *tree = [self fetchFileSystemTree];
-    NSData *treeData = [NSJSONSerialization dataWithJSONObject:tree options:0 error:nil];
-    NSString *treeStr = [[NSString alloc] initWithData:treeData encoding:NSUTF8StringEncoding];
-    // 组装html
-    NSString *templatePath = [[config documentRoot] stringByAppendingPathComponent:path];
-    NSDictionary* replacementDict = @{@"TREE_DATA": treeStr};
-    HTTPDynamicFileResponse *response = [[HTTPDynamicFileResponse alloc] initWithFilePath:templatePath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
+#pragma mark - Response
+
+- (NSObject<HTTPResponse> *)fetchFileExplorerResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path {
+    NSObject<HTTPResponse> *response = [super httpResponseForMethod:method URI:path];
     return response;
 }
 
-- (NSArray *)fetchFileSystemTree
-{
+- (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
+    NSMutableArray<NSDictionary *> *itemList = [[NSMutableArray alloc] init];
+    if ([params count] == 0) {
+        // request root path
+        NSString *homeDirectory = NSHomeDirectory();
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSArray *fileNames = [fileManager contentsOfDirectoryAtPath:homeDirectory error:nil];
+        for (NSString *fileName in fileNames) {
+            // files in home directory
+            NSString *filePath = [homeDirectory stringByAppendingPathComponent:fileName];
+            BOOL isExist;
+            BOOL isDir;
+            isExist = [fileManager fileExistsAtPath:filePath isDirectory:&isDir];
+            if (isExist) {
+                // construct file item
+                NSString *tmpFileName = fileName.length > 0 ? fileName : @"";
+                filePath = filePath.length > 0 ? filePath : @"";
+                NSDictionary *itemDict =
+                @{
+                  @"file_name": tmpFileName,
+                  @"file_path": filePath,
+                  @"is_directory": @(isDir)
+                };
+                [itemList addObject:itemDict];
+            }
+        }
+    }
+    // serialization
+    NSData *data = [NSJSONSerialization dataWithJSONObject:itemList options:0 error:nil];
+    HTTPDataResponse *response;
+    if (data) {
+        response = [[HTTPDataResponse alloc] initWithData:data];
+    }
+    return response;
+}
+
+#pragma mark -
+
+- (NSArray *)fetchFileSystemTree {
     // 顶级目录
     NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
     NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) firstObject];
@@ -99,8 +130,7 @@
     return fileSystem;
 }
 
-- (BDHttpServerJSTreeNode *)createJSTreeNodeWithFilePath:(NSString *)path
-{
+- (BDHttpServerJSTreeNode *)createJSTreeNodeWithFilePath:(NSString *)path {
     BDHttpServerJSTreeNode *node;
     BOOL isDir;
     NSFileManager *fileManager = [NSFileManager defaultManager];

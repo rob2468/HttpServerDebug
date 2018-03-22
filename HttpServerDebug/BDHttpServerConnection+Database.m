@@ -50,7 +50,7 @@
     return response;
 }
 
-- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params {
+- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
     NSString *subModule;
     if ([paths count] > 1) {
         subModule = [paths objectAtIndex:1];

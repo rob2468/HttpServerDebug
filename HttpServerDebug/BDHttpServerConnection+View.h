@@ -12,6 +12,6 @@
 
 - (NSObject<HTTPResponse> *)fetchViewDebugResponseForMethod:(NSString *)method URI:(NSString *)path;
 
-- (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePath:(NSArray *)paths parameters:(NSDictionary *)params;
+- (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
 
 @end

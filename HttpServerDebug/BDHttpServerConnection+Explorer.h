@@ -10,6 +10,14 @@
 
 @interface BDHttpServerConnection (Explorer)
 
+/**
+ *  request html
+ */
 - (NSObject<HTTPResponse> *)fetchFileExplorerResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path;
+
+/**
+ *  requst data
+ */
+- (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
 
 @end
