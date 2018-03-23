@@ -69,26 +69,26 @@ body {
     white-space: nowrap;
     overflow: hidden;
 }
+#property-sidebar p {
+    text-align: center;
+    word-wrap: break-word;
+    overflow: hidden;
+}
+#property-sidebar p.file-name {
+    font-size: 16px;
+}
 </style>
 <script type="text/javascript">
 </script>
 </head>
 <body>
 <div id="file-explorer">
-    <!-- <div class="directory-container">
-    <ul>
-        <li><img class="icon directory-icon"><span>Library</span></li>
-        <li><img class="icon file-icon"><span>Documents</span></li>
-    </ul>
-    </div>
-    <div class="directory-container">
-    <ul>
-        <li><img class="icon directory-icon"><span>Library2</span></li>
-        <li><img class="icon file-icon"><span>Documents2</span></li>
-    </ul>
-    </div> -->
 </div>
 <div id="property-sidebar">
+    <p class="file-name">Readme.txt</p>
+    <p>12KB</p>
+    <p>创建时间：2018</p>
+    <p>修改时间：2018</p>
 </div>
 <script type="text/javascript">
 /**
@@ -179,7 +179,37 @@ function onItemClicked(element) {
         clearTimeout(clickTimerOut);
     }
     clickTimerOut = setTimeout(function () {
-        console.log(element);
+        // parse data
+        var eleID = element.id;
+        var separatedArr = eleID.split('-');
+        var row = separatedArr.pop();
+        row = parseInt(row, 10);
+        var section = separatedArr.pop();
+        section = parseInt(section, 10);
+        var itemList = allData[section];
+        var item = itemList[row];
+        var isDir = item.is_directory;
+        var fileName = item.file_name;
+        var filePath = item.file_path;
+
+        if (!isDir) {
+            // request file attributes
+            var attrXHR = new XMLHttpRequest();
+            var requestURL = document.location.protocol + '//' + document.location.host
+            + '/file_explorer?file_path=' + filePath;
+            attrXHR.open('GET', requestURL);
+            attrXHR.onreadystatechange = function () {
+                if (attrXHR.readyState === 4) {
+                    if (attrXHR.status === 200) {
+                        var responseText = attrXHR.responseText;
+                        var attrs = JSON.parse(responseText);
+
+                        showPropertySidebar(item, attrs);
+                    }
+                }
+            };
+            attrXHR.send(null);
+        }
     }, 250);
 }
 
@@ -249,6 +279,45 @@ function onItemDoubleClicked(element) {
         };
         dirXHR.send(null);
     }
+}
+
+/**
+ *  @param item  file data
+ *  @param attrs  file attributes
+ */
+function showPropertySidebar(item, attrs) {
+    // parse data
+    var isDir = item.is_directory;
+    var fileName = item.file_name;
+    var fileSize = attrs.file_size;
+    var creationTime = attrs.creation_time;
+    var modificationTime = attrs.modification_time;
+
+    var fileExpEle = document.getElementById('file-explorer');
+    var propertySidebarEle = document.getElementById('property-sidebar');
+    var widthStr = '200px';
+
+    // expand property side bar area
+    fileExpEle.style.right = widthStr;
+    propertySidebarEle.style.width = widthStr;
+    propertySidebarEle.style.borderLeft = '1px solid #000';
+
+    // construct html
+    var htmlStr = '<p class="file-name">' + fileName + '</p>';
+    htmlStr += '<p>' + fileSize + '</p>';
+    htmlStr += '<p>创建时间：' + creationTime + '</p>';
+    htmlStr += '<p>修改时间：' + modificationTime + '</p>';
+    propertySidebarEle.innerHTML = htmlStr;
+}
+
+function hidePropertySidebar() {
+    var fileExpEle = document.getElementById('file-explorer');
+    var propertySidebarEle = document.getElementById('property-sidebar');
+
+    fileExpEle.style.right = '0';
+    propertySidebarEle.style.width = '0';
+    propertySidebarEle.style.borderLeft = '0';
+    propertySidebarEle.innerHTML = '';
 }
 </script>
 </body>

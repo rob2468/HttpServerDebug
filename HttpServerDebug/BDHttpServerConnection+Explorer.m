@@ -11,60 +11,6 @@
 #import "BDHttpServerDefine.h"
 #import "BDHttpServerManager.h"
 
-@interface BDHttpServerJSTreeNode : NSObject
-
-@property (nonatomic, copy) NSString *ID;
-@property (nonatomic, copy) NSString *text;
-@property (nonatomic, copy) NSString *icon;
-@property (nonatomic, strong) NSMutableDictionary *data;
-@property (nonatomic, strong) NSMutableDictionary *state;
-@property (nonatomic, strong) NSMutableDictionary *a_attr;
-@property (nonatomic, strong) NSMutableArray *children;
-
-@end
-
-@implementation BDHttpServerJSTreeNode
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        self.data = [[NSMutableDictionary alloc] init];
-        self.state = [[NSMutableDictionary alloc] init];
-        self.a_attr = [[NSMutableDictionary alloc] init];
-        self.children = [[NSMutableArray alloc] init];
-    }
-    return self;
-}
-
-- (NSDictionary *)serialize
-{
-    NSString *ID = self.ID.length > 0? self.ID: @"";
-    NSString *text = self.text.length > 0? self.text: @"";
-    NSString *icon = self.icon.length > 0? self.icon: @"";
-    NSDictionary *data = self.data;
-    NSDictionary *state = self.state;
-    NSDictionary *a_attr = self.a_attr;
-    NSMutableArray *children = [[NSMutableArray alloc] init];
-    for (BDHttpServerJSTreeNode *node in self.children) {
-        NSDictionary *dict = [node serialize];
-        [children addObject:dict];
-    }
-    NSDictionary *node =
-    @{
-      @"id": ID,
-      @"text": text,
-      @"icon": icon,
-      @"data": data,
-      @"state": state,
-      @"a_attr": a_attr,
-      @"children": children,
-      };
-    return node;
-}
-
-@end
-
 @implementation BDHttpServerConnection (Explorer)
 
 #pragma mark - Response
@@ -78,27 +24,76 @@
     // parse data
     NSString *filePath = [params objectForKey:@"file_path"];
     
-    NSArray<NSDictionary *> *itemList = [[NSArray alloc] init];
+    id json;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (filePath.length == 0) {
         // request root path
         NSString *homeDirectory = NSHomeDirectory();
         NSArray *filesDataList = [self constructFilesDataListInDirectory:homeDirectory];
-        itemList = [filesDataList copy];
+        json = [filesDataList copy];
     } else {
         // request specific file path
         BOOL isDir;
         if ([fileManager fileExistsAtPath:filePath isDirectory:&isDir]) {
             if (isDir) {
+                // directory, construct directory contents
                 NSArray *filesDataList = [self constructFilesDataListInDirectory:filePath];
-                itemList = [filesDataList copy];
+                json = [filesDataList copy];
             } else {
+                // normal file, construct file attribute
+                NSDictionary<NSFileAttributeKey, id> *attrs = [fileManager attributesOfItemAtPath:filePath error:nil];
+                NSString *fileType = [attrs objectForKey:NSFileType];
+                NSNumber *fileSize = [attrs objectForKey:NSFileSize];   // unit, Byte
+                NSDate *fileModificationDate = [attrs objectForKey:NSFileModificationDate];
+                NSDate *fileCreationDate = [attrs objectForKey:NSFileCreationDate];
                 
+                // file type
+                fileType = fileType.length > 0 ? fileType : @"";
+                // file size
+                NSString *sizeStr;
+                long size = fileSize.longValue;
+                long KB = 1024;
+                long MB = 1024 * 1024;
+                long GB = 1024 * 1024 * 1024;
+                if (size >= GB) {
+                    double num = (size * 1.0f) / GB;
+                    sizeStr = [NSString stringWithFormat:@"%.1fGB", num];
+                } else if (size >= MB) {
+                    double num = (size * 1.0f) / MB;
+                    sizeStr = [NSString stringWithFormat:@"%.1fMB", num];
+                } else if (size >= KB) {
+                    double num = (size * 1.0f) / KB;
+                    sizeStr = [NSString stringWithFormat:@"%.1fKB", num];
+                } else {
+                    sizeStr = [NSString stringWithFormat:@"%ldB", size];
+                }
+                // file modification date
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"yyyy/M/d H:mm"];
+                NSString *modificationTime = @"";
+                if (fileModificationDate) {
+                    modificationTime = [dateFormatter stringFromDate:fileModificationDate];
+                }
+                // file creation date
+                NSString *creationTime = @"";
+                if (fileCreationDate) {
+                    creationTime = [dateFormatter stringFromDate:fileCreationDate];
+                }
+                json =
+                @{
+                  @"file_type": fileType,
+                  @"file_size": sizeStr,
+                  @"modification_time": modificationTime,
+                  @"creation_time": creationTime
+                  };
             }
         }
     }
     // serialization
-    NSData *data = [NSJSONSerialization dataWithJSONObject:itemList options:0 error:nil];
+    NSData *data;
+    if (json) {
+        data = [NSJSONSerialization dataWithJSONObject:json options:0 error:nil];
+    }
     HTTPDataResponse *response;
     if (data) {
         response = [[HTTPDataResponse alloc] initWithData:data];
