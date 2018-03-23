@@ -75,29 +75,25 @@
 }
 
 - (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
-    NSMutableArray<NSDictionary *> *itemList = [[NSMutableArray alloc] init];
-    if ([params count] == 0) {
+    // parse data
+    NSString *filePath = [params objectForKey:@"file_path"];
+    
+    NSArray<NSDictionary *> *itemList = [[NSArray alloc] init];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (filePath.length == 0) {
         // request root path
         NSString *homeDirectory = NSHomeDirectory();
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSArray *fileNames = [fileManager contentsOfDirectoryAtPath:homeDirectory error:nil];
-        for (NSString *fileName in fileNames) {
-            // files in home directory
-            NSString *filePath = [homeDirectory stringByAppendingPathComponent:fileName];
-            BOOL isExist;
-            BOOL isDir;
-            isExist = [fileManager fileExistsAtPath:filePath isDirectory:&isDir];
-            if (isExist) {
-                // construct file item
-                NSString *tmpFileName = fileName.length > 0 ? fileName : @"";
-                filePath = filePath.length > 0 ? filePath : @"";
-                NSDictionary *itemDict =
-                @{
-                  @"file_name": tmpFileName,
-                  @"file_path": filePath,
-                  @"is_directory": @(isDir)
-                };
-                [itemList addObject:itemDict];
+        NSArray *filesDataList = [self constructFilesDataListInDirectory:homeDirectory];
+        itemList = [filesDataList copy];
+    } else {
+        // request specific file path
+        BOOL isDir;
+        if ([fileManager fileExistsAtPath:filePath isDirectory:&isDir]) {
+            if (isDir) {
+                NSArray *filesDataList = [self constructFilesDataListInDirectory:filePath];
+                itemList = [filesDataList copy];
+            } else {
+                
             }
         }
     }
@@ -112,56 +108,35 @@
 
 #pragma mark -
 
-- (NSArray *)fetchFileSystemTree {
-    // 顶级目录
-    NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-    NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) firstObject];
-    NSString *tmpPath = NSTemporaryDirectory();
-    
-    // 构造jstree node
-    BDHttpServerJSTreeNode *documentNode = [self createJSTreeNodeWithFilePath:documentPath];
-    [documentNode.state setObject:[NSNumber numberWithBool:YES] forKey:@"opened"];
-    BDHttpServerJSTreeNode *libraryNode = [self createJSTreeNodeWithFilePath:libraryPath];
-    [libraryNode.state setObject:[NSNumber numberWithBool:YES] forKey:@"opened"];
-    BDHttpServerJSTreeNode *tmpNode = [self createJSTreeNodeWithFilePath:tmpPath];
-    [tmpNode.state setObject:[NSNumber numberWithBool:YES] forKey:@"opened"];
-    NSMutableArray *fileSystem = [[NSMutableArray alloc] init];
-    [fileSystem addObjectsFromArray:@[[documentNode serialize], [libraryNode serialize], [tmpNode serialize]]];
-    return fileSystem;
-}
-
-- (BDHttpServerJSTreeNode *)createJSTreeNodeWithFilePath:(NSString *)path {
-    BDHttpServerJSTreeNode *node;
-    BOOL isDir;
+/**
+ *  enumarate directory and construct json data
+ *  @param filePath  the objective directory file path
+ *  @return  json data
+ */
+- (NSArray<NSDictionary *> *)constructFilesDataListInDirectory:(NSString *)filePath {
+    NSMutableArray<NSDictionary *> *itemList = [[NSMutableArray alloc] init];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if ([fileManager fileExistsAtPath:path isDirectory:&isDir]) {
-        path = path.length > 0? path: @"";
-        NSString *text = path.lastPathComponent;
-        text = text.length > 0? text: @"";
-        NSString *href = kBDHttpServerFilePreview;
-        href = [href stringByAppendingPathComponent:text];
-        href = [href stringByAppendingFormat:@"?file_path=%@", path];
-        
-        node = [[BDHttpServerJSTreeNode alloc] init];
-        node.text = text;
-        [node.data setObject:path forKey:@"path"];
-        [node.a_attr setObject:href forKey:@"href"];
-
-        if (isDir) {
-            NSArray *fileNames = [fileManager contentsOfDirectoryAtPath:path error:nil];
-            for (NSString *fileName in fileNames) {
-                NSString *subPath = [path stringByAppendingPathComponent:fileName];
-                BDHttpServerJSTreeNode *subNode = [self createJSTreeNodeWithFilePath:subPath];
-                [node.children addObject:subNode];
-            }
-            [node.data setObject:[NSNumber numberWithBool:YES] forKey:@"is_directory"];
-        } else {
-            node.icon = @"jstree-file";
-            [node.data setObject:[NSNumber numberWithBool:NO] forKey:@"is_directory"];
+    NSArray *fileNames = [fileManager contentsOfDirectoryAtPath:filePath error:nil];
+    for (NSString *fileName in fileNames) {
+        // files in filePath directory
+        NSString *subPath = [filePath stringByAppendingPathComponent:fileName];
+        BOOL isExist;
+        BOOL isDir;
+        isExist = [fileManager fileExistsAtPath:subPath isDirectory:&isDir];
+        if (isExist) {
+            // construct file item
+            NSString *tmpFileName = fileName.length > 0 ? fileName : @"";
+            subPath = subPath.length > 0 ? subPath : @"";
+            NSDictionary *itemDict =
+            @{
+              @"file_name": tmpFileName,
+              @"file_path": subPath,
+              @"is_directory": @(isDir)
+              };
+            [itemList addObject:itemDict];
         }
     }
-    
-    return node;
+    return itemList;
 }
 
 @end

@@ -5,41 +5,45 @@
 <title>文件浏览</title>
 <style type="text/css">
 body {
-    margin: 0px;
+    margin: 0;
     font-size: 14px;
 }
 #file-explorer,
 #property-sidebar {
     position: absolute;
-    top: 0px;
-    bottom: 0px;
+    top: 0;
+    bottom: 0;
 }
 #file-explorer {
-    left: 0px;
-    right: 0px;
+    left: 0;
+    right: 0;
     overflow-x: scroll;
     white-space: nowrap;
 }
 #property-sidebar {
-    right: 0px;
-    width: 0px;
+    right: 0;
+    width: 0;
 }
 .directory-container {
     display: inline-block;
     width: 200px;
     height: 100%;
-    border-right: 1px solid red;
+    border-right: 1px solid #f00;
     overflow-y: scroll;
 }
 .directory-container ul {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     list-style-type: none;
 }
 .directory-container li {
     display: block;
     position: relative;
     height: 26px;
+    border: 1px solid transparent;
+}
+.directory-container li:hover {
+    border: 1px solid #00f;
 }
 .directory-container img.icon {
     display: inline-block;
@@ -60,7 +64,7 @@ body {
     vertical-align: middle;
     line-height: 26px;
     left: 21px;
-    right: 0px;
+    right: 0;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -82,17 +86,18 @@ body {
         <li><img class="icon directory-icon"><span>Library2</span></li>
         <li><img class="icon file-icon"><span>Documents2</span></li>
     </ul>
-    </div>
-    <div class="directory-container">
-    <ul>
-        <li><img class="icon directory-icon"><span>Library</span></li>
-        <li><img class="icon file-icon"><span>Documents</span></li>
-    </ul>
     </div> -->
 </div>
 <div id="property-sidebar">
 </div>
 <script type="text/javascript">
+/**
+ *  Two-dimensional array:
+ *      directory containers,
+ *          files
+ */
+var allData;
+
 (function init() {
     var rootDirData;
     var htmlStr;
@@ -107,22 +112,26 @@ body {
             if (rootDirXHR.status === 200) {
                 var responseText = rootDirXHR.responseText;
                 rootDirData = JSON.parse(responseText);
-                // construct html
-                htmlStr = constructDirectoryHTML(rootDirData);
-                fileExpEle = document.getElementById('file-explorer');
-                fileExpEle.insertAdjacentHTML('beforeend', htmlStr);
+                if (rootDirData.length > 0) {
+                    // save data
+                    allData = [rootDirData];
+                    // construct html
+                    htmlStr = constructDirectoryHTML(rootDirData, 0);
+                    fileExpEle = document.getElementById('file-explorer');
+                    fileExpEle.insertAdjacentHTML('beforeend', htmlStr);
+                }
             }
         }
     };
     rootDirXHR.send(null);
-
 })();
 
 /**
- *  @param dirData Array, items in the directory
+ *  @param dirData  Array, items in the directory
+ *  @param dirIdx  directory index, 0-index
  *  @return String, html string
  */
-function constructDirectoryHTML(dirData) {
+function constructDirectoryHTML(dirData, dirIdx) {
     var htmlStr;
     var itemNum = dirData.length;
     var item;       // an item in the directory
@@ -131,24 +140,28 @@ function constructDirectoryHTML(dirData) {
         for (var i = 0; i < itemNum; i++) {
             item = dirData[i];
             if (item) {
-                htmlStr += constructDirectoryItemHTML(item);
+                htmlStr += constructDirectoryItemHTML(item, dirIdx, i);
             }
         }
-        htmlStr += '</ul></div>'
+        htmlStr += '</ul></div>';
     }
     return htmlStr;
 }
 
 /**
- *  @param item Dictionary, an item in the directory
+ *  @param item  Dictionary, an item in the directory
+ *  @param dirIdx  directory index, 0-index
+ *  @param fileIdx  file index, 0-index
  *  @return String, html string
  */
-function constructDirectoryItemHTML(item) {
+function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
     // origin data
     var isDir = item.is_directory;
     var fileName = item.file_name;
 
-    var htmlStr = '<li><img class=';
+    var htmlStr = '<li id="directory-container-' + dirIdx + '-' + fileIdx
+    + '" title="' + fileName
+    + '" onclick="onItemClicked(this)" ondblclick="onItemDoubleClicked(this)"><img class=';
     // is directory
     if (isDir) {
         htmlStr += '"icon directory-icon"';
@@ -156,8 +169,86 @@ function constructDirectoryItemHTML(item) {
         htmlStr += '"icon file-icon"';
     }
     // file name
-    htmlStr += '><span>' + fileName + '</span></li>'
+    htmlStr += '><span>' + fileName + '</span></li>';
     return htmlStr;
+}
+
+var clickTimerOut;
+function onItemClicked(element) {
+    if (clickTimerOut) {
+        clearTimeout(clickTimerOut);
+    }
+    clickTimerOut = setTimeout(function () {
+        console.log(element);
+    }, 250);
+}
+
+function onItemDoubleClicked(element) {
+    if (clickTimerOut) {
+        // stop single click logic
+        clearTimeout(clickTimerOut);
+    }
+    // parse data
+    var eleID = element.id;
+    var separatedArr = eleID.split('-');
+    var row = separatedArr.pop();
+    row = parseInt(row, 10);
+    var section = separatedArr.pop();
+    section = parseInt(section, 10);
+    var itemList = allData[section];
+    var item = itemList[row];
+    var isDir = item.is_directory;
+    var fileName = item.file_name;
+    var filePath = item.file_path;
+
+    if (!isDir) {
+        // normal file
+        var fileExtension = fileName.split('.').pop();
+        var url;
+        if (fileExtension === 'db'
+            || fileExtension === 'rdb'
+            || fileExtension === 'sqlite'
+            || fileExtension === 'sqlite3') {
+            // database inspect
+            url = window.location.origin + '/database_inspect.html?db_path=' + filePath;
+        } else {
+            // file preview
+            url = window.location.origin + '/file_preview/' + fileName + '?file_path=' + filePath;
+        }
+        window.open(url);
+    } else {
+        // directory
+        var dirXHR = new XMLHttpRequest();
+        var requestURL = document.location.protocol + '//' + document.location.host
+        + '/file_explorer?file_path=' + filePath;
+        dirXHR.open('GET', requestURL);
+        dirXHR.onreadystatechange = function () {
+            if (dirXHR.readyState === 4) {
+                if (dirXHR.status === 200) {
+                    var responseText = dirXHR.responseText;
+                    var tmpDirData = JSON.parse(responseText);
+
+                    var fileExpEle = document.getElementById('file-explorer');
+                    // remove no longer needed data
+                    allData.splice(section + 1, allData.length - (section + 1));
+                    // remove no longer needed views
+                    var dirContainers = fileExpEle.children;
+                    for (var i = dirContainers.length - 1; i >= section + 1; i--) {
+                        dirContainers[i].remove();
+                    }
+
+                    if (tmpDirData.length > 0) {
+                        // save data
+                        allData.push(tmpDirData);
+                        // construct html
+                        var htmlStr = constructDirectoryHTML(tmpDirData, section + 1);
+                        fileExpEle.insertAdjacentHTML('beforeend', htmlStr);
+                    }
+                }
+            }
+        };
+        dirXHR.send(null);
+    }
 }
 </script>
 </body>
