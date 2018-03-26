@@ -26,13 +26,15 @@ body {
 }
 .directory-container {
     display: inline-block;
+    position: relative;
     width: 200px;
     height: 100%;
-    border-right: 1px solid #f00;
+    border-right: 1px solid transparent;
     overflow-y: scroll;
 }
 .directory-container ul {
-    margin: 0;
+    display: block;
+    margin: 0 1px 0 0;
     padding: 0;
     list-style-type: none;
 }
@@ -68,6 +70,15 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+.directory-container div.split-handler {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    right: 0;
+    border-right: 1px solid #E0E0E0;
+    cursor: col-resize;
 }
 #property-sidebar img.icon {
     content: url(resources/file-icon.png);
@@ -252,14 +263,22 @@ function onItemDoubleClicked(element) {
 function constructDirectoryHTML(dirData, dirIdx) {
     var itemNum = dirData.length;
     var item;       // an item in the directory
-    var htmlStr = '<div class="directory-container"><ul>';
+    var htmlStr = '<div class="directory-container">';
+
+    // file list view
+    htmlStr += '<ul>';
     for (var i = 0; i < itemNum; i++) {
         item = dirData[i];
         if (item) {
             htmlStr += constructDirectoryItemHTML(item, dirIdx, i);
         }
     }
-    htmlStr += '</ul></div>';
+    htmlStr += '</ul>';
+
+    // split handler view
+    htmlStr += '<div class="split-handler" onmousedown="initResizeDrag(event)"></div>';
+
+    htmlStr += '</div>';
     return htmlStr;
 }
 
@@ -344,6 +363,37 @@ function removeNoNeededDataAndViews(section, row) {
         dirContainers[i].remove();
     }
 }
+
+/* resize column functions */
+var startResizeX;
+var startResizeWidth;
+var targetResizeEle;
+
+function initResizeDrag(event) {
+    targetResizeEle = event.currentTarget.parentElement;
+
+    // initial value
+    startResizeX = event.clientX;
+    startResizeWidth = parseInt(document.defaultView.getComputedStyle(targetResizeEle).width, 10);
+
+    document.documentElement.addEventListener('mousemove', doResizeDrag, false);
+    document.documentElement.addEventListener('mouseup', stopResizeDrag, false);
+}
+
+function doResizeDrag(event) {
+    // modify view
+    targetResizeEle.style.width = (startResizeWidth + event.clientX - startResizeX) + 'px';
+
+    if (event.preventDefault) {
+        event.preventDefault();
+    }
+}
+
+function stopResizeDrag(event) {
+    document.documentElement.removeEventListener('mousemove', doResizeDrag, false);
+    document.documentElement.removeEventListener('mouseup', stopResizeDrag, false);
+}
+
 </script>
 </body>
 </html>
