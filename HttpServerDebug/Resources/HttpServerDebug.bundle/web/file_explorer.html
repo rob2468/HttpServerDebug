@@ -69,6 +69,12 @@ body {
     white-space: nowrap;
     overflow: hidden;
 }
+#property-sidebar img.icon {
+    content: url(resources/file-icon.png);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 #property-sidebar p {
     text-align: center;
     word-wrap: break-word;
@@ -306,7 +312,8 @@ function showPropertySidebar(item, attrs) {
     propertySidebarEle.style.borderLeft = '1px solid #000';
 
     // construct html
-    var htmlStr = '<p class="file-name">' + fileName + '</p>';
+    var htmlStr = '<img class="icon">';
+    htmlStr += '<p class="file-name">' + fileName + '</p>';
     htmlStr += '<p>' + fileSize + '</p>';
     htmlStr += '<p>创建时间：' + creationTime + '</p>';
     htmlStr += '<p>修改时间：' + modificationTime + '</p>';
