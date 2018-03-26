@@ -148,31 +148,6 @@ function constructDirectoryHTML(dirData, dirIdx) {
     return htmlStr;
 }
 
-/**
- *  @param item  Dictionary, an item in the directory
- *  @param dirIdx  directory index, 0-index
- *  @param fileIdx  file index, 0-index
- *  @return String, html string
- */
-function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
-    // origin data
-    var isDir = item.is_directory;
-    var fileName = item.file_name;
-
-    var htmlStr = '<li id="directory-container-' + dirIdx + '-' + fileIdx
-    + '" title="' + fileName
-    + '" onclick="onItemClicked(this)" ondblclick="onItemDoubleClicked(this)"><img class=';
-    // is directory
-    if (isDir) {
-        htmlStr += '"icon directory-icon"';
-    } else {
-        htmlStr += '"icon file-icon"';
-    }
-    // file name
-    htmlStr += '><span>' + fileName + '</span></li>';
-    return htmlStr;
-}
-
 var clickTimerOut;
 function onItemClicked(element) {
     if (clickTimerOut) {
@@ -191,6 +166,12 @@ function onItemClicked(element) {
         var isDir = item.is_directory;
         var fileName = item.file_name;
         var filePath = item.file_path;
+
+        // hide property side bar
+        hidePropertySidebar();
+
+        // remove no longer needed data and view
+        removeNoNeededDataAndViews(section, row);
 
         if (!isDir) {
             // request file attributes
@@ -231,6 +212,12 @@ function onItemDoubleClicked(element) {
     var fileName = item.file_name;
     var filePath = item.file_path;
 
+        // hide property side bar
+    hidePropertySidebar();
+
+    // remove no longer needed data and view
+    removeNoNeededDataAndViews(section, row);
+
     if (!isDir) {
         // normal file
         var fileExtension = fileName.split('.').pop();
@@ -257,21 +244,12 @@ function onItemDoubleClicked(element) {
                 if (dirXHR.status === 200) {
                     var responseText = dirXHR.responseText;
                     var tmpDirData = JSON.parse(responseText);
-
-                    var fileExpEle = document.getElementById('file-explorer');
-                    // remove no longer needed data
-                    allData.splice(section + 1, allData.length - (section + 1));
-                    // remove no longer needed views
-                    var dirContainers = fileExpEle.children;
-                    for (var i = dirContainers.length - 1; i >= section + 1; i--) {
-                        dirContainers[i].remove();
-                    }
-
                     if (tmpDirData.length > 0) {
                         // save data
                         allData.push(tmpDirData);
                         // construct html
                         var htmlStr = constructDirectoryHTML(tmpDirData, section + 1);
+                        var fileExpEle = document.getElementById('file-explorer');
                         fileExpEle.insertAdjacentHTML('beforeend', htmlStr);
                     }
                 }
@@ -279,6 +257,31 @@ function onItemDoubleClicked(element) {
         };
         dirXHR.send(null);
     }
+}
+
+/**
+ *  @param item  Dictionary, an item in the directory
+ *  @param dirIdx  directory index, 0-index
+ *  @param fileIdx  file index, 0-index
+ *  @return String, html string
+ */
+function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
+    // origin data
+    var isDir = item.is_directory;
+    var fileName = item.file_name;
+
+    var htmlStr = '<li id="directory-container-' + dirIdx + '-' + fileIdx
+    + '" title="' + fileName
+    + '" onclick="onItemClicked(this)" ondblclick="onItemDoubleClicked(this)"><img class=';
+    // is directory
+    if (isDir) {
+        htmlStr += '"icon directory-icon"';
+    } else {
+        htmlStr += '"icon file-icon"';
+    }
+    // file name
+    htmlStr += '><span>' + fileName + '</span></li>';
+    return htmlStr;
 }
 
 /**
@@ -310,6 +313,9 @@ function showPropertySidebar(item, attrs) {
     propertySidebarEle.innerHTML = htmlStr;
 }
 
+/**
+ *  hide property side bar
+ */
 function hidePropertySidebar() {
     var fileExpEle = document.getElementById('file-explorer');
     var propertySidebarEle = document.getElementById('property-sidebar');
@@ -318,6 +324,20 @@ function hidePropertySidebar() {
     propertySidebarEle.style.width = '0';
     propertySidebarEle.style.borderLeft = '0';
     propertySidebarEle.innerHTML = '';
+}
+
+/**
+ *  remove no longer needed data and view
+ */
+function removeNoNeededDataAndViews(section, row) {
+    // remove no longer needed data
+    allData.splice(section + 1, allData.length - (section + 1));
+    // remove no longer needed views
+    var fileExpEle = document.getElementById('file-explorer');
+    var dirContainers = fileExpEle.children;
+    for (var i = dirContainers.length - 1; i >= section + 1; i--) {
+        dirContainers[i].remove();
+    }
 }
 </script>
 </body>
