@@ -1,46 +1,44 @@
 //
-//  BDHttpServerManager.m
-//  BaiduBrowser
+//  HSDHttpServerManager.m
+//  HttpServerDebug
 //
 //  Created by chenjun on 07/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "BDHttpServerManager.h"
+#import "HSDHttpServerManager.h"
 #import "HTTPServer.h"
-#import "BDHttpServerUtility.h"
-#import "BDHttpServerConnection.h"
-#import "BDHttpServerDebugDelegate.h"
+#import "HSDHttpServerUtility.h"
+#import "HSDHttpServerConnection.h"
+#import "HSDHttpServerDebugDelegate.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
-@interface BDHttpServerManager ()
+@interface HSDHttpServerManager ()
 
 @property (strong, nonatomic) HTTPServer *server;
 @property (copy, nonatomic) NSString *dbFilePath;   // default inspect db file path
-@property (weak, nonatomic) id<BDHttpServerDebugDelegate> delegate;
+@property (weak, nonatomic) id<HSDHttpServerDebugDelegate> delegate;
 
 @end
 
-@implementation BDHttpServerManager
+@implementation HSDHttpServerManager
 
 - (void)dealloc {
     [self.server stop];
 }
 
-+ (instancetype)sharedInstance
-{
-    static BDHttpServerManager *instance;
++ (instancetype)sharedInstance {
+    static HSDHttpServerManager *instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[BDHttpServerManager alloc] init];
+        instance = [[HSDHttpServerManager alloc] init];
     });
     return instance;
 }
 
-+ (BOOL)isHttpServerRunning
-{
-    BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
++ (BOOL)isHttpServerRunning {
+    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
     HTTPServer *server = manager.server;
     BOOL isRunning = server.isRunning;
     return isRunning;
@@ -55,7 +53,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
     NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
     
-    BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
+    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
     manager.server = [[HTTPServer alloc] init];
     [manager.server setType:@"_http._tcp."];
     
@@ -68,7 +66,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     if (port.length > 0) {
         [manager.server setPort:port.integerValue];
     }
-    [manager.server setConnectionClass:[BDHttpServerConnection class]];
+    [manager.server setConnectionClass:[HSDHttpServerConnection class]];
     NSError *error;
     BOOL isSucc = [manager.server start:&error];
     
@@ -80,37 +78,35 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     }
 }
 
-+ (void)stopHttpServer
-{
-    BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
++ (void)stopHttpServer {
+    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
     [manager.server stop];
     
     NSLog(@"http server stopped");
 }
 
 + (void)updateDefaultInspectDBFilePath:(NSString *)path {
-    BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
+    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
     manager.dbFilePath = path;
 }
 
 + (NSString *)fetchDatabaseFilePath {
-    return [BDHttpServerManager sharedInstance].dbFilePath;
+    return [HSDHttpServerManager sharedInstance].dbFilePath;
 }
 
-+ (void)updateHSDDelegate:(id<BDHttpServerDebugDelegate>)delegate {
-    BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
++ (void)updateHSDDelegate:(id<HSDHttpServerDebugDelegate>)delegate {
+    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
     manager.delegate = delegate;
 }
 
-+ (id<BDHttpServerDebugDelegate>)fetchHSDDelegate {
-    BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
++ (id<HSDHttpServerDebugDelegate>)fetchHSDDelegate {
+    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
     return manager.delegate;
 }
 
-+ (NSString *)fetchAlternateServerSites
-{
-    NSArray *ipAddresses = [BDHttpServerUtility fetchLocalAlternateIPAddresses];
-    BDHttpServerManager *manager = [BDHttpServerManager sharedInstance];
++ (NSString *)fetchAlternateServerSites {
+    NSArray *ipAddresses = [HSDHttpServerUtility fetchLocalAlternateIPAddresses];
+    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
     UInt16 port = manager.server.listeningPort;
     
     NSString *serverSites = @"";

@@ -1,6 +1,6 @@
 //
-//  BDHttpServerConnection.h
-//  BaiduBrowser
+//  HSDHttpServerConnection.h
+//  HttpServerDebug
 //
 //  Created by chenjun on 22/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
@@ -9,13 +9,13 @@
 #import "HTTPConnection.h"
 #import "HTTPDataResponse.h"
 
-@interface BDHttpServerConnection : HTTPConnection
+@interface HSDHttpServerConnection : HTTPConnection
 
 @property (strong, nonatomic) NSFileHandle *storeFile;
 
 @end
 
-@interface BDHttpServerDataResponse : HTTPDataResponse
+@interface HSDHttpServerDataResponse : HTTPDataResponse
 
 - (instancetype)initWithData:(NSData *)data contentType:(NSString *)type;
 

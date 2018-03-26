@@ -1,16 +1,16 @@
 //
-//  BDHttpServerConnection+View.m
+//  HSDHttpServerConnection+View.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 2017/10/30.
 //  Copyright © 2017年 chenjun. All rights reserved.
 //
 
-#import "BDHttpServerConnection+View.h"
+#import "HSDHttpServerConnection+View.h"
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 
-@implementation BDHttpServerConnection (View)
+@implementation HSDHttpServerConnection (View)
 
 #pragma mark - create http response
 
@@ -93,7 +93,7 @@
 - (NSArray *)fetchAllViewsDataInHierarchy {
     NSArray *(^MainThreadBlock)(void) = ^{
         NSMutableArray *allViewsData = [[NSMutableArray alloc] init];
-        NSArray *windows = [BDHttpServerConnection fetchAllWindows];
+        NSArray *windows = [HSDHttpServerConnection fetchAllWindows];
         for (UIWindow *window in windows) {
             // generate all views data of displayed window
             if (![[self class] viewBaseClassIsHidden:window]) {

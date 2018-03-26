@@ -1,39 +1,39 @@
 //
-//  BDHttpServerConnection.m
-//  BaiduBrowser
+//  HSDHttpServerConnection.m
+//  HttpServerDebug
 //
 //  Created by chenjun on 22/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "BDHttpServerConnection.h"
-#import "BDHttpServerDefine.h"
+#import "HSDHttpServerConnection.h"
+#import "HSDHttpServerDefine.h"
 #import "HTTPFileResponse.h"
-#import "BDHttpServerConnection+Explorer.h"
-#import "BDHttpServerConnection+Database.h"
-#import "BDHttpServerConnection+Preview.h"
-#import "BDHttpServerConnection+View.h"
-#import "BDHttpServerConnection+Info.h"
+#import "HSDHttpServerConnection+Explorer.h"
+#import "HSDHttpServerConnection+Database.h"
+#import "HSDHttpServerConnection+Preview.h"
+#import "HSDHttpServerConnection+View.h"
+#import "HSDHttpServerConnection+Info.h"
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
-#import "BDHttpServerManager.h"
-#import "BDHttpServerUtility.h"
+#import "HSDHttpServerManager.h"
+#import "HSDHttpServerUtility.h"
 
-@interface BDHttpServerConnection ()
+@interface HSDHttpServerConnection ()
 
 @property (nonatomic, strong) MultipartFormDataParser *parser;
 
 @end
 
-@implementation BDHttpServerConnection
+@implementation HSDHttpServerConnection
 
 #pragma mark -- override methods
 
 - (BOOL)supportsMethod:(NSString *)method atPath:(NSString *)path {
     BOOL isSupported = [super supportsMethod:method atPath:path];
     if ([method isEqualToString:@"POST"]) {
-        if ([path isEqualToString:[NSString stringWithFormat:@"/%@", kBDHttpServerSendInfo]]) {
+        if ([path isEqualToString:[NSString stringWithFormat:@"/%@", kHSDHttpServerSendInfo]]) {
             // "/send_info"
             isSupported = YES;
         }
@@ -77,48 +77,48 @@
             }
         }
     }
-    if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerFileExplorer]]) {
+    if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDHttpServerFileExplorer]]) {
         // file_explorer.html
         response = [self fetchFileExplorerResponse:params forMethod:method URI:path];
-    } else if ([firstPath isEqualToString:kBDHttpServerFileExplorer]) {
+    } else if ([firstPath isEqualToString:kHSDHttpServerFileExplorer]) {
         // file_explorer api
         response = [self fetchFileExplorerAPIResponsePaths:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerDBInspect]]) {
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDHttpServerDBInspect]]) {
         // database_inspect.html
         response = [self fetchDatabaseHTMLResponse:params];
-    } else if ([firstPath isEqualToString:kBDHttpServerDBInspect]) {
+    } else if ([firstPath isEqualToString:kHSDHttpServerDBInspect]) {
         // database_inspect api
         response = [self fetchDatabaseAPIResponsePaths:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:kBDHttpServerFilePreview]) {
+    } else if ([firstPath isEqualToString:kHSDHttpServerFilePreview]) {
         // file_preview api
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerViewDebug]]) {
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDHttpServerViewDebug]]) {
         // view_debug.html
         response = [self fetchViewDebugResponseForMethod:method URI:path];
-    } else if ([firstPath isEqualToString:kBDHttpServerViewDebug]) {
+    } else if ([firstPath isEqualToString:kHSDHttpServerViewDebug]) {
         // view_debug api
         response = [self fetchViewDebugAPIResponsePaths:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kBDHttpServerSendInfo]]) {
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDHttpServerSendInfo]]) {
         // send_info.html
         response = [self fetchSendInfoResponseForMethod:method URI:path];
-    } else if ([firstPath isEqualToString:kBDHttpServerSendInfo]) {
+    } else if ([firstPath isEqualToString:kHSDHttpServerSendInfo]) {
         // send_info api
         response = [self fetchSendInfoAPIResponseForMethod:method paths:pathComps parameters:params];
     } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
         // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
-        NSString *dbPath = [BDHttpServerManager fetchDatabaseFilePath];
+        NSString *dbPath = [HSDHttpServerManager fetchDatabaseFilePath];
         dbPath = dbPath.length > 0? dbPath: @"";
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": dbPath};
-        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
+        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDHttpServerTemplateSeparator replacementDictionary:replacementDict];
     } else if ([firstPath isEqualToString:@"resources"]) {
         // set resources Content-Type manually
         NSString *pathExtension = [[pathComps lastObject] pathExtension];
-        NSString *contentType = [BDHttpServerUtility fetchContentTypeWithFilePathExtension:pathExtension];
+        NSString *contentType = [HSDHttpServerUtility fetchContentTypeWithFilePathExtension:pathExtension];
         NSString *dataPath = [[config documentRoot] stringByAppendingPathComponent:path];
         NSData *data = [[NSData alloc] initWithContentsOfFile:dataPath];
-        response = [[BDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
+        response = [[HSDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
     } else {
         response = [super httpResponseForMethod:method URI:path];
     }
@@ -136,13 +136,13 @@
 
 @end
 
-@interface BDHttpServerDataResponse ()
+@interface HSDHttpServerDataResponse ()
 
 @property (nonatomic, copy) NSString *contentType;
 
 @end
 
-@implementation BDHttpServerDataResponse
+@implementation HSDHttpServerDataResponse
 
 - (instancetype)initWithData:(NSData *)data contentType:(NSString *)type {
     self = [super initWithData:data];

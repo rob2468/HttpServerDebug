@@ -1,17 +1,17 @@
 //
-//  BDHttpServerConnection+Explorer.m
-//  BDPhoneBrowser
+//  HSDHttpServerConnection+Explorer.m
+//  HttpServerDebug
 //
 //  Created by chenjun on 02/08/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "BDHttpServerConnection+Explorer.h"
+#import "HSDHttpServerConnection+Explorer.h"
 #import "HTTPDynamicFileResponse.h"
-#import "BDHttpServerDefine.h"
-#import "BDHttpServerManager.h"
+#import "HSDHttpServerDefine.h"
+#import "HSDHttpServerManager.h"
 
-@implementation BDHttpServerConnection (Explorer)
+@implementation HSDHttpServerConnection (Explorer)
 
 #pragma mark - Response
 

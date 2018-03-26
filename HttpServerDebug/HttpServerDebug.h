@@ -9,8 +9,8 @@
 #ifndef HttpServerDebug_h
 #define HttpServerDebug_h
 
-#import "BDHttpServerManager.h"
-#import "BDHttpServerControlPannelController.h"
-#import "BDHttpServerDebugDelegate.h"
+#import "HSDHttpServerManager.h"
+#import "HSDHttpServerControlPannelController.h"
+#import "HSDHttpServerDebugDelegate.h"
 
 #endif /* HttpServerDebug_h */

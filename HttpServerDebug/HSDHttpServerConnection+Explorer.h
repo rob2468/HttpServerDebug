@@ -1,14 +1,14 @@
 //
-//  BDHttpServerConnection+Explorer.h
-//  BDPhoneBrowser
+//  HSDHttpServerConnection+Explorer.h
+//  HttpServerDebug
 //
 //  Created by chenjun on 02/08/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "BDHttpServerConnection.h"
+#import "HSDHttpServerConnection.h"
 
-@interface BDHttpServerConnection (Explorer)
+@interface HSDHttpServerConnection (Explorer)
 
 /**
  *  request html

@@ -1,14 +1,14 @@
 //
-//  BDHttpServerConnection+Info.h
+//  HSDHttpServerConnection+Info.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 2017/12/26.
 //  Copyright © 2017年 chenjun. All rights reserved.
 //
 
-#import "BDHttpServerConnection.h"
+#import "HSDHttpServerConnection.h"
 
-@interface BDHttpServerConnection (Info)
+@interface HSDHttpServerConnection (Info)
 
 - (NSObject<HTTPResponse> *)fetchSendInfoResponseForMethod:(NSString *)method URI:(NSString *)path;
 

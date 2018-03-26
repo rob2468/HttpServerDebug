@@ -1,5 +1,5 @@
 //
-//  BDHttpServerDebugDelegate.h
+//  HSDHttpServerDebugDelegate.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 2017/12/26.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol BDHttpServerDebugDelegate <NSObject>
+@protocol HSDHttpServerDebugDelegate <NSObject>
 
 @optional
 

@@ -1,15 +1,15 @@
 //
-//  BDHttpServerManager.h
-//  BaiduBrowser
+//  HSDHttpServerManager.h
+//  HttpServerDebug
 //
 //  Created by chenjun on 07/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-@protocol BDHttpServerDebugDelegate;
+@protocol HSDHttpServerDebugDelegate;
 
-@interface BDHttpServerManager : NSObject
+@interface HSDHttpServerManager : NSObject
 
 + (instancetype)sharedInstance;
 
@@ -30,8 +30,8 @@
 
 + (NSString *)fetchDatabaseFilePath;
 
-+ (void)updateHSDDelegate:(id<BDHttpServerDebugDelegate>)delegate;
++ (void)updateHSDDelegate:(id<HSDHttpServerDebugDelegate>)delegate;
 
-+ (id<BDHttpServerDebugDelegate>)fetchHSDDelegate;
++ (id<HSDHttpServerDebugDelegate>)fetchHSDDelegate;
 
 @end

@@ -1,19 +1,19 @@
 //
-//  BDHttpServerConnection+Database.m
-//  BaiduBrowser
+//  HSDHttpServerConnection+Database.m
+//  HttpServerDebug
 //
 //  Created by chenjun on 26/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "BDHttpServerConnection+Database.h"
+#import "HSDHttpServerConnection+Database.h"
 #import "HTTPDataResponse.h"
-#import "BDHttpServerDefine.h"
+#import "HSDHttpServerDefine.h"
 #import "FMDB.h"
-#import "BDHttpServerManager.h"
+#import "HSDHttpServerManager.h"
 #import "HTTPDynamicFileResponse.h"
 
-@implementation BDHttpServerConnection (Database)
+@implementation HSDHttpServerConnection (Database)
 
 - (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params {
     NSObject<HTTPResponse> *response;
@@ -40,12 +40,12 @@
         [rs close];
         [database close];
         
-        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kBDHttpServerDBInspect]];
+        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kHSDHttpServerDBInspect]];
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": dbPath,
           @"SELECT_HTML": selectHtml
           };
-        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kBDHttpServerTemplateSeparator replacementDictionary:replacementDict];
+        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDHttpServerTemplateSeparator replacementDictionary:replacementDict];
     }
     return response;
 }

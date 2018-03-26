@@ -1,15 +1,15 @@
 //
-//  BDHttpServerControlPannelController.m
-//  BaiduBrowser
+//  HSDHttpServerControlPannelController.m
+//  HttpServerDebug
 //
 //  Created by chenjun on 18/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "BDHttpServerControlPannelController.h"
-#import "BDHttpServerManager.h"
+#import "HSDHttpServerControlPannelController.h"
+#import "HSDHttpServerManager.h"
 
-@interface BDHttpServerControlPannelController ()
+@interface HSDHttpServerControlPannelController ()
 
 @property (strong, nonatomic) UIButton *startButton;
 @property (strong, nonatomic) UILabel *siteLabel;
@@ -17,10 +17,9 @@
 
 @end
 
-@implementation BDHttpServerControlPannelController
+@implementation HSDHttpServerControlPannelController
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -37,8 +36,8 @@
     self.siteLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.siteLabel.textColor = [UIColor blackColor];
     self.siteLabel.numberOfLines = 0;
-    if ([BDHttpServerManager isHttpServerRunning]) {
-        self.siteLabel.text = [BDHttpServerManager fetchAlternateServerSites];
+    if ([HSDHttpServerManager isHttpServerRunning]) {
+        self.siteLabel.text = [HSDHttpServerManager fetchAlternateServerSites];
     }
     [self.view addSubview:self.siteLabel];
     
@@ -61,23 +60,16 @@
     [NSLayoutConstraint constraintWithItem:self.stopButton attribute:(NSLayoutAttributeTop) relatedBy:(NSLayoutRelationEqual) toItem:self.siteLabel attribute:(NSLayoutAttributeBottom) multiplier:1 constant:20]]];
 }
 
-- (void)startHttpServer
-{
-    [BDHttpServerManager startHttpServer:nil];
+- (void)startHttpServer {
+    [HSDHttpServerManager startHttpServer:nil];
     
-    self.siteLabel.text = [BDHttpServerManager fetchAlternateServerSites];
+    self.siteLabel.text = [HSDHttpServerManager fetchAlternateServerSites];
 }
 
-- (void)stopHttpServer
-{
-    [BDHttpServerManager stopHttpServer];
+- (void)stopHttpServer {
+    [HSDHttpServerManager stopHttpServer];
     
     self.siteLabel.text = @"";
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

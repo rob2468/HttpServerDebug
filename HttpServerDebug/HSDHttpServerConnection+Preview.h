@@ -1,14 +1,14 @@
 //
-//  BDHttpServerConnection+Preview.h
-//  BDPhoneBrowser
+//  HSDHttpServerConnection+Preview.h
+//  HttpServerDebug
 //
 //  Created by chenjun on 03/08/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "BDHttpServerConnection.h"
+#import "HSDHttpServerConnection.h"
 
-@interface BDHttpServerConnection (Preview)
+@interface HSDHttpServerConnection (Preview)
 
 - (NSObject<HTTPResponse> *)fetchFilePreviewResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path;
 
