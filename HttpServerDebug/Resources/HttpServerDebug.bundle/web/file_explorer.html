@@ -132,28 +132,6 @@ var allData;
     rootDirXHR.send(null);
 })();
 
-/**
- *  @param dirData  Array, items in the directory
- *  @param dirIdx  directory index, 0-index
- *  @return String, html string
- */
-function constructDirectoryHTML(dirData, dirIdx) {
-    var htmlStr;
-    var itemNum = dirData.length;
-    var item;       // an item in the directory
-    if (itemNum > 0) {
-        htmlStr = '<div class="directory-container"><ul>';
-        for (var i = 0; i < itemNum; i++) {
-            item = dirData[i];
-            if (item) {
-                htmlStr += constructDirectoryItemHTML(item, dirIdx, i);
-            }
-        }
-        htmlStr += '</ul></div>';
-    }
-    return htmlStr;
-}
-
 var clickTimerOut;
 function onItemClicked(element) {
     if (clickTimerOut) {
@@ -250,19 +228,39 @@ function onItemDoubleClicked(element) {
                 if (dirXHR.status === 200) {
                     var responseText = dirXHR.responseText;
                     var tmpDirData = JSON.parse(responseText);
-                    if (tmpDirData.length > 0) {
-                        // save data
-                        allData.push(tmpDirData);
-                        // construct html
-                        var htmlStr = constructDirectoryHTML(tmpDirData, section + 1);
-                        var fileExpEle = document.getElementById('file-explorer');
-                        fileExpEle.insertAdjacentHTML('beforeend', htmlStr);
+                    if (tmpDirData.length == 0) {
+                        tmpDirData = new Array();
                     }
+                    // save data
+                    allData.push(tmpDirData);
+                    // construct html
+                    var htmlStr = constructDirectoryHTML(tmpDirData, section + 1);
+                    var fileExpEle = document.getElementById('file-explorer');
+                    fileExpEle.insertAdjacentHTML('beforeend', htmlStr);
                 }
             }
         };
         dirXHR.send(null);
     }
+}
+
+/**
+ *  @param dirData  Array, items in the directory
+ *  @param dirIdx  directory index, 0-index
+ *  @return String, html string
+ */
+function constructDirectoryHTML(dirData, dirIdx) {
+    var itemNum = dirData.length;
+    var item;       // an item in the directory
+    var htmlStr = '<div class="directory-container"><ul>';
+    for (var i = 0; i < itemNum; i++) {
+        item = dirData[i];
+        if (item) {
+            htmlStr += constructDirectoryItemHTML(item, dirIdx, i);
+        }
+    }
+    htmlStr += '</ul></div>';
+    return htmlStr;
 }
 
 /**
