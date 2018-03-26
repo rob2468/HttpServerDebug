@@ -52,7 +52,7 @@ div.split-handler {
     border: 1px solid transparent;
 }
 .directory-container li:hover {
-    border: 1px solid #00f;
+    border: 1px solid #0069D9;
 }
 .directory-container img.icon {
     display: inline-block;
@@ -81,6 +81,9 @@ div.split-handler {
 .directory-container div.split-handler {
     right: 0;
     border-right: 1px solid #E0E0E0;
+}
+#property-sidebar div.content-container {
+    margin: 0 0 0 1px;
 }
 #property-sidebar img.icon {
     content: url(resources/file-icon.png);
@@ -243,8 +246,8 @@ function onItemDoubleClicked(element) {
                 if (dirXHR.status === 200) {
                     var responseText = dirXHR.responseText;
                     var tmpDirData = JSON.parse(responseText);
-                    if (tmpDirData.length == 0) {
-                        tmpDirData = new Array();
+                    if (tmpDirData.length === 0) {
+                        tmpDirData = [];
                     }
                     // save data
                     allData.push(tmpDirData);
@@ -385,8 +388,8 @@ function initResizeDrag(event) {
 function doResizeDrag(event) {
     // calculate target element width and modify views
     var sidebarEle = document.getElementById('property-sidebar');
-    if (targetResizeEle == sidebarEle) {
-        var widthStr = (startResizeWidth - event.clientX + startResizeX) + 'px'
+    if (targetResizeEle === sidebarEle) {
+        var widthStr = (startResizeWidth - event.clientX + startResizeX) + 'px';
         var fileExpEle = document.getElementById('file-explorer');
 
         targetResizeEle.style.width = widthStr;
