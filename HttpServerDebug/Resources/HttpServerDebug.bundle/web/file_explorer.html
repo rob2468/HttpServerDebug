@@ -50,6 +50,12 @@ div.split-handler {
     position: relative;
     height: 26px;
     border: 1px solid transparent;
+    color: #000;
+    background-color: #0000;
+}
+.directory-container li.selected {
+    color: #fff;
+    background-color: #0069D9;
 }
 .directory-container li:hover {
     border: 1px solid #0069D9;
@@ -115,10 +121,25 @@ div.split-handler {
     <div class="content-container"></div>
 </div>
 <script type="text/javascript">
+/* Data Model */
+var DirectoryContainerItem = {
+    /**
+     *  create one directory container instance
+     *  @param dirData  Array, sub-directories and files
+     */
+    createInstance: function (dirData) {
+        var directoryContainerItem = {};
+
+        directoryContainerItem.items = dirData; // sub-directories and files
+        directoryContainerItem.selectedIdx = -1; // user selected item index, 0-index (-1: default value, no item selected)
+
+        return directoryContainerItem;
+    }
+};
+
 /**
- *  Two-dimensional array:
- *      directory containers,
- *          files
+ *  Array, all directory containers
+ *      DirectoryContainerItem instance
  */
 var allData;
 
@@ -138,7 +159,7 @@ var allData;
                 rootDirData = JSON.parse(responseText);
                 if (rootDirData.length > 0) {
                     // save data
-                    allData = [rootDirData];
+                    allData = [DirectoryContainerItem.createInstance(rootDirData)];
                     // construct html
                     htmlStr = constructDirectoryHTML(rootDirData, 0);
                     fileExpEle = document.getElementById('file-explorer');
@@ -163,11 +184,14 @@ function onItemClicked(element) {
         row = parseInt(row, 10);
         var section = separatedArr.pop();
         section = parseInt(section, 10);
-        var itemList = allData[section];
+        var itemList = allData[section].items;
         var item = itemList[row];
         var isDir = item.is_directory;
         var fileName = item.file_name;
         var filePath = item.file_path;
+
+        // update selected states
+        updateSelectedState(section, row);
 
         // hide property side bar
         hidePropertySidebar();
@@ -208,13 +232,16 @@ function onItemDoubleClicked(element) {
     row = parseInt(row, 10);
     var section = separatedArr.pop();
     section = parseInt(section, 10);
-    var itemList = allData[section];
+    var itemList = allData[section].items;
     var item = itemList[row];
     var isDir = item.is_directory;
     var fileName = item.file_name;
     var filePath = item.file_path;
 
-        // hide property side bar
+    // update selected states
+    updateSelectedState(section, row);
+
+    // hide property side bar
     hidePropertySidebar();
 
     // remove no longer needed data and view
@@ -250,7 +277,7 @@ function onItemDoubleClicked(element) {
                         tmpDirData = [];
                     }
                     // save data
-                    allData.push(tmpDirData);
+                    allData.push(DirectoryContainerItem.createInstance(tmpDirData));
                     // construct html
                     var htmlStr = constructDirectoryHTML(tmpDirData, section + 1);
                     var fileExpEle = document.getElementById('file-explorer');
@@ -406,6 +433,25 @@ function doResizeDrag(event) {
 function stopResizeDrag(event) {
     document.documentElement.removeEventListener('mousemove', doResizeDrag, false);
     document.documentElement.removeEventListener('mouseup', stopResizeDrag, false);
+}
+
+/**
+ *  update item selected states
+ */
+function updateSelectedState(section, row) {
+    var directoryContainerItem = allData[section];
+    var oldSelectedIdx = directoryContainerItem.selectedIdx;
+    var selectedEle;
+
+    // update data
+    directoryContainerItem.selectedIdx = row;
+    // update views
+    if (oldSelectedIdx !== -1) {
+        selectedEle = document.getElementById('directory-container-' + section + '-' + oldSelectedIdx);
+        selectedEle.classList.remove('selected');
+    }
+    selectedEle = document.getElementById('directory-container-' + section + '-' + row);
+    selectedEle.classList.add('selected');
 }
 
 </script>

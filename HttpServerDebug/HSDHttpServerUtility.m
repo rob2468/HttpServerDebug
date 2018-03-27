@@ -69,6 +69,8 @@
 }
 
 + (NSString *)fetchContentTypeWithFilePathExtension:(NSString *)pathExtension {
+    pathExtension = [pathExtension lowercaseString];
+
     NSString *contentType = @"text/plain;charset=utf-8";
     if ([pathExtension isEqualToString:@"png"]) {
         contentType = @"image/png";
