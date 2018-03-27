@@ -349,6 +349,7 @@ function showPropertySidebar(item, attrs) {
     // parse data
     var isDir = item.is_directory;
     var fileName = item.file_name;
+    var filePath = item.file_path;
     var fileSize = attrs.file_size;
     var creationTime = attrs.creation_time;
     var modificationTime = attrs.modification_time;
@@ -367,6 +368,7 @@ function showPropertySidebar(item, attrs) {
     htmlStr += '<p>' + fileSize + '</p>';
     htmlStr += '<p>创建时间：' + creationTime + '</p>';
     htmlStr += '<p>修改时间：' + modificationTime + '</p>';
+    htmlStr += '<p>文件路径：' + filePath + '</p>';
     propertySidebarEle.getElementsByClassName('content-container')[0].innerHTML = htmlStr;
 }
 
@@ -437,6 +439,8 @@ function stopResizeDrag(event) {
 
 /**
  *  update item selected states
+ *  @param section  selected section
+ *  @param row  selected row
  */
 function updateSelectedState(section, row) {
     var directoryContainerItem = allData[section];
