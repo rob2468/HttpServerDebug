@@ -251,22 +251,32 @@
     CGFloat alpha = view.alpha;
     // backgroundColor
     UIColor *backgroundColor = view.backgroundColor;
-    CGFloat red, green, blue, a;
-    BOOL suc = [backgroundColor getRed:&red green:&green blue:&blue alpha:&a];
     NSDictionary *backgroundColorDict;
-    if (suc) {
-        backgroundColorDict =
-        @{
-          @"r": @(red * 255),
-          @"g": @(green * 255),
-          @"b": @(blue * 255),
-          @"a": @(a)
-          };
-    } else {
+    if (!backgroundColor) {
         backgroundColorDict =
         @{
           @"r": @"nil color"
           };
+    } else {
+        CGFloat red, green, blue, a;
+        BOOL suc = [backgroundColor getRed:&red green:&green blue:&blue alpha:&a];
+        if (suc) {
+            backgroundColorDict =
+            @{
+              @"r": @(red * 255),
+              @"g": @(green * 255),
+              @"b": @(blue * 255),
+              @"a": @(a)
+              };
+        } else {
+            CGColorSpaceRef colorSpace = CGColorGetColorSpace(backgroundColor.CGColor);
+            NSString *str = [NSString stringWithFormat:@"%@", colorSpace];
+            str = str.length > 0 ? str : @"";
+            backgroundColorDict =
+            @{
+              @"r": str
+              };
+        }
     }
     
     // construct data

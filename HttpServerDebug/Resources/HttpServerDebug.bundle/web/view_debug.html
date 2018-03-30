@@ -48,15 +48,16 @@ body {
     top: 0;
     bottom: 0;
     width: 3px;
-    background-color: #848484;
     height: 100%;
     cursor: col-resize;
 }
 .navigation-sidebar .split-handler {
     right: 0;
+    border-right: 1px solid #e0e0e0;
 }
 .property-sidebar .split-handler {
     left: 0;
+    border-left: 1px solid #e0e0e0;
 }
 #view-hierarchy-list ul {
     padding: 0 0 0 10px;
@@ -101,7 +102,7 @@ div.view-hierarchy-area {
     bottom: 0;
     left: 30%;
     right: 30%;
-    background-color: #F0F0F0;
+    background-color: #f0f0f0;
 }
 #canvas-toolbar .control-tool {
     display: inline-block;
@@ -313,7 +314,7 @@ function generateViewPropertyListHTML(viewData) {
     // backgroundColor
     var red = backgroundColor['r'];
     if (typeof red === 'string') {
-        // nil color
+        // background color description
         ulStr += '<li>Background: ' + red + '</li>';
     } else {
         // rgba data
