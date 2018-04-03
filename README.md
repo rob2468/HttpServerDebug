@@ -1,10 +1,41 @@
-# HttpServerDebug
+# HttpServerDebug (HSD)
 
-HttpServerDebug offers debug utilities (exploring file system, inspecting database, etc.) with the help of http server. HttpServerDebug will start http server in your device, and you can connect to the server through user agents.
+## Overview
+
+HSD offers debug utilities (exploring file system, inspecting database, etc.) with the help of http server. HSD will start http server in your device, and you can connect to the server through user agents in the local area network.
+
+## Access HSD
+
+As HSD is started as a http server in your device, you can access it just like browsing normal websites in your favorite web browser. HSD also provides some useful server apis, you can get these apis' description from Documents/ Directory.
+
+HSD provides a method to get the address which is the combination of protocol (http), ip address and port number, like "http://x.x.x.x:xxxx". You can provide this information in a custome user interface. Or you can set a static port number, and get ip address from your iOS device's Setting app, then combine all these parts together.
+
+You may feel annoying to access HSD by typing ip addresses. You are able to access HSD with meaningful domain names.
+
+When HSD is started, the builtin bonjour broadcasting of `_http._tcp` type service is also published. You can browse for instances of service type `_http._tcp` in domain `local.`. When you get the instance name, you can lookup the target hostname to contact. In the following example, we use the `dns-sd` tool to browse and lookup the target hostname. As the outputs shown, you can now connect HSD with "chenjundeiPhone-7.local.:5555" instead of something like "http://x.x.x.x:xxxx".
+
+```shell
+chenjundeMacBook-Pro:~ chenjun$ dns-sd -B _http
+Browsing for _http._tcp
+DATE: ---Wed 04 Apr 2018---
+10:10:14.738  ...STARTING...
+Timestamp     A/R    Flags  if Domain               Service Type         Instance Name
+10:10:14.738  Add        2  13 local.               _http._tcp.          陈军的iPhone 7
+
+chenjundeMacBook-Pro:~ chenjun$ dns-sd -L "陈军的iPhone 7" _http
+Lookup 陈军的iPhone 7._http._tcp.local
+DATE: ---Wed 04 Apr 2018---
+10:10:45.715  ...STARTING...
+10:10:45.879  陈军的iPhone\0327._http._tcp.local. can be reached at chenjundeiPhone-7.local.:5555 (interface 13)
+```
+
+## Packaging
 
 In the root directory, there is the "archive.sh" script. `cd` to the root directory, then `bash archive.sh`. This script will generate files in the "output" folder in the same directory. The "output" folder contains three kinds of files, headers, library and bundle. These are all files that needed.
 
 You may need add libxml2 to your project after integrating HttpServerDebug. In "Build Phases -> Link Binary With Libraries", add libxml2.
+
+## Customized packaging
 
 HttpServerDebug utilizes some third party libraries, CocoaAsyncSocket, CocoaLumberjack, CocoaHttpServer and FMDB. "archive.sh" script will compile all source files and integrate all contents in one static library, libHttpServerDebug.a. But sometimes you may want to exclude some third party libraries if your project has already import. You can update "archive.sh". For example, if you want to remove FMDB, set `FMDB_INCLUDE=0`.
 
