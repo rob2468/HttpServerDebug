@@ -4,6 +4,16 @@
 
 HSD offers debug utilities (exploring file system, inspecting database, etc.) with the help of http server. HSD will start http server in your device, and you can connect to the server through user agents in the local area network.
 
+## Demo screenshot
+
+![index](http://ozel6a0l7.bkt.clouddn.com/hsd-demo-index.png)
+
+![file explorer](http://ozel6a0l7.bkt.clouddn.com/hsd-demo-file-explorer.png)
+
+![database inspect](http://ozel6a0l7.bkt.clouddn.com/hsd-demo-database-inspect.png)
+
+![view debug](http://ozel6a0l7.bkt.clouddn.com/hsd-demo-view-debug.gif)
+
 ## Access HSD
 
 As HSD is started as a http server in your device, you can access it just like browsing normal websites in your favorite web browser. HSD also provides some useful server apis, you can get these apis' description from Documents/ Directory.
