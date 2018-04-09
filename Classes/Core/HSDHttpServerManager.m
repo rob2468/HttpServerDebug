@@ -59,7 +59,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     
 #ifdef DEBUG
     // develop web in simulator, use files in the project bundle directly
-    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/Classes/Resources/HttpServerDebug.bundle/web";
 #endif
     
     [manager.server setDocumentRoot:webPath];
