@@ -1,14 +1,14 @@
 //
-//  HSDHttpServerConnection+Explorer.h
+//  HSDHttpConnection+Explorer.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 02/08/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "HSDHttpServerConnection.h"
+#import "HSDHttpConnection.h"
 
-@interface HSDHttpServerConnection (Explorer)
+@interface HSDHttpConnection (Explorer)
 
 /**
  *  request html

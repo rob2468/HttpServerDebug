@@ -7,7 +7,7 @@
 //
 
 #import "HSDHttpServerControlPannelController.h"
-#import "HSDHttpServerManager.h"
+#import "HSDManager.h"
 
 @interface HSDHttpServerControlPannelController ()
 
@@ -36,8 +36,8 @@
     self.siteLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.siteLabel.textColor = [UIColor blackColor];
     self.siteLabel.numberOfLines = 0;
-    if ([HSDHttpServerManager isHttpServerRunning]) {
-        self.siteLabel.text = [HSDHttpServerManager fetchAlternateServerSites];
+    if ([HSDManager isHttpServerRunning]) {
+        self.siteLabel.text = [HSDManager fetchAlternateServerSites];
     }
     [self.view addSubview:self.siteLabel];
     
@@ -61,13 +61,13 @@
 }
 
 - (void)startHttpServer {
-    [HSDHttpServerManager startHttpServer:nil];
+    [HSDManager startHttpServer:nil];
     
-    self.siteLabel.text = [HSDHttpServerManager fetchAlternateServerSites];
+    self.siteLabel.text = [HSDManager fetchAlternateServerSites];
 }
 
 - (void)stopHttpServer {
-    [HSDHttpServerManager stopHttpServer];
+    [HSDManager stopHttpServer];
     
     self.siteLabel.text = @"";
 }

@@ -1,5 +1,5 @@
 //
-//  HSDHttpServerManager.h
+//  HSDManager.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 07/07/2017.
@@ -7,11 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-@protocol HSDHttpServerDebugDelegate;
+@protocol HSDDelegate;
 
-@interface HSDHttpServerManager : NSObject
-
-+ (instancetype)sharedInstance;
+@interface HSDManager : NSObject
 
 + (BOOL)isHttpServerRunning;
 
@@ -30,8 +28,8 @@
 
 + (NSString *)fetchDatabaseFilePath;
 
-+ (void)updateHSDDelegate:(id<HSDHttpServerDebugDelegate>)delegate;
++ (void)updateHSDDelegate:(id<HSDDelegate>)delegate;
 
-+ (id<HSDHttpServerDebugDelegate>)fetchHSDDelegate;
++ (id<HSDDelegate>)fetchHSDDelegate;
 
 @end

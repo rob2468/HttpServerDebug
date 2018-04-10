@@ -1,32 +1,32 @@
 //
-//  HSDHttpServerConnection.m
+//  HSDHttpConnection.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 22/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "HSDHttpServerConnection.h"
-#import "HSDHttpServerDefine.h"
+#import "HSDHttpConnection.h"
+#import "HSDDefine.h"
 #import "HTTPFileResponse.h"
-#import "HSDHttpServerConnection+Explorer.h"
-#import "HSDHttpServerConnection+Database.h"
-#import "HSDHttpServerConnection+Preview.h"
-#import "HSDHttpServerConnection+View.h"
-#import "HSDHttpServerConnection+Info.h"
+#import "HSDHttpConnection+Explorer.h"
+#import "HSDHttpConnection+Database.h"
+#import "HSDHttpConnection+Preview.h"
+#import "HSDHttpConnection+View.h"
+#import "HSDHttpConnection+Info.h"
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
-#import "HSDHttpServerManager.h"
-#import "HSDHttpServerUtility.h"
+#import "HSDManager.h"
+#import "HSDUtility.h"
 
-@interface HSDHttpServerConnection ()
+@interface HSDHttpConnection ()
 
 @property (nonatomic, strong) MultipartFormDataParser *parser;
 
 @end
 
-@implementation HSDHttpServerConnection
+@implementation HSDHttpConnection
 
 #pragma mark -- override methods
 
@@ -107,7 +107,7 @@
     } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
         // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
-        NSString *dbPath = [HSDHttpServerManager fetchDatabaseFilePath];
+        NSString *dbPath = [HSDManager fetchDatabaseFilePath];
         dbPath = dbPath.length > 0? dbPath: @"";
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": dbPath};
@@ -115,10 +115,10 @@
     } else if ([firstPath isEqualToString:@"resources"]) {
         // set resources Content-Type manually
         NSString *pathExtension = [[pathComps lastObject] pathExtension];
-        NSString *contentType = [HSDHttpServerUtility fetchContentTypeWithFilePathExtension:pathExtension];
+        NSString *contentType = [HSDUtility fetchContentTypeWithFilePathExtension:pathExtension];
         NSString *dataPath = [[config documentRoot] stringByAppendingPathComponent:path];
         NSData *data = [[NSData alloc] initWithContentsOfFile:dataPath];
-        response = [[HSDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
+        response = [[HSDHttpDataResponse alloc] initWithData:data contentType:contentType];
     } else {
         response = [super httpResponseForMethod:method URI:path];
     }
@@ -136,13 +136,13 @@
 
 @end
 
-@interface HSDHttpServerDataResponse ()
+@interface HSDHttpDataResponse ()
 
 @property (nonatomic, copy) NSString *contentType;
 
 @end
 
-@implementation HSDHttpServerDataResponse
+@implementation HSDHttpDataResponse
 
 - (instancetype)initWithData:(NSData *)data contentType:(NSString *)type {
     self = [super initWithData:data];

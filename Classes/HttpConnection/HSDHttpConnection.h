@@ -1,5 +1,5 @@
 //
-//  HSDHttpServerConnection.h
+//  HSDHttpConnection.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 22/07/2017.
@@ -9,13 +9,13 @@
 #import "HTTPConnection.h"
 #import "HTTPDataResponse.h"
 
-@interface HSDHttpServerConnection : HTTPConnection
+@interface HSDHttpConnection : HTTPConnection
 
 @property (strong, nonatomic) NSFileHandle *storeFile;
 
 @end
 
-@interface HSDHttpServerDataResponse : HTTPDataResponse
+@interface HSDHttpDataResponse : HTTPDataResponse
 
 - (instancetype)initWithData:(NSData *)data contentType:(NSString *)type;
 

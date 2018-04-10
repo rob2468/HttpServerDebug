@@ -1,12 +1,12 @@
 //
-//  HSDHttpServerUtility.m
+//  HSDUtility.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 18/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "HSDHttpServerUtility.h"
+#import "HSDUtility.h"
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 #include <net/if.h>
@@ -17,7 +17,7 @@
 #define IP_ADDR_IPv4    @"ipv4"
 #define IP_ADDR_IPv6    @"ipv6"
 
-@implementation HSDHttpServerUtility
+@implementation HSDUtility
 
 + (NSArray *)fetchLocalAlternateIPAddresses {
     NSMutableDictionary *addresses = [NSMutableDictionary dictionaryWithCapacity:8];

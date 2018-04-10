@@ -1,21 +1,21 @@
 //
-//  HSDHttpServerConnection+Preview.m
+//  HSDHttpConnection+Preview.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 03/08/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "HSDHttpServerConnection+Preview.h"
+#import "HSDHttpConnection+Preview.h"
 #import "HTTPDataResponse.h"
-#import "HSDHttpServerUtility.h"
+#import "HSDUtility.h"
 #import "ZipArchive.h"
 
-@implementation HSDHttpServerConnection (Preview)
+@implementation HSDHttpConnection (Preview)
 
 - (NSObject<HTTPResponse> *)fetchFilePreviewResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path
 {
-    HSDHttpServerDataResponse *response;
+    HSDHttpDataResponse *response;
     NSString *contentType = @"text/plain;charset=utf-8";
     NSString *filePath = [params objectForKey:@"file_path"];
     if (filePath.length > 0) {
@@ -28,7 +28,7 @@
         } else {
             // response content type
             NSString *extension = filePath.pathExtension;
-            contentType = [HSDHttpServerUtility fetchContentTypeWithFilePathExtension:extension];
+            contentType = [HSDUtility fetchContentTypeWithFilePathExtension:extension];
             
             // generate response data
             if (![filePath hasPrefix:@"/"]) {
@@ -73,13 +73,13 @@
             }
         }
         if (data) {
-            response = [[HSDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
+            response = [[HSDHttpDataResponse alloc] initWithData:data contentType:contentType];
         }
     }
     if (!response) {
         NSString *prompt = @"文件不存在或不支持预览";
         NSData *data = [prompt dataUsingEncoding:NSUTF8StringEncoding];
-        response = [[HSDHttpServerDataResponse alloc] initWithData:data contentType:contentType];
+        response = [[HSDHttpDataResponse alloc] initWithData:data contentType:contentType];
     }
     return response;
 }

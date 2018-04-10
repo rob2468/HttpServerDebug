@@ -6,39 +6,39 @@
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "HSDHttpServerManager.h"
+#import "HSDManager.h"
 #import "HTTPServer.h"
-#import "HSDHttpServerUtility.h"
-#import "HSDHttpServerConnection.h"
-#import "HSDHttpServerDebugDelegate.h"
+#import "HSDUtility.h"
+#import "HSDHttpConnection.h"
+#import "HSDDelegate.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
-@interface HSDHttpServerManager ()
+@interface HSDManager ()
 
 @property (strong, nonatomic) HTTPServer *server;
 @property (copy, nonatomic) NSString *dbFilePath;   // default inspect db file path
-@property (weak, nonatomic) id<HSDHttpServerDebugDelegate> delegate;
+@property (weak, nonatomic) id<HSDDelegate> delegate;
 
 @end
 
-@implementation HSDHttpServerManager
+@implementation HSDManager
 
 - (void)dealloc {
     [self.server stop];
 }
 
 + (instancetype)sharedInstance {
-    static HSDHttpServerManager *instance;
+    static HSDManager *instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[HSDHttpServerManager alloc] init];
+        instance = [[HSDManager alloc] init];
     });
     return instance;
 }
 
 + (BOOL)isHttpServerRunning {
-    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
+    HSDManager *manager = [HSDManager sharedInstance];
     HTTPServer *server = manager.server;
     BOOL isRunning = server.isRunning;
     return isRunning;
@@ -53,7 +53,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
     NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
     
-    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
+    HSDManager *manager = [HSDManager sharedInstance];
     manager.server = [[HTTPServer alloc] init];
     [manager.server setType:@"_http._tcp."];
     
@@ -66,7 +66,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     if (port.length > 0) {
         [manager.server setPort:port.integerValue];
     }
-    [manager.server setConnectionClass:[HSDHttpServerConnection class]];
+    [manager.server setConnectionClass:[HSDHttpConnection class]];
     NSError *error;
     BOOL isSucc = [manager.server start:&error];
     
@@ -79,34 +79,34 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 }
 
 + (void)stopHttpServer {
-    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
+    HSDManager *manager = [HSDManager sharedInstance];
     [manager.server stop];
     
     NSLog(@"http server stopped");
 }
 
 + (void)updateDefaultInspectDBFilePath:(NSString *)path {
-    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
+    HSDManager *manager = [HSDManager sharedInstance];
     manager.dbFilePath = path;
 }
 
 + (NSString *)fetchDatabaseFilePath {
-    return [HSDHttpServerManager sharedInstance].dbFilePath;
+    return [HSDManager sharedInstance].dbFilePath;
 }
 
-+ (void)updateHSDDelegate:(id<HSDHttpServerDebugDelegate>)delegate {
-    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
++ (void)updateHSDDelegate:(id<HSDDelegate>)delegate {
+    HSDManager *manager = [HSDManager sharedInstance];
     manager.delegate = delegate;
 }
 
-+ (id<HSDHttpServerDebugDelegate>)fetchHSDDelegate {
-    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
++ (id<HSDDelegate>)fetchHSDDelegate {
+    HSDManager *manager = [HSDManager sharedInstance];
     return manager.delegate;
 }
 
 + (NSString *)fetchAlternateServerSites {
-    NSArray *ipAddresses = [HSDHttpServerUtility fetchLocalAlternateIPAddresses];
-    HSDHttpServerManager *manager = [HSDHttpServerManager sharedInstance];
+    NSArray *ipAddresses = [HSDUtility fetchLocalAlternateIPAddresses];
+    HSDManager *manager = [HSDManager sharedInstance];
     UInt16 port = manager.server.listeningPort;
     
     NSString *serverSites = @"";

@@ -1,17 +1,17 @@
 //
-//  HSDHttpServerConnection+Explorer.m
+//  HSDHttpConnection+Explorer.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 02/08/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "HSDHttpServerConnection+Explorer.h"
+#import "HSDHttpConnection+Explorer.h"
 #import "HTTPDynamicFileResponse.h"
-#import "HSDHttpServerDefine.h"
-#import "HSDHttpServerManager.h"
+#import "HSDDefine.h"
+#import "HSDManager.h"
 
-@implementation HSDHttpServerConnection (Explorer)
+@implementation HSDHttpConnection (Explorer)
 
 #pragma mark - Response
 

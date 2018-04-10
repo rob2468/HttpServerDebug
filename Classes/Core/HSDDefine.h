@@ -1,5 +1,5 @@
 //
-//  HSDHttpServerDefine.h
+//  HSDDefine.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 22/07/2017.
@@ -17,6 +17,6 @@ extern NSString *const kHSDHttpServerViewDebug;
 
 extern NSString *const kHSDHttpServerTemplateSeparator;
 
-@interface HSDHttpServerDefine : NSObject
+@interface HSDDefine : NSObject
 
 @end

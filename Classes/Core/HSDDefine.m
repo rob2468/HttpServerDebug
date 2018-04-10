@@ -1,12 +1,12 @@
 //
-//  HSDHttpServerDefine.m
+//  HSDDefine.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 22/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "HSDHttpServerDefine.h"
+#import "HSDDefine.h"
 
 NSString *const kHSDHttpServerFileExplorer = @"file_explorer";
 NSString *const kHSDHttpServerDBInspect = @"database_inspect";
@@ -16,6 +16,6 @@ NSString *const kHSDHttpServerViewDebug = @"view_debug";
 
 NSString *const kHSDHttpServerTemplateSeparator = @"%%";
 
-@implementation HSDHttpServerDefine
+@implementation HSDDefine
 
 @end

@@ -1,19 +1,19 @@
 //
-//  HSDHttpServerConnection+Database.m
+//  HSDHttpConnection+Database.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 26/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "HSDHttpServerConnection+Database.h"
+#import "HSDHttpConnection+Database.h"
 #import "HTTPDataResponse.h"
-#import "HSDHttpServerDefine.h"
+#import "HSDDefine.h"
 #import "FMDB.h"
-#import "HSDHttpServerManager.h"
+#import "HSDManager.h"
 #import "HTTPDynamicFileResponse.h"
 
-@implementation HSDHttpServerConnection (Database)
+@implementation HSDHttpConnection (Database)
 
 - (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params {
     NSObject<HTTPResponse> *response;

@@ -1,14 +1,14 @@
 //
-//  HSDHttpServerConnection+Database.h
+//  HSDHttpConnection+Database.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 26/07/2017.
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import "HSDHttpServerConnection.h"
+#import "HSDHttpConnection.h"
 
-@interface HSDHttpServerConnection (Database)
+@interface HSDHttpConnection (Database)
 
 /**
  *  fetch html page

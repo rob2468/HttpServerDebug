@@ -1,5 +1,5 @@
 //
-//  HSDHttpServerUtility.h
+//  HSDUtility.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 18/07/2017.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface HSDHttpServerUtility : NSObject
+@interface HSDUtility : NSObject
 
 /**
  *  local ip address

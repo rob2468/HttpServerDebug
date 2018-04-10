@@ -1,17 +1,17 @@
 //
-//  HSDHttpServerConnection+Info.m
+//  HSDHttpConnection+Info.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 2017/12/26.
 //  Copyright © 2017年 chenjun. All rights reserved.
 //
 
-#import "HSDHttpServerConnection+Info.h"
-#import "HSDHttpServerManager.h"
-#import "HSDHttpServerDebugDelegate.h"
+#import "HSDHttpConnection+Info.h"
+#import "HSDManager.h"
+#import "HSDDelegate.h"
 #import "HTTPMessage.h"
 
-@implementation HSDHttpServerConnection (Info)
+@implementation HSDHttpConnection (Info)
 
 - (NSObject<HTTPResponse> *)fetchSendInfoResponseForMethod:(NSString *)method URI:(NSString *)path {
     return [super httpResponseForMethod:method URI:path];
@@ -35,7 +35,7 @@
         }
     }
     // forward to the delegate
-    id<HSDHttpServerDebugDelegate> delegate = [HSDHttpServerManager fetchHSDDelegate];
+    id<HSDDelegate> delegate = [HSDManager fetchHSDDelegate];
     if ([delegate respondsToSelector:@selector(onHSDReceiveInfo:)]) {
         NSDictionary *result = [delegate onHSDReceiveInfo:info];
         if (result) {

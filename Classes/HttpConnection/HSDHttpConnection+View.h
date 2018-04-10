@@ -1,14 +1,14 @@
 //
-//  HSDHttpServerConnection+View.h
+//  HSDHttpConnection+View.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 2017/10/30.
 //  Copyright © 2017年 chenjun. All rights reserved.
 //
 
-#import "HSDHttpServerConnection.h"
+#import "HSDHttpConnection.h"
 
-@interface HSDHttpServerConnection (View)
+@interface HSDHttpConnection (View)
 
 - (NSObject<HTTPResponse> *)fetchViewDebugResponseForMethod:(NSString *)method URI:(NSString *)path;
 
