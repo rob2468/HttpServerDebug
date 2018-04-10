@@ -27,6 +27,9 @@ if ('WebSocket' in window) {
         var stateEle = document.getElementById('connection_state');
         stateEle.innerHTML = 'DISCONNECTED';
     };
+    ws.onerror = function () {
+        
+    };
 } else {
     alert('Browser doesn\'t support WebSocket!');
 }

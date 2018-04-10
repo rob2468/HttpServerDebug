@@ -11,6 +11,7 @@
 #import "HSDUtility.h"
 #import "HSDHttpConnection.h"
 #import "HSDDelegate.h"
+#import "HSDConsoleLogController.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
@@ -19,6 +20,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 @property (strong, nonatomic) HTTPServer *server;
 @property (copy, nonatomic) NSString *dbFilePath;   // default inspect db file path
 @property (weak, nonatomic) id<HSDDelegate> delegate;
+@property (nonatomic, strong) HSDConsoleLogController *consoleLogController;
 
 @end
 
@@ -121,10 +123,19 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return serverSites;
 }
 
-+ (NSString *)fetchWebUploadDirectoryPath
-{
++ (NSString *)fetchWebUploadDirectoryPath {
     NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:@"web_upload"];
     return path;
+}
+
++ (HSDConsoleLogController *)fetchTheConsoleLogController {
+    HSDManager *manager = [HSDManager sharedInstance];
+    HSDConsoleLogController *ctrl = manager.consoleLogController;
+    if (!ctrl) {
+        ctrl = [[HSDConsoleLogController alloc] init];
+        manager.consoleLogController = ctrl;
+    }
+    return ctrl;
 }
 
 @end

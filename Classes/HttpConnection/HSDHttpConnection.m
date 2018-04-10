@@ -114,7 +114,7 @@
         // construct WebSocket url
         NSString *webSocketURL = @"";
         if (requestHost.length > 0) {
-            webSocketURL = [NSString stringWithFormat:@"ws://%@/service", requestHost];
+            webSocketURL = [NSString stringWithFormat:@"ws://%@", requestHost];
         }
         NSDictionary *replacementDict =
         @{@"WEBSOCKET_URL": webSocketURL};

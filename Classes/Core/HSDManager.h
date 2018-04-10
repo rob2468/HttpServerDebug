@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 @protocol HSDDelegate;
+@class HSDConsoleLogController;
 
 @interface HSDManager : NSObject
 
@@ -31,5 +32,10 @@
 + (void)updateHSDDelegate:(id<HSDDelegate>)delegate;
 
 + (id<HSDDelegate>)fetchHSDDelegate;
+
+/**
+ *  return the HSDConsoleLogController instance
+ */
++ (HSDConsoleLogController *)fetchTheConsoleLogController;
 
 @end

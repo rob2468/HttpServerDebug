@@ -7,18 +7,22 @@
 //
 
 #import "HSDWebSocket.h"
+#import "HSDManager.h"
+#import "HSDConsoleLogController.h"
 
 @implementation HSDWebSocket
 
 - (void)didOpen {
     [super didOpen];
     
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        [NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) {
-            [self sendMessage:[NSString stringWithFormat:@"%@", [NSDate date]]];
-        }];
-
-    });
+    // redirect stderr
+    HSDConsoleLogController *consoleLogController = [HSDManager fetchTheConsoleLogController];
+    [consoleLogController redirectStandardErrorOutput];
+    
+    HSDWebSocket __weak *weakSelf = self;
+    consoleLogController.readCompletionBlock = ^(NSString *logStr) {
+        [weakSelf sendMessage:logStr];
+    };
 }
 
 - (void)didReceiveMessage:(NSString *)msg {
@@ -26,6 +30,10 @@
 
 - (void)didClose {
     [super didClose];
+    
+    // reset stderr
+    HSDConsoleLogController *consoleLogController = [HSDManager fetchTheConsoleLogController];
+    [consoleLogController recoverStandardErrorOutput];
 }
 
 @end
