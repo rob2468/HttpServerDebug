@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>控制台日志</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style type="text/css">
+</style>
+</head>
+<body>
+<p id="connection_state"></p>
+<hr>
+<script type="text/javascript">
+if ('WebSocket' in window) {
+    var ws = new WebSocket('%%WEBSOCKET_URL%%');
+    ws.onopen = function () {
+        var stateEle = document.getElementById('connection_state');
+        stateEle.innerHTML = 'CONNECTED';
+    };
+    ws.onmessage = function (evt) {
+        // alert("received: " + evt.data);
+        var htmlStr = '<p>' + evt.data + '</p>';
+        var bodyEle = document.getElementsByTagName('body')[0];
+        bodyEle.insertAdjacentHTML('beforeend', htmlStr);
+    };
+    ws.onclose = function () {
+        var stateEle = document.getElementById('connection_state');
+        stateEle.innerHTML = 'DISCONNECTED';
+    };
+} else {
+    alert('Browser doesn\'t support WebSocket!');
+}
+</script>
+</body>
+</html>

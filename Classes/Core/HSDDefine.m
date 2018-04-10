@@ -8,13 +8,14 @@
 
 #import "HSDDefine.h"
 
-NSString *const kHSDHttpServerFileExplorer = @"file_explorer";
-NSString *const kHSDHttpServerDBInspect = @"database_inspect";
-NSString *const kHSDHttpServerSendInfo = @"send_info";
-NSString *const kHSDHttpServerFilePreview = @"file_preview";
-NSString *const kHSDHttpServerViewDebug = @"view_debug";
+NSString *const kHSDComponentFileExplorer = @"file_explorer";
+NSString *const kHSDComponentDBInspect = @"database_inspect";
+NSString *const kHSDComponentSendInfo = @"send_info";
+NSString *const kHSDComponentFilePreview = @"file_preview";
+NSString *const kHSDComponentViewDebug = @"view_debug";
+NSString *const kHSDComponentConsoleLog = @"console_log";
 
-NSString *const kHSDHttpServerTemplateSeparator = @"%%";
+NSString *const kHSDTemplateSeparator = @"%%";
 
 @implementation HSDDefine
 

@@ -40,12 +40,12 @@
         [rs close];
         [database close];
         
-        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kHSDHttpServerDBInspect]];
+        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kHSDComponentDBInspect]];
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": dbPath,
           @"SELECT_HTML": selectHtml
           };
-        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDHttpServerTemplateSeparator replacementDictionary:replacementDict];
+        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
     }
     return response;
 }

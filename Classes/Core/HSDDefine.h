@@ -9,13 +9,14 @@
 #import <Foundation/Foundation.h>
 
 // http request path
-extern NSString *const kHSDHttpServerFileExplorer;
-extern NSString *const kHSDHttpServerDBInspect;
-extern NSString *const kHSDHttpServerSendInfo;
-extern NSString *const kHSDHttpServerFilePreview;
-extern NSString *const kHSDHttpServerViewDebug;
+extern NSString *const kHSDComponentFileExplorer;
+extern NSString *const kHSDComponentDBInspect;
+extern NSString *const kHSDComponentSendInfo;
+extern NSString *const kHSDComponentFilePreview;
+extern NSString *const kHSDComponentViewDebug;
+extern NSString *const kHSDComponentConsoleLog;
 
-extern NSString *const kHSDHttpServerTemplateSeparator;
+extern NSString *const kHSDTemplateSeparator;
 
 @interface HSDDefine : NSObject
 

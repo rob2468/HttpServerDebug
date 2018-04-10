@@ -19,6 +19,7 @@
 #import "HTTPDynamicFileResponse.h"
 #import "HSDManager.h"
 #import "HSDUtility.h"
+#import "HSDWebSocket.h"
 
 @interface HSDHttpConnection ()
 
@@ -33,7 +34,7 @@
 - (BOOL)supportsMethod:(NSString *)method atPath:(NSString *)path {
     BOOL isSupported = [super supportsMethod:method atPath:path];
     if ([method isEqualToString:@"POST"]) {
-        if ([path isEqualToString:[NSString stringWithFormat:@"/%@", kHSDHttpServerSendInfo]]) {
+        if ([path isEqualToString:[NSString stringWithFormat:@"/%@", kHSDComponentSendInfo]]) {
             // "/send_info"
             isSupported = YES;
         }
@@ -77,33 +78,47 @@
             }
         }
     }
-    if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDHttpServerFileExplorer]]) {
+    // request host
+    NSString *requestHost = [request headerField:@"Host"];
+
+    if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentFileExplorer]]) {
         // file_explorer.html
         response = [self fetchFileExplorerResponse:params forMethod:method URI:path];
-    } else if ([firstPath isEqualToString:kHSDHttpServerFileExplorer]) {
+    } else if ([firstPath isEqualToString:kHSDComponentFileExplorer]) {
         // file_explorer api
         response = [self fetchFileExplorerAPIResponsePaths:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDHttpServerDBInspect]]) {
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentDBInspect]]) {
         // database_inspect.html
         response = [self fetchDatabaseHTMLResponse:params];
-    } else if ([firstPath isEqualToString:kHSDHttpServerDBInspect]) {
+    } else if ([firstPath isEqualToString:kHSDComponentDBInspect]) {
         // database_inspect api
         response = [self fetchDatabaseAPIResponsePaths:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:kHSDHttpServerFilePreview]) {
+    } else if ([firstPath isEqualToString:kHSDComponentFilePreview]) {
         // file_preview api
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDHttpServerViewDebug]]) {
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentViewDebug]]) {
         // view_debug.html
         response = [self fetchViewDebugResponseForMethod:method URI:path];
-    } else if ([firstPath isEqualToString:kHSDHttpServerViewDebug]) {
+    } else if ([firstPath isEqualToString:kHSDComponentViewDebug]) {
         // view_debug api
         response = [self fetchViewDebugAPIResponsePaths:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDHttpServerSendInfo]]) {
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentSendInfo]]) {
         // send_info.html
         response = [self fetchSendInfoResponseForMethod:method URI:path];
-    } else if ([firstPath isEqualToString:kHSDHttpServerSendInfo]) {
+    } else if ([firstPath isEqualToString:kHSDComponentSendInfo]) {
         // send_info api
         response = [self fetchSendInfoAPIResponseForMethod:method paths:pathComps parameters:params];
+    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentConsoleLog]]) {
+        // console_log.html
+        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"console_log.html"];
+        // construct WebSocket url
+        NSString *webSocketURL = @"";
+        if (requestHost.length > 0) {
+            webSocketURL = [NSString stringWithFormat:@"ws://%@/service", requestHost];
+        }
+        NSDictionary *replacementDict =
+        @{@"WEBSOCKET_URL": webSocketURL};
+        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
     } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
         // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
@@ -111,7 +126,7 @@
         dbPath = dbPath.length > 0? dbPath: @"";
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": dbPath};
-        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDHttpServerTemplateSeparator replacementDictionary:replacementDict];
+        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
     } else if ([firstPath isEqualToString:@"resources"]) {
         // set resources Content-Type manually
         NSString *pathExtension = [[pathComps lastObject] pathExtension];
@@ -123,6 +138,11 @@
         response = [super httpResponseForMethod:method URI:path];
     }
     return response;
+}
+
+- (WebSocket *)webSocketForURI:(NSString *)path {
+    HSDWebSocket *webSocket = [[HSDWebSocket alloc] initWithRequest:request socket:asyncSocket];
+    return webSocket;
 }
 
 - (void)prepareForBodyWithSize:(UInt64)contentLength {
