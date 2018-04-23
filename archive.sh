@@ -16,7 +16,6 @@ OUTPUT_FOLDER_NAME="output"
 BUILD_FOLDER_NAME="build"
 IPHONEOS_SDK="iphoneos"
 IPHONESIMULATOR_SDK="iphonesimulator"
-LIBRARY_NAME="libHttpServerDebug.a"
 
 rm -rf ${OUTPUT_FOLDER_NAME}
 mkdir ${OUTPUT_FOLDER_NAME}
@@ -25,7 +24,7 @@ mkdir ${OUTPUT_FOLDER_NAME}
 build_combine() {
     SDK=$1
     build_cmd='xcodebuild -project "${PROJECT_NAME}.xcodeproj" -configuration ${CONFIGURATION_SETTING} -sdk ${SDK} ONLY_ACTIVE_ARCH=NO'
-    combine_cmd='libtool -static -o "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${SDK}/aggregation.a" "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${SDK}/${LIBRARY_NAME}"'
+    combine_cmd='libtool -static -o "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${SDK}/aggregation.a" "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${SDK}/libHttpServerDebug.a"'
 
     eval ${build_cmd}' -target "HttpServerDebug"'
     if [[ FMDB_INCLUDE -eq 1 ]]; then
@@ -55,13 +54,13 @@ build_combine ${IPHONEOS_SDK}
 build_combine ${IPHONESIMULATOR_SDK}
 
 # Create universal binary file
-lipo -create -output "${OUTPUT_FOLDER_NAME}/${LIBRARY_NAME}" "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${IPHONEOS_SDK}/aggregation.a" "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${IPHONESIMULATOR_SDK}/aggregation.a"
+lipo -create -output "${OUTPUT_FOLDER_NAME}/libHttpServerDebug.a" "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${IPHONEOS_SDK}/aggregation.a" "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${IPHONESIMULATOR_SDK}/aggregation.a"
 
 # Copy header files
 cp -R "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${IPHONEOS_SDK}/include/" "${OUTPUT_FOLDER_NAME}/Headers/"
 
 # Copy bundle
-cp -R "${PROJECT_NAME}/Resources/${PROJECT_NAME}.bundle" "${OUTPUT_FOLDER_NAME}/"
+cp -R "Resources/${PROJECT_NAME}.bundle" "${OUTPUT_FOLDER_NAME}/"
 
 # Copy documents
 cp -R "./Documents" "${OUTPUT_FOLDER_NAME}/"

@@ -37,12 +37,6 @@
 		8FC544651FBAB41500C1DAFC /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544591FBAB3F500C1DAFC /* mztools.c */; };
 		8FC544661FBAB41500C1DAFC /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445B1FBAB3F500C1DAFC /* unzip.c */; };
 		8FC544671FBAB41500C1DAFC /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445D1FBAB3F500C1DAFC /* zip.c */; };
-		8FEFE7441F3F4F5700D841E0 /* FMDatabase.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9A1F3D5275002E1FAF /* FMDatabase.h */; };
-		8FEFE7451F3F4F5700D841E0 /* FMDatabaseAdditions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9C1F3D5275002E1FAF /* FMDatabaseAdditions.h */; };
-		8FEFE7461F3F4F5700D841E0 /* FMDatabasePool.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704B9E1F3D5275002E1FAF /* FMDatabasePool.h */; };
-		8FEFE7471F3F4F5700D841E0 /* FMDatabaseQueue.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704BA01F3D5275002E1FAF /* FMDatabaseQueue.h */; };
-		8FEFE7481F3F4F5700D841E0 /* FMDB.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704BA21F3D5275002E1FAF /* FMDB.h */; };
-		8FEFE7491F3F4F5700D841E0 /* FMResultSet.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F704BA31F3D5275002E1FAF /* FMResultSet.h */; };
 		8FF95F371F409D5A00DDC97F /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E01F3C84E500D329B1 /* DDAbstractDatabaseLogger.m */; };
 		8FF95F381F409D5A00DDC97F /* DDASLLogCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E21F3C84E500D329B1 /* DDASLLogCapture.m */; };
 		8FF95F391F409D5A00DDC97F /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E41F3C84E500D329B1 /* DDASLLogger.m */; };
@@ -82,7 +76,7 @@
 		8F13E2B01F3C7B4500FF8881 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
+			dstPath = include;
 			dstSubfolderSpec = 16;
 			files = (
 				8F1218EA207B8CA2000C2E48 /* HSDHttpServerControlPannelController.h in CopyFiles */,
@@ -98,12 +92,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				8FEFE7441F3F4F5700D841E0 /* FMDatabase.h in CopyFiles */,
-				8FEFE7451F3F4F5700D841E0 /* FMDatabaseAdditions.h in CopyFiles */,
-				8FEFE7461F3F4F5700D841E0 /* FMDatabasePool.h in CopyFiles */,
-				8FEFE7471F3F4F5700D841E0 /* FMDatabaseQueue.h in CopyFiles */,
-				8FEFE7481F3F4F5700D841E0 /* FMDB.h in CopyFiles */,
-				8FEFE7491F3F4F5700D841E0 /* FMResultSet.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
