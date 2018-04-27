@@ -7,19 +7,30 @@
 //
 
 #import "HSDHttpServerControlPannelController.h"
-#import "HSDManager.h"
+#import "HSDManager+Private.h"
 #import "HSDDefine.h"
 
 @interface HSDHttpServerControlPannelController ()
+<NSNetServiceDelegate>
 
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UITextView *textView;
 @property (strong, nonatomic) UIButton *startButton;
 @property (strong, nonatomic) UIButton *stopButton;
 
+@property (strong, nonatomic) NSMutableString *logText;
+
 @end
 
 @implementation HSDHttpServerControlPannelController
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.logText = [[NSMutableString alloc] initWithString:@""];
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -62,12 +73,8 @@
     self.textView.layer.borderColor = [UIColor blackColor].CGColor;
     self.textView.layer.borderWidth = 1.f;
     self.textView.textColor = [UIColor blackColor];
-    self.textView.font = [UIFont systemFontOfSize:14];
-    NSString *text = @"";
-    if ([HSDManager isHttpServerRunning]) {
-        text = [HSDManager fetchAlternateServerSites];
-    }
-    self.textView.text = text;
+    self.textView.font = [UIFont systemFontOfSize:13];
+    self.textView.text = @"";
     [self.scrollView addSubview:self.textView];
     contentSizeHeight += edgeLength + textViewHeight;
     
@@ -149,16 +156,25 @@
     [contentView addSubview:button];
     
     self.scrollView.contentSize = CGSizeMake(scrollViewFrame.size.width, contentSizeHeight);
+    
+    if ([HSDManager isHttpServerRunning]) {
+        [self resolveHostName];
+    }
 }
 
 - (void)startSwitchViewValueChanged:(UISwitch *)sender {
     BOOL isON = sender.on;
     if (isON) {
         [HSDManager startHttpServer];
-        self.textView.text = [HSDManager fetchAlternateServerSites];
+        [self showLog:@"HSD启动\n"];
+        
+        // dispatch after, make sure bonjour has published
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self resolveHostName];
+        });
     } else {
         [HSDManager stopHttpServer];
-        self.textView.text = @"";
+        [self showLog:@"HSD关闭\n"];
     }
 }
 
@@ -172,6 +188,41 @@
         self.backBlock();
     } else {
         [self.navigationController popViewControllerAnimated:YES];
+    }
+}
+
+/**
+ *  resolve host name and show logs in textView
+ */
+- (void)resolveHostName {
+    [HSDManager resolveHostName:^(HostNameResolveState state, NSString *result, NSDictionary<NSString *,NSNumber *> *errorDict) {
+        if (state == HostNameResolveStateReady) {
+            [self showLog:@"开始查找域名...\n"];
+        } else if (state == HostNameResolveStateSuccess) {
+            NSMutableString *logStr = [@"查找域名成功，可通过如下地址访问HSD：\n" mutableCopy];
+            result = result.length > 0 ? result : @"";
+            [logStr appendString:result];
+            [logStr appendString:@"\n"];
+            [self showLog:logStr];
+            
+            NSLog(@"%@", result);
+        } else if (state == HostNameResolveStateFail) {
+            [self showLog:@"查找失败\n"];
+        } else if (state == HostNameResolveStateStop) {
+            [self showLog:@"查找结束\n"];
+        }
+    }];
+}
+
+- (void)showLog:(NSString *)logStr {
+    [self.logText appendString:logStr];
+    self.textView.text = self.logText;
+    
+    // scroll to bottom
+    NSUInteger length = self.logText.length;
+    if (length > 0) {
+        NSRange bottom = NSMakeRange(length - 1, 1);
+        [self.textView scrollRangeToVisible:bottom];
     }
 }
 

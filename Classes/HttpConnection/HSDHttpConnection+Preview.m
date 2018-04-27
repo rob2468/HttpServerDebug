@@ -8,8 +8,8 @@
 
 #import "HSDHttpConnection+Preview.h"
 #import "HTTPDataResponse.h"
-#import "HSDUtility.h"
 #import "ZipArchive.h"
+#import "HSDManager+Private.h"
 
 @implementation HSDHttpConnection (Preview)
 
@@ -28,7 +28,7 @@
         } else {
             // response content type
             NSString *extension = filePath.pathExtension;
-            contentType = [HSDUtility fetchContentTypeWithFilePathExtension:extension];
+            contentType = [HSDManager fetchContentTypeWithFilePathExtension:extension];
             
             // generate response data
             if (![filePath hasPrefix:@"/"]) {

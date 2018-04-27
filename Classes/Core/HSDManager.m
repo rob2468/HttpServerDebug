@@ -8,12 +8,12 @@
 
 #import "HSDManager.h"
 #import "HTTPServer.h"
-#import "HSDUtility.h"
 #import "HSDHttpConnection.h"
 #import "HSDDelegate.h"
 #import "HSDConsoleLogController.h"
 #import <UIKit/UIKit.h>
 #import "HSDDefine.h"
+#import "HSDHostNameResolveController.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
@@ -22,9 +22,10 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 @property (strong, nonatomic) HTTPServer *server;
 @property (copy, nonatomic) NSString *dbFilePath;   // default inspect db file path
 @property (copy, nonatomic) NSString *serverPort;
+@property (copy, nonatomic) NSString *serverName;
 @property (weak, nonatomic) id<HSDDelegate> delegate;
-@property (nonatomic, strong) HSDConsoleLogController *consoleLogController;
-
+@property (strong, nonatomic) HSDConsoleLogController *consoleLogController;
+@property (strong, nonatomic) HSDHostNameResolveController *hostNameResolveController;
 @end
 
 @implementation HSDManager
@@ -60,6 +61,28 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     manager.serverPort = port;
 }
 
++ (int)fetchHttpServerPort {
+    int port = 0;
+    if ([HSDManager isHttpServerRunning]) {
+        HSDManager *manager = [HSDManager sharedInstance];
+        port = manager.server.listeningPort;
+    }
+    return port;
+}
+
++ (void)updateHttpServerName:(NSString *)name {
+    HSDManager *manager = [HSDManager sharedInstance];
+    manager.serverName = name;
+}
+
++ (NSString *)fetchHttpServerName {
+    HSDManager *manager = [HSDManager sharedInstance];
+    HTTPServer *server = manager.server;
+    NSNetService *netService = [server valueForKey:@"netService"];
+    NSString *serviceName = netService.name;
+    return serviceName;
+}
+
 + (BOOL)isHttpServerRunning {
     HSDManager *manager = [HSDManager sharedInstance];
     HTTPServer *server = manager.server;
@@ -69,7 +92,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
 + (void)startHttpServer {
     if ([self isHttpServerRunning]) {
-        NSLog(@"http server has already started: %@", [self fetchAlternateServerSites]);
+        NSLog(@"http server has already started.");
         return;
     }
     
@@ -91,12 +114,16 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     if (port.length > 0) {
         [manager.server setPort:port.integerValue];
     }
+    NSString *name = manager.serverName;
+    if (name.length > 0) {
+        [manager.server setName:name];
+    }
     [manager.server setConnectionClass:[HSDHttpConnection class]];
     NSError *error;
     BOOL isSucc = [manager.server start:&error];
     
     if (isSucc) {
-        NSLog(@"http server started:\n%@", [self fetchAlternateServerSites]);
+        NSLog(@"http server start, please access with the device ip address and port %d", [HSDManager fetchHttpServerPort]);
         NSLog(@"http server root document: %@", webPath);
     } else {
         NSLog(@"Error starting http server: %@", error);
@@ -130,21 +157,9 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return manager.delegate;
 }
 
-+ (NSString *)fetchAlternateServerSites {
-    NSArray *ipAddresses = [HSDUtility fetchLocalAlternateIPAddresses];
-    HSDManager *manager = [HSDManager sharedInstance];
-    UInt16 port = manager.server.listeningPort;
-    
-    NSString *serverSites = @"";
-    if ([ipAddresses count] > 0) {
-        serverSites = [NSString stringWithFormat:@"http://%@:%d", ipAddresses.firstObject, port];
-        for (NSUInteger i = 1; i < [ipAddresses count]; i++) {
-            NSString *tmp = [NSString stringWithFormat:@"\nhttp://%@:%d", [ipAddresses objectAtIndex:i], port];
-            serverSites = [serverSites stringByAppendingString:tmp];
-        }
-    }
-    
-    return serverSites;
++ (void)resolveHostName:(HostNameResolveBlock)block {
+    HSDHostNameResolveController *ctrl = [HSDManager fetchTheHostNameResolveController];
+    [ctrl resolveHostName:block];
 }
 
 + (NSString *)fetchWebUploadDirectoryPath {
@@ -160,6 +175,33 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
         manager.consoleLogController = ctrl;
     }
     return ctrl;
+}
+
++ (HSDHostNameResolveController *)fetchTheHostNameResolveController {
+    HSDManager *manager = [HSDManager sharedInstance];
+    HSDHostNameResolveController *ctrl = manager.hostNameResolveController;
+    if (!ctrl) {
+        ctrl = [[HSDHostNameResolveController alloc] init];
+        manager.hostNameResolveController = ctrl;
+    }
+    return ctrl;
+}
+
+#pragma mark - Utility
+
++ (NSString *)fetchContentTypeWithFilePathExtension:(NSString *)pathExtension {
+    pathExtension = [pathExtension lowercaseString];
+    
+    NSString *contentType = @"text/plain;charset=utf-8";
+    if ([pathExtension isEqualToString:@"png"]) {
+        contentType = @"image/png";
+    } else if ([pathExtension isEqualToString:@"jpg"] ||
+               [pathExtension isEqualToString:@"jpeg"]) {
+        contentType = @"image/jpeg";
+    } else if ([pathExtension isEqualToString:@"svg"]) {
+        contentType = @"image/svg+xml";
+    }
+    return contentType;
 }
 
 @end

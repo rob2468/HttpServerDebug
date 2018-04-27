@@ -8,7 +8,14 @@
 
 #import <Foundation/Foundation.h>
 @protocol HSDDelegate;
-@class HSDConsoleLogController;
+
+typedef NS_ENUM(NSUInteger, HostNameResolveState) {
+    HostNameResolveStateReady,
+    HostNameResolveStateSuccess,
+    HostNameResolveStateFail,
+    HostNameResolveStateStop
+};
+typedef void(^HostNameResolveBlock)(HostNameResolveState state, NSString *result, NSDictionary<NSString *, NSNumber *> *errorDict);
 
 @interface HSDManager : NSObject
 
@@ -29,6 +36,11 @@
 + (void)updateHttpServerPort:(NSString *)port;
 
 /**
+ *
+ */
++ (int)fetchHttpServerPort;
+
+/**
  *  is hsd started
  */
 + (BOOL)isHttpServerRunning;
@@ -43,9 +55,6 @@
  */
 + (void)stopHttpServer;
 
-/**
- *  return all site addresses, that you may connect to hsd
- */
-+ (NSString *)fetchAlternateServerSites;
++ (void)resolveHostName:(HostNameResolveBlock)block;
 
 @end

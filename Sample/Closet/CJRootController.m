@@ -28,12 +28,6 @@
     self.rootNav.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.rootNav.navigationBarHidden = YES;
     [self.view addSubview:self.rootNav.view];
-    
-    static NSInteger tmp = 1;
-    [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:YES block:^(NSTimer * _Nonnull timer) {
-        tmp++;
-        NSLog(@"wosdhifadf%ld", (long)tmp);
-    }];
 }
 
 + (CJRootController *)fetchRootVC {

@@ -18,7 +18,6 @@
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
 #import "HSDManager+Private.h"
-#import "HSDUtility.h"
 #import "HSDWebSocket.h"
 
 @interface HSDHttpConnection ()
@@ -130,7 +129,7 @@
     } else if ([firstPath isEqualToString:@"resources"]) {
         // set resources Content-Type manually
         NSString *pathExtension = [[pathComps lastObject] pathExtension];
-        NSString *contentType = [HSDUtility fetchContentTypeWithFilePathExtension:pathExtension];
+        NSString *contentType = [HSDManager fetchContentTypeWithFilePathExtension:pathExtension];
         NSString *dataPath = [[config documentRoot] stringByAppendingPathComponent:path];
         NSData *data = [[NSData alloc] initWithContentsOfFile:dataPath];
         response = [[HSDHttpDataResponse alloc] initWithData:data contentType:contentType];
