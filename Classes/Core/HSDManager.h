@@ -12,30 +12,40 @@
 
 @interface HSDManager : NSObject
 
+/**
+ *  set the default db file path, that you can inspect when click the db inspect entrance in the index.html
+ */
++ (void)updateDefaultInspectDBFilePath:(NSString *)path;
+
+/**
+ *  set the delegate, that implements hsd's delegate protocol
+ */
++ (void)updateHSDDelegate:(id<HSDDelegate>)delegate;
+
+/**
+ *  invoke before starting http server, if you need to set the port
+ *  @param port  port number. nil will use random number.
+ */
++ (void)updateHttpServerPort:(NSString *)port;
+
+/**
+ *  is hsd started
+ */
 + (BOOL)isHttpServerRunning;
 
 /**
- *  @param port  port number. nil will use random number.
+ *  start hsd
  */
-+ (void)startHttpServer:(NSString *)port;
-
-+ (void)stopHttpServer;
-
-+ (NSString *)fetchAlternateServerSites;
-
-+ (NSString *)fetchWebUploadDirectoryPath;
-
-+ (void)updateDefaultInspectDBFilePath:(NSString *)path;
-
-+ (NSString *)fetchDatabaseFilePath;
-
-+ (void)updateHSDDelegate:(id<HSDDelegate>)delegate;
-
-+ (id<HSDDelegate>)fetchHSDDelegate;
++ (void)startHttpServer;
 
 /**
- *  return the HSDConsoleLogController instance
+ *  stop hsd
  */
-+ (HSDConsoleLogController *)fetchTheConsoleLogController;
++ (void)stopHttpServer;
+
+/**
+ *  return all site addresses, that you may connect to hsd
+ */
++ (NSString *)fetchAlternateServerSites;
 
 @end

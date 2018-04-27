@@ -266,6 +266,7 @@
 		8FC5445E1FBAB3F500C1DAFC /* zip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		8FC5445F1FBAB3F500C1DAFC /* ZipArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
 		8FC544601FBAB3F500C1DAFC /* ZipArchive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZipArchive.m; sourceTree = "<group>"; };
+		8FECF3382092C6800070C6CE /* HSDManager+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HSDManager+Private.h"; sourceTree = "<group>"; };
 		8FF95F2E1F409D3700DDC97F /* libCocoaLumberjack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaLumberjack.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F7B1F413C8100DDC97F /* libCocoaAsyncSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaAsyncSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F8C1F413D9600DDC97F /* libCocoaHttpServer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaHttpServer.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -359,6 +360,7 @@
 				8F1218E1207B8C95000C2E48 /* HSDDefine.m */,
 				8F1218E2207B8C95000C2E48 /* HSDManager.h */,
 				8F1218E3207B8C95000C2E48 /* HSDManager.m */,
+				8FECF3382092C6800070C6CE /* HSDManager+Private.h */,
 				8F1218E4207B8C95000C2E48 /* HSDUtility.h */,
 				8F1218E5207B8C95000C2E48 /* HSDUtility.m */,
 				8F1219B3207C9E97000C2E48 /* HSDConsoleLogController.h */,

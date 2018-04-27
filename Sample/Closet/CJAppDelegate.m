@@ -20,10 +20,8 @@
     self.window.rootViewController = rootVC;
     [self.window makeKeyAndVisible];
     
-#if DEBUG
     [HSDManager updateHSDDelegate:self];
-    [HSDManager startHttpServer:@"5555"];
-#endif
+    [HSDManager updateHttpServerPort:@"5555"];
     return YES;
 }
 

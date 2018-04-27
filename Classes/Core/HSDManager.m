@@ -12,6 +12,8 @@
 #import "HSDHttpConnection.h"
 #import "HSDDelegate.h"
 #import "HSDConsoleLogController.h"
+#import <UIKit/UIKit.h>
+#import "HSDDefine.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
@@ -19,12 +21,26 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
 @property (strong, nonatomic) HTTPServer *server;
 @property (copy, nonatomic) NSString *dbFilePath;   // default inspect db file path
+@property (copy, nonatomic) NSString *serverPort;
 @property (weak, nonatomic) id<HSDDelegate> delegate;
 @property (nonatomic, strong) HSDConsoleLogController *consoleLogController;
 
 @end
 
 @implementation HSDManager
+
++ (void)load {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidFinishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
+}
+
++ (void)applicationDidFinishLaunching:(NSNotification *)notification {
+    BOOL isAutoStart = [[NSUserDefaults standardUserDefaults] boolForKey:kHSDUserDefaultsKeyAutoStart];
+    if (isAutoStart) {
+        if (![self isHttpServerRunning]) {
+            [self startHttpServer];
+        }
+    }
+}
 
 - (void)dealloc {
     [self.server stop];
@@ -39,6 +55,11 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return instance;
 }
 
++ (void)updateHttpServerPort:(NSString *)port {
+    HSDManager *manager = [HSDManager sharedInstance];
+    manager.serverPort = port;
+}
+
 + (BOOL)isHttpServerRunning {
     HSDManager *manager = [HSDManager sharedInstance];
     HTTPServer *server = manager.server;
@@ -46,7 +67,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return isRunning;
 }
 
-+ (void)startHttpServer:(NSString *)port {
++ (void)startHttpServer {
     if ([self isHttpServerRunning]) {
         NSLog(@"http server has already started: %@", [self fetchAlternateServerSites]);
         return;
@@ -56,7 +77,8 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
     
     HSDManager *manager = [HSDManager sharedInstance];
-    manager.server = [[HTTPServer alloc] init];
+    HTTPServer *server = [[HTTPServer alloc] init];
+    manager.server = server;
     [manager.server setType:@"_http._tcp."];
     
 #ifdef DEBUG
@@ -65,6 +87,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 #endif
     
     [manager.server setDocumentRoot:webPath];
+    NSString *port = manager.serverPort;
     if (port.length > 0) {
         [manager.server setPort:port.integerValue];
     }
@@ -83,6 +106,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 + (void)stopHttpServer {
     HSDManager *manager = [HSDManager sharedInstance];
     [manager.server stop];
+    manager.server = nil;
     
     NSLog(@"http server stopped");
 }
@@ -92,7 +116,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     manager.dbFilePath = path;
 }
 
-+ (NSString *)fetchDatabaseFilePath {
++ (NSString *)fetchDefaultInspectDBFilePath {
     return [HSDManager sharedInstance].dbFilePath;
 }
 

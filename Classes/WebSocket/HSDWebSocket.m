@@ -7,7 +7,7 @@
 //
 
 #import "HSDWebSocket.h"
-#import "HSDManager.h"
+#import "HSDManager+Private.h"
 #import "HSDConsoleLogController.h"
 
 @implementation HSDWebSocket

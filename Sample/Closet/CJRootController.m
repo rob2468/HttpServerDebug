@@ -7,6 +7,7 @@
 //
 
 #import "CJRootController.h"
+#import "CJHomeController.h"
 #import "Closet-Swift.h"
 
 @interface CJRootController ()

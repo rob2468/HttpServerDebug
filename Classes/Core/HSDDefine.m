@@ -17,6 +17,4 @@ NSString *const kHSDComponentConsoleLog = @"console_log";
 
 NSString *const kHSDTemplateSeparator = @"%%";
 
-@implementation HSDDefine
-
-@end
+NSString *const kHSDUserDefaultsKeyAutoStart = @"hsd_userdefaultskey_is_started_automatically";

@@ -12,7 +12,7 @@ private let kPannelViewWidth = 280.0            // 分类面板宽度
 private let kHeaderContentViewHeight = 64.0     // 头部引导视图高度
 private let kCJCategoryTableViewCellReuseIdentifier = "kCJCategoryTableViewCellReuseIdentifier"
 
-protocol CJCategoryControllerDelegate {
+@objc protocol CJCategoryControllerDelegate {
     func closePannel() -> Void
     func showCategoryManage() -> Void
 }

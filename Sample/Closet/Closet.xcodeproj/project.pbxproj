@@ -16,10 +16,10 @@
 		8F4CFF2B1F4AD99000AC817B /* CJCategoryManageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4CFF2A1F4AD99000AC817B /* CJCategoryManageController.swift */; };
 		8F4CFF2D1F4AE6AC00AC817B /* CJCategoryEditController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4CFF2C1F4AE6AC00AC817B /* CJCategoryEditController.swift */; };
 		8F5819492091C5EF003ED611 /* HttpServerDebug.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8F5819482091C5EF003ED611 /* HttpServerDebug.bundle */; };
+		8F58196C2091CB4D003ED611 /* CJHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F58196B2091CB4D003ED611 /* CJHomeController.m */; };
 		8F87BBDA208DF8D800FA7E5C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F87BBD9208DF8D800FA7E5C /* main.m */; };
 		8F87BBDD208DF90800FA7E5C /* CJAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F87BBDC208DF90800FA7E5C /* CJAppDelegate.m */; };
 		8F87BBE0208DFB7100FA7E5C /* CJRootController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F87BBDF208DFB7100FA7E5C /* CJRootController.m */; };
-		8FB6F7FF1F05EFBC00786297 /* CJHomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB6F7FE1F05EFBC00786297 /* CJHomeController.swift */; };
 		8FB6F8011F05F08400786297 /* CJCategoryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB6F8001F05F08400786297 /* CJCategoryController.swift */; };
 		8FB6F8031F05F0BC00786297 /* CJExhibitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB6F8021F05F0BC00786297 /* CJExhibitController.swift */; };
 		8FB6F8071F05F15200786297 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8FB6F8061F05F15200786297 /* Info.plist */; };
@@ -47,12 +47,13 @@
 		8F4CFF2A1F4AD99000AC817B /* CJCategoryManageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CJCategoryManageController.swift; sourceTree = "<group>"; };
 		8F4CFF2C1F4AE6AC00AC817B /* CJCategoryEditController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CJCategoryEditController.swift; sourceTree = "<group>"; };
 		8F5819482091C5EF003ED611 /* HttpServerDebug.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = HttpServerDebug.bundle; path = ../../Resources/HttpServerDebug.bundle; sourceTree = "<group>"; };
+		8F58196A2091CB4D003ED611 /* CJHomeController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CJHomeController.h; sourceTree = "<group>"; };
+		8F58196B2091CB4D003ED611 /* CJHomeController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CJHomeController.m; sourceTree = "<group>"; };
 		8F87BBD9208DF8D800FA7E5C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8F87BBDB208DF90800FA7E5C /* CJAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CJAppDelegate.h; sourceTree = "<group>"; };
 		8F87BBDC208DF90800FA7E5C /* CJAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CJAppDelegate.m; sourceTree = "<group>"; };
 		8F87BBDE208DFB7100FA7E5C /* CJRootController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CJRootController.h; sourceTree = "<group>"; };
 		8F87BBDF208DFB7100FA7E5C /* CJRootController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CJRootController.m; sourceTree = "<group>"; };
-		8FB6F7FE1F05EFBC00786297 /* CJHomeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJHomeController.swift; sourceTree = "<group>"; };
 		8FB6F8001F05F08400786297 /* CJCategoryController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJCategoryController.swift; sourceTree = "<group>"; };
 		8FB6F8021F05F0BC00786297 /* CJExhibitController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJExhibitController.swift; sourceTree = "<group>"; };
 		8FB6F8061F05F15200786297 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -164,9 +165,10 @@
 		8FB6F7FD1F05EFBC00786297 /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				8FB6F7FE1F05EFBC00786297 /* CJHomeController.swift */,
 				8FB6F8001F05F08400786297 /* CJCategoryController.swift */,
 				8FB6F8021F05F0BC00786297 /* CJExhibitController.swift */,
+				8F58196A2091CB4D003ED611 /* CJHomeController.h */,
+				8F58196B2091CB4D003ED611 /* CJHomeController.m */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -289,7 +291,7 @@
 				8F87BBDD208DF90800FA7E5C /* CJAppDelegate.m in Sources */,
 				8F4CFF2B1F4AD99000AC817B /* CJCategoryManageController.swift in Sources */,
 				8F13445E1F3B3160008E86CF /* CJDBManager.swift in Sources */,
-				8FB6F7FF1F05EFBC00786297 /* CJHomeController.swift in Sources */,
+				8F58196C2091CB4D003ED611 /* CJHomeController.m in Sources */,
 				8FE622BF1F7A389600739A2C /* CJProductItemEditController.swift in Sources */,
 				8F3BA9EA1F7BA37D00AB8290 /* CJDBProductItemManager.swift in Sources */,
 				8F87BBDA208DF8D800FA7E5C /* main.m in Sources */,

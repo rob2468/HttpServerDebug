@@ -7,7 +7,7 @@
 //
 
 #import "HSDHttpConnection+Info.h"
-#import "HSDManager.h"
+#import "HSDManager+Private.h"
 #import "HSDDelegate.h"
 #import "HTTPMessage.h"
 

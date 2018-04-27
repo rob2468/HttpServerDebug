@@ -17,7 +17,7 @@
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
-#import "HSDManager.h"
+#import "HSDManager+Private.h"
 #import "HSDUtility.h"
 #import "HSDWebSocket.h"
 
@@ -122,7 +122,7 @@
     } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
         // index.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
-        NSString *dbPath = [HSDManager fetchDatabaseFilePath];
+        NSString *dbPath = [HSDManager fetchDefaultInspectDBFilePath];
         dbPath = dbPath.length > 0? dbPath: @"";
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": dbPath};

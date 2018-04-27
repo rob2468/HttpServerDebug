@@ -18,6 +18,4 @@ extern NSString *const kHSDComponentConsoleLog;
 
 extern NSString *const kHSDTemplateSeparator;
 
-@interface HSDDefine : NSObject
-
-@end
+extern NSString *const kHSDUserDefaultsKeyAutoStart;

@@ -10,4 +10,10 @@
 
 @interface HSDHttpServerControlPannelController : UIViewController
 
+/**
+ *  Actions when user press back button.
+ *  If not assigned, [self.navigationController popViewControllerAnimated:YES] will be executed.
+ */
+@property (strong, nonatomic) void(^backBlock)(void);
+
 @end
