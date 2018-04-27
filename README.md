@@ -6,15 +6,15 @@ HSD offers debug utilities (exploring file system, inspecting database, etc.) wi
 
 ## Demo screenshot
 
-![index](http://ozel6a0l7.bkt.clouddn.com/hsd-demo-index.png)
+<img src="http://ozel6a0l7.bkt.clouddn.com/hsd-demo-index.png" alt="index" width="640px">
 
-![file explorer](http://ozel6a0l7.bkt.clouddn.com/hsd-demo-file-explorer.png)
+<img src="http://ozel6a0l7.bkt.clouddn.com/hsd-demo-file-explorer.png" alt="file explorer" width="640px">
 
-![database inspect](http://ozel6a0l7.bkt.clouddn.com/hsd-demo-database-inspect.png)
+<img src="http://ozel6a0l7.bkt.clouddn.com/hsd-demo-database-inspect.png" alt="database inspect" width="640px">
 
-![view debug](http://ozel6a0l7.bkt.clouddn.com/hsd-demo-view-debug.gif)
+<img src="http://ozel6a0l7.bkt.clouddn.com/hsd-demo-view-debug.gif" alt="view debug" width="640px">
 
-![console log](http://ozel6a0l7.bkt.clouddn.com/hsd-demo-console-log.gif)
+<img src="http://ozel6a0l7.bkt.clouddn.com/hsd-demo-console-log.gif" alt="console log" width="640px">
 
 ## Access HSD
 
