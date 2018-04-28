@@ -22,7 +22,7 @@
 		8F1218EC207B8CA2000C2E48 /* HSDManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F1218E2207B8C95000C2E48 /* HSDManager.h */; };
 		8F1218F2207C5BB6000C2E48 /* HttpServerDebug.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8F1218F1207C5BB6000C2E48 /* HttpServerDebug.bundle */; };
 		8F1218F8207C6357000C2E48 /* HSDWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F1218F7207C6357000C2E48 /* HSDWebSocket.m */; };
-		8F1219B5207C9E97000C2E48 /* HSDConsoleLogController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F1219B4207C9E97000C2E48 /* HSDConsoleLogController.m */; };
+		8F1219B5207C9E97000C2E48 /* HSDConsoleLogComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F1219B4207C9E97000C2E48 /* HSDConsoleLogComponent.m */; };
 		8F704BB21F3D52CC002E1FAF /* FMDatabase+FTS3.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B921F3D5275002E1FAF /* FMDatabase+FTS3.m */; };
 		8F704BB31F3D52DD002E1FAF /* FMTokenizers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B941F3D5275002E1FAF /* FMTokenizers.m */; };
 		8F704BB41F3D52DD002E1FAF /* FMDatabase+InMemoryOnDiskIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704B981F3D5275002E1FAF /* FMDatabase+InMemoryOnDiskIO.m */; };
@@ -36,7 +36,7 @@
 		8FC544651FBAB41500C1DAFC /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC544591FBAB3F500C1DAFC /* mztools.c */; };
 		8FC544661FBAB41500C1DAFC /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445B1FBAB3F500C1DAFC /* unzip.c */; };
 		8FC544671FBAB41500C1DAFC /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445D1FBAB3F500C1DAFC /* zip.c */; };
-		8FECF33D209316B10070C6CE /* HSDHostNameResolveController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FECF33C209316B10070C6CE /* HSDHostNameResolveController.m */; };
+		8FECF33D209316B10070C6CE /* HSDHostNameResolveComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FECF33C209316B10070C6CE /* HSDHostNameResolveComponent.m */; };
 		8FF95F371F409D5A00DDC97F /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E01F3C84E500D329B1 /* DDAbstractDatabaseLogger.m */; };
 		8FF95F381F409D5A00DDC97F /* DDASLLogCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E21F3C84E500D329B1 /* DDASLLogCapture.m */; };
 		8FF95F391F409D5A00DDC97F /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E41F3C84E500D329B1 /* DDASLLogger.m */; };
@@ -157,8 +157,8 @@
 		8F1218F1207C5BB6000C2E48 /* HttpServerDebug.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HttpServerDebug.bundle; sourceTree = "<group>"; };
 		8F1218F6207C6357000C2E48 /* HSDWebSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HSDWebSocket.h; sourceTree = "<group>"; };
 		8F1218F7207C6357000C2E48 /* HSDWebSocket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HSDWebSocket.m; sourceTree = "<group>"; };
-		8F1219B3207C9E97000C2E48 /* HSDConsoleLogController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HSDConsoleLogController.h; sourceTree = "<group>"; };
-		8F1219B4207C9E97000C2E48 /* HSDConsoleLogController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HSDConsoleLogController.m; sourceTree = "<group>"; };
+		8F1219B3207C9E97000C2E48 /* HSDConsoleLogComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HSDConsoleLogComponent.h; sourceTree = "<group>"; };
+		8F1219B4207C9E97000C2E48 /* HSDConsoleLogComponent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HSDConsoleLogComponent.m; sourceTree = "<group>"; };
 		8F13E2B21F3C7B4500FF8881 /* libHttpServerDebug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHttpServerDebug.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F16DD711F3CABD200A2BFBF /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = ../../../../../usr/lib/libxml2.dylib; sourceTree = "<group>"; };
 		8F704B911F3D5275002E1FAF /* FMDatabase+FTS3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FMDatabase+FTS3.h"; sourceTree = "<group>"; };
@@ -265,8 +265,8 @@
 		8FC5445F1FBAB3F500C1DAFC /* ZipArchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
 		8FC544601FBAB3F500C1DAFC /* ZipArchive.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZipArchive.m; sourceTree = "<group>"; };
 		8FECF3382092C6800070C6CE /* HSDManager+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HSDManager+Private.h"; sourceTree = "<group>"; };
-		8FECF33B209316B10070C6CE /* HSDHostNameResolveController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HSDHostNameResolveController.h; sourceTree = "<group>"; };
-		8FECF33C209316B10070C6CE /* HSDHostNameResolveController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HSDHostNameResolveController.m; sourceTree = "<group>"; };
+		8FECF33B209316B10070C6CE /* HSDHostNameResolveComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HSDHostNameResolveComponent.h; sourceTree = "<group>"; };
+		8FECF33C209316B10070C6CE /* HSDHostNameResolveComponent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HSDHostNameResolveComponent.m; sourceTree = "<group>"; };
 		8FF95F2E1F409D3700DDC97F /* libCocoaLumberjack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaLumberjack.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F7B1F413C8100DDC97F /* libCocoaAsyncSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaAsyncSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F8C1F413D9600DDC97F /* libCocoaHttpServer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaHttpServer.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -361,10 +361,10 @@
 				8F1218E2207B8C95000C2E48 /* HSDManager.h */,
 				8F1218E3207B8C95000C2E48 /* HSDManager.m */,
 				8FECF3382092C6800070C6CE /* HSDManager+Private.h */,
-				8FECF33B209316B10070C6CE /* HSDHostNameResolveController.h */,
-				8FECF33C209316B10070C6CE /* HSDHostNameResolveController.m */,
-				8F1219B3207C9E97000C2E48 /* HSDConsoleLogController.h */,
-				8F1219B4207C9E97000C2E48 /* HSDConsoleLogController.m */,
+				8FECF33B209316B10070C6CE /* HSDHostNameResolveComponent.h */,
+				8FECF33C209316B10070C6CE /* HSDHostNameResolveComponent.m */,
+				8F1219B3207C9E97000C2E48 /* HSDConsoleLogComponent.h */,
+				8F1219B4207C9E97000C2E48 /* HSDConsoleLogComponent.m */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -838,12 +838,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F1219B5207C9E97000C2E48 /* HSDConsoleLogController.m in Sources */,
+				8F1219B5207C9E97000C2E48 /* HSDConsoleLogComponent.m in Sources */,
 				8F1218E8207B8C95000C2E48 /* HSDManager.m in Sources */,
 				8F1218D2207B8AED000C2E48 /* HSDHttpConnection+Explorer.m in Sources */,
 				8F1218D3207B8AED000C2E48 /* HSDHttpConnection+Info.m in Sources */,
 				8F1218E7207B8C95000C2E48 /* HSDDefine.m in Sources */,
-				8FECF33D209316B10070C6CE /* HSDHostNameResolveController.m in Sources */,
+				8FECF33D209316B10070C6CE /* HSDHostNameResolveComponent.m in Sources */,
 				8F1218E6207B8C95000C2E48 /* HSDHttpServerControlPannelController.m in Sources */,
 				8F1218D5207B8AED000C2E48 /* HSDHttpConnection+View.m in Sources */,
 				8F1218D4207B8AED000C2E48 /* HSDHttpConnection+Preview.m in Sources */,

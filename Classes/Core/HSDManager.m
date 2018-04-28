@@ -10,10 +10,10 @@
 #import "HTTPServer.h"
 #import "HSDHttpConnection.h"
 #import "HSDDelegate.h"
-#import "HSDConsoleLogController.h"
+#import "HSDConsoleLogComponent.h"
 #import <UIKit/UIKit.h>
 #import "HSDDefine.h"
-#import "HSDHostNameResolveController.h"
+#import "HSDHostNameResolveComponent.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
@@ -24,8 +24,8 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 @property (copy, nonatomic) NSString *serverPort;
 @property (copy, nonatomic) NSString *serverName;
 @property (weak, nonatomic) id<HSDDelegate> delegate;
-@property (strong, nonatomic) HSDConsoleLogController *consoleLogController;
-@property (strong, nonatomic) HSDHostNameResolveController *hostNameResolveController;
+@property (strong, nonatomic) HSDConsoleLogComponent *consoleLogComponent;
+@property (strong, nonatomic) HSDHostNameResolveComponent *hostNameResolveComponent;
 @end
 
 @implementation HSDManager
@@ -158,8 +158,8 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 }
 
 + (void)resolveHostName:(HostNameResolveBlock)block {
-    HSDHostNameResolveController *ctrl = [HSDManager fetchTheHostNameResolveController];
-    [ctrl resolveHostName:block];
+    HSDHostNameResolveComponent *component = [HSDManager fetchTheHostNameResolveComponent];
+    [component resolveHostName:block];
 }
 
 + (NSString *)fetchWebUploadDirectoryPath {
@@ -167,24 +167,24 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return path;
 }
 
-+ (HSDConsoleLogController *)fetchTheConsoleLogController {
++ (HSDConsoleLogComponent *)fetchTheConsoleLogComponent {
     HSDManager *manager = [HSDManager sharedInstance];
-    HSDConsoleLogController *ctrl = manager.consoleLogController;
-    if (!ctrl) {
-        ctrl = [[HSDConsoleLogController alloc] init];
-        manager.consoleLogController = ctrl;
+    HSDConsoleLogComponent *component = manager.consoleLogComponent;
+    if (!component) {
+        component = [[HSDConsoleLogComponent alloc] init];
+        manager.consoleLogComponent = component;
     }
-    return ctrl;
+    return component;
 }
 
-+ (HSDHostNameResolveController *)fetchTheHostNameResolveController {
++ (HSDHostNameResolveComponent *)fetchTheHostNameResolveComponent {
     HSDManager *manager = [HSDManager sharedInstance];
-    HSDHostNameResolveController *ctrl = manager.hostNameResolveController;
-    if (!ctrl) {
-        ctrl = [[HSDHostNameResolveController alloc] init];
-        manager.hostNameResolveController = ctrl;
+    HSDHostNameResolveComponent *component = manager.hostNameResolveComponent;
+    if (!component) {
+        component = [[HSDHostNameResolveComponent alloc] init];
+        manager.hostNameResolveComponent = component;
     }
-    return ctrl;
+    return component;
 }
 
 #pragma mark - Utility

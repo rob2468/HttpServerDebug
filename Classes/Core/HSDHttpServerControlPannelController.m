@@ -195,10 +195,10 @@
  *  resolve host name and show logs in textView
  */
 - (void)resolveHostName {
-    [HSDManager resolveHostName:^(HostNameResolveState state, NSString *result, NSDictionary<NSString *,NSNumber *> *errorDict) {
-        if (state == HostNameResolveStateReady) {
+    [HSDManager resolveHostName:^(HSDHostNameResolveState state, NSString *result, NSDictionary<NSString *,NSNumber *> *errorDict) {
+        if (state == HSDHostNameResolveStateReady) {
             [self showLog:@"开始查找域名...\n"];
-        } else if (state == HostNameResolveStateSuccess) {
+        } else if (state == HSDHostNameResolveStateSuccess) {
             NSMutableString *logStr = [@"查找域名成功，可通过如下地址访问HSD：\n" mutableCopy];
             result = result.length > 0 ? result : @"";
             [logStr appendString:result];
@@ -206,9 +206,9 @@
             [self showLog:logStr];
             
             NSLog(@"%@", result);
-        } else if (state == HostNameResolveStateFail) {
+        } else if (state == HSDHostNameResolveStateFail) {
             [self showLog:@"查找失败\n"];
-        } else if (state == HostNameResolveStateStop) {
+        } else if (state == HSDHostNameResolveStateStop) {
             [self showLog:@"查找结束\n"];
         }
     }];

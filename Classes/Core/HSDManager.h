@@ -9,13 +9,13 @@
 #import <Foundation/Foundation.h>
 @protocol HSDDelegate;
 
-typedef NS_ENUM(NSUInteger, HostNameResolveState) {
-    HostNameResolveStateReady,
-    HostNameResolveStateSuccess,
-    HostNameResolveStateFail,
-    HostNameResolveStateStop
+typedef NS_ENUM(NSUInteger, HSDHostNameResolveState) {
+    HSDHostNameResolveStateReady,
+    HSDHostNameResolveStateSuccess,
+    HSDHostNameResolveStateFail,
+    HSDHostNameResolveStateStop
 };
-typedef void(^HostNameResolveBlock)(HostNameResolveState state, NSString *result, NSDictionary<NSString *, NSNumber *> *errorDict);
+typedef void(^HostNameResolveBlock)(HSDHostNameResolveState state, NSString *result, NSDictionary<NSString *, NSNumber *> *errorDict);
 
 @interface HSDManager : NSObject
 

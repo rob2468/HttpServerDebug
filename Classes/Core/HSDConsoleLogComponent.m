@@ -1,20 +1,20 @@
 //
-//  HSDConsoleLogController.m
+//  HSDConsoleLogComponent.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 2018/4/10.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "HSDConsoleLogController.h"
+#import "HSDConsoleLogComponent.h"
 
-@interface HSDConsoleLogController ()
+@interface HSDConsoleLogComponent ()
 
 @property (nonatomic, strong) NSThread *readStdErrThread;   // thread for read stderr
 
 @end
 
-@implementation HSDConsoleLogController
+@implementation HSDConsoleLogComponent
 
 - (instancetype)init {
     self = [super init];

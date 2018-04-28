@@ -1,14 +1,14 @@
 //
-//  HSDHostNameResolveController.m
+//  HSDHostNameResolveComponent.m
 //  HttpServerDebug
 //
 //  Created by chenjun on 2018/4/27.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "HSDHostNameResolveController.h"
+#import "HSDHostNameResolveComponent.h"
 
-@interface HSDHostNameResolveController ()
+@interface HSDHostNameResolveComponent ()
 <NSNetServiceDelegate>
 
 @property (strong, nonatomic) NSNetService *netService; // used to resolve hostname
@@ -17,7 +17,7 @@
 
 @end
 
-@implementation HSDHostNameResolveController
+@implementation HSDHostNameResolveComponent
 
 - (instancetype)init {
     self = [super init];
@@ -44,7 +44,7 @@
 - (void)netServiceWillResolve:(NSNetService *)sender {
     self.isResolving = YES;
     if (self.resolveBlock) {
-        self.resolveBlock(HostNameResolveStateReady, nil, nil);
+        self.resolveBlock(HSDHostNameResolveStateReady, nil, nil);
     }
 }
 
@@ -56,13 +56,13 @@
             NSInteger port = sender.port;
             res = [NSString stringWithFormat:@"http://%@:%ld", hostName, (long)port];
         }
-        self.resolveBlock(HostNameResolveStateSuccess, res, nil);
+        self.resolveBlock(HSDHostNameResolveStateSuccess, res, nil);
     }
 }
 
 - (void)netService:(NSNetService *)sender didNotResolve:(NSDictionary<NSString *,NSNumber *> *)errorDict {
     if (self.resolveBlock) {
-        self.resolveBlock(HostNameResolveStateFail, nil, errorDict);
+        self.resolveBlock(HSDHostNameResolveStateFail, nil, errorDict);
     }
     [sender stop];
 }
@@ -70,7 +70,7 @@
 - (void)netServiceDidStop:(NSNetService *)sender {
     self.isResolving = NO;
     if (self.resolveBlock) {
-        self.resolveBlock(HostNameResolveStateStop, nil, nil);
+        self.resolveBlock(HSDHostNameResolveStateStop, nil, nil);
     }
     
     self.netService = nil;

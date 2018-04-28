@@ -7,8 +7,8 @@
 //
 
 #import "HSDManager.h"
-@class HSDConsoleLogController;
-@class HSDHostNameResolveController;
+@class HSDConsoleLogComponent;
+@class HSDHostNameResolveComponent;
 
 @interface HSDManager (Private)
 
@@ -23,14 +23,14 @@
 + (NSString *)fetchWebUploadDirectoryPath;
 
 /**
- *  return the HSDConsoleLogController singleton instance
+ *  return the HSDConsoleLogComponent singleton instance
  */
-+ (HSDConsoleLogController *)fetchTheConsoleLogController;
++ (HSDConsoleLogComponent *)fetchTheConsoleLogComponent;
 
 /**
- *  return the HSDHostNameResolveController singleton instance
+ *  return the HSDHostNameResolveComponent singleton instance
  */
-+ (HSDHostNameResolveController *)fetchTheHostNameResolveController;
++ (HSDHostNameResolveComponent *)fetchTheHostNameResolveComponent;
 
 /**
  *  Content-Type according to file extension, default return value text/plain;charset=utf-8

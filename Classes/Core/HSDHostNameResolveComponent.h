@@ -1,5 +1,5 @@
 //
-//  HSDHostNameResolveController.h
+//  HSDHostNameResolveComponent.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 2018/4/27.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "HSDManager+Private.h"
 
-@interface HSDHostNameResolveController : NSObject
+@interface HSDHostNameResolveComponent : NSObject
 
 - (void)resolveHostName:(HostNameResolveBlock)block;
 

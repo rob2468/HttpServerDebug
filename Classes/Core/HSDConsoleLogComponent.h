@@ -1,5 +1,5 @@
 //
-//  HSDConsoleLogController.h
+//  HSDConsoleLogComponent.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 2018/4/10.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface HSDConsoleLogController : NSObject
+@interface HSDConsoleLogComponent : NSObject
 
 /**
  *  finish reading from stderr
