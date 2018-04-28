@@ -106,7 +106,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     
 #ifdef DEBUG
     // develop web in simulator, use files in the project bundle directly
-    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/Resources/HttpServerDebug.bundle/web";
+//    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/Resources/HttpServerDebug.bundle/web";
 #endif
     
     [manager.server setDocumentRoot:webPath];
@@ -157,7 +157,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return manager.delegate;
 }
 
-+ (void)resolveHostName:(HostNameResolveBlock)block {
++ (void)resolveHostName:(HSDHostNameResolveBlock)block {
     HSDHostNameResolveComponent *component = [HSDManager fetchTheHostNameResolveComponent];
     [component resolveHostName:block];
 }

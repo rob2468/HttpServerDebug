@@ -11,6 +11,9 @@
 
 @interface HSDHostNameResolveComponent : NSObject
 
-- (void)resolveHostName:(HostNameResolveBlock)block;
+/**
+ *
+ */
+- (void)resolveHostName:(HSDHostNameResolveBlock)block;
 
 @end

@@ -13,7 +13,7 @@
 
 @property (strong, nonatomic) NSNetService *netService; // used to resolve hostname
 @property (assign, nonatomic) BOOL isResolving;
-@property (strong, nonatomic) HostNameResolveBlock resolveBlock;
+@property (strong, nonatomic) HSDHostNameResolveBlock resolveBlock;
 
 @end
 
@@ -27,7 +27,7 @@
     return self;
 }
 
-- (void)resolveHostName:(HostNameResolveBlock)block {
+- (void)resolveHostName:(HSDHostNameResolveBlock)block {
     if (self.isResolving) {
         [self.netService stop];
     }
