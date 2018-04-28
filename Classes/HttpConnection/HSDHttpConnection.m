@@ -10,7 +10,6 @@
 #import "HSDDefine.h"
 #import "HTTPFileResponse.h"
 #import "HSDHttpConnection+Preview.h"
-#import "HSDHttpConnection+Info.h"
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
@@ -19,6 +18,7 @@
 #import "HSDViewDebugComponent.h"
 #import "HSDDBInspectComponent.h"
 #import "HSDFileExplorerComponent.h"
+#import "HSDSendInfoComponent.h"
 
 @interface HSDHttpConnection ()
 
@@ -107,10 +107,11 @@
         response = [viewDebugComponent fetchViewDebugAPIResponsePaths:pathComps parameters:params];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentSendInfo]]) {
         // send_info.html
-        response = [self fetchSendInfoResponseForMethod:method URI:path];
+        response = [super httpResponseForMethod:method URI:path];
     } else if ([firstPath isEqualToString:kHSDComponentSendInfo]) {
         // send_info api
-        response = [self fetchSendInfoAPIResponseForMethod:method paths:pathComps parameters:params];
+        HSDSendInfoComponent *sendInfoComponent = [HSDManager fetchTheSendInfoComponent];
+        response = [sendInfoComponent fetchSendInfoAPIResponseForMethod:method paths:pathComps parameters:params withRequest:request];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentConsoleLog]]) {
         // console_log.html
         NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"console_log.html"];

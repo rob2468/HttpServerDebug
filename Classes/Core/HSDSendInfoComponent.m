@@ -1,23 +1,20 @@
 //
-//  HSDHttpConnection+Info.m
+//  HSDSendInfoComponent.m
 //  HttpServerDebug
 //
-//  Created by chenjun on 2017/12/26.
-//  Copyright © 2017年 chenjun. All rights reserved.
+//  Created by chenjun on 2018/4/28.
+//  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "HSDHttpConnection+Info.h"
+#import "HSDSendInfoComponent.h"
 #import "HSDManager+Private.h"
-#import "HSDDelegate.h"
 #import "HTTPMessage.h"
+#import "HSDDelegate.h"
+#import "HTTPDataResponse.h"
 
-@implementation HSDHttpConnection (Info)
+@implementation HSDSendInfoComponent
 
-- (NSObject<HTTPResponse> *)fetchSendInfoResponseForMethod:(NSString *)method URI:(NSString *)path {
-    return [super httpResponseForMethod:method URI:path];
-}
-
-- (NSObject<HTTPResponse> *)fetchSendInfoAPIResponseForMethod:(NSString *)method paths:(NSArray *)paths parameters:(NSDictionary *)params {
+- (NSObject<HTTPResponse> *)fetchSendInfoAPIResponseForMethod:(NSString *)method paths:(NSArray *)paths parameters:(NSDictionary *)params withRequest:(HTTPMessage *)request {
     NSDictionary *responseDict;
     NSString *info;
     // parse info from request

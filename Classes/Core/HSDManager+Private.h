@@ -12,6 +12,7 @@
 @class HSDViewDebugComponent;
 @class HSDDBInspectComponent;
 @class HSDFileExplorerComponent;
+@class HSDSendInfoComponent;
 
 @interface HSDManager (Private)
 
@@ -54,6 +55,11 @@
  *
  */
 + (HSDFileExplorerComponent *)fetchTheFileExplorerComponent;
+
+/**
+ *
+ */
++ (HSDSendInfoComponent *)fetchTheSendInfoComponent;
 
 /**
  *  Content-Type according to file extension, default return value text/plain;charset=utf-8
