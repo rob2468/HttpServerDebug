@@ -1,5 +1,8 @@
 # HttpServerDebug (HSD)
 
+[![Build Status](https://travis-ci.org/rob2468/HttpServerDebug.svg?branch=master)](https://travis-ci.org/rob2468/HttpServerDebug)
+[![License](https://img.shields.io/github/license/rob2468/HttpServerDebug.svg)](https://github.com/rob2468/HttpServerDebug/blob/master/LICENSE.txt)
+
 ## Overview
 
 HSD offers debug utilities (exploring file system, inspecting database, etc.) with the help of http server. HSD will start http server in your device, and you can connect to the server through user agents in the local area network.
