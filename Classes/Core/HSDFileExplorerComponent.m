@@ -1,24 +1,17 @@
 //
-//  HSDHttpConnection+Explorer.m
+//  HSDFileExplorerComponent.m
 //  HttpServerDebug
 //
-//  Created by chenjun on 02/08/2017.
-//  Copyright © 2017 Baidu Inc. All rights reserved.
+//  Created by chenjun on 2018/4/28.
+//  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "HSDHttpConnection+Explorer.h"
-#import "HTTPDynamicFileResponse.h"
-#import "HSDDefine.h"
-#import "HSDManager.h"
+#import "HSDFileExplorerComponent.h"
+#import "HTTPDataResponse.h"
 
-@implementation HSDHttpConnection (Explorer)
+@implementation HSDFileExplorerComponent
 
 #pragma mark - Response
-
-- (NSObject<HTTPResponse> *)fetchFileExplorerResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path {
-    NSObject<HTTPResponse> *response = [super httpResponseForMethod:method URI:path];
-    return response;
-}
 
 - (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
     // parse data

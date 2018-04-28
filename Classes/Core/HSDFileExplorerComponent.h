@@ -1,5 +1,5 @@
 //
-//  HSDViewDebugComponent.h
+//  HSDFileExplorerComponent.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 2018/4/28.
@@ -10,8 +10,11 @@
 #import <Foundation/Foundation.h>
 @protocol HTTPResponse;
 
-@interface HSDViewDebugComponent : NSObject
+@interface HSDFileExplorerComponent : NSObject
 
-- (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
+/**
+ *  request data
+ */
+- (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
 
 @end

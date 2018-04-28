@@ -11,6 +11,7 @@
 @class HSDHostNameResolveComponent;
 @class HSDViewDebugComponent;
 @class HSDDBInspectComponent;
+@class HSDFileExplorerComponent;
 
 @interface HSDManager (Private)
 
@@ -48,6 +49,11 @@
  *
  */
 + (HSDDBInspectComponent *)fetchTheDBInspectComponent;
+
+/**
+ *
+ */
++ (HSDFileExplorerComponent *)fetchTheFileExplorerComponent;
 
 /**
  *  Content-Type according to file extension, default return value text/plain;charset=utf-8
