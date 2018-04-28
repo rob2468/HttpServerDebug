@@ -18,6 +18,7 @@
 #import "HSDDBInspectComponent.h"
 #import "HSDFileExplorerComponent.h"
 #import "HSDSendInfoComponent.h"
+#import "HSDFilePreviewComponent.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
@@ -34,6 +35,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 @property (strong, nonatomic) HSDDBInspectComponent *dbInspectComponent;
 @property (strong, nonatomic) HSDFileExplorerComponent *fileExplorerComponent;
 @property (strong, nonatomic) HSDSendInfoComponent *sendInfoComponent;
+@property (strong, nonatomic) HSDFilePreviewComponent *filePreviewComponent;
 
 @end
 
@@ -240,6 +242,16 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     if (!component) {
         component = [[HSDSendInfoComponent alloc] init];
         manager.sendInfoComponent = component;
+    }
+    return component;
+}
+
++ (HSDFilePreviewComponent *)fetchTheFilePreviewComponent {
+    HSDManager *manager = [HSDManager sharedInstance];
+    HSDFilePreviewComponent *component = [[HSDFilePreviewComponent alloc] init];
+    if (!component) {
+        component = [[HSDFilePreviewComponent alloc] init];
+        manager.filePreviewComponent = component;
     }
     return component;
 }

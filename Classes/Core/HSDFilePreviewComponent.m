@@ -1,20 +1,20 @@
 //
-//  HSDHttpConnection+Preview.m
+//  HSDFilePreviewComponent.m
 //  HttpServerDebug
 //
-//  Created by chenjun on 03/08/2017.
-//  Copyright © 2017 Baidu Inc. All rights reserved.
+//  Created by chenjun on 2018/4/28.
+//  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "HSDHttpConnection+Preview.h"
+#import "HSDFilePreviewComponent.h"
 #import "HTTPDataResponse.h"
 #import "ZipArchive.h"
 #import "HSDManager+Private.h"
+#import "HSDHttpConnection.h"
 
-@implementation HSDHttpConnection (Preview)
+@implementation HSDFilePreviewComponent
 
-- (NSObject<HTTPResponse> *)fetchFilePreviewResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path
-{
+- (NSObject<HTTPResponse> *)fetchFilePreviewResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path {
     HSDHttpDataResponse *response;
     NSString *contentType = @"text/plain;charset=utf-8";
     NSString *filePath = [params objectForKey:@"file_path"];
@@ -52,7 +52,7 @@
             // file or directory
             BOOL isDirectory;
             BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
-
+            
             if (isExist) {
                 if (isDirectory) {
                     // request directory, zip archive directory and response

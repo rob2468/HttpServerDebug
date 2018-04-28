@@ -9,7 +9,6 @@
 #import "HSDHttpConnection.h"
 #import "HSDDefine.h"
 #import "HTTPFileResponse.h"
-#import "HSDHttpConnection+Preview.h"
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
@@ -19,6 +18,7 @@
 #import "HSDDBInspectComponent.h"
 #import "HSDFileExplorerComponent.h"
 #import "HSDSendInfoComponent.h"
+#import "HSDFilePreviewComponent.h"
 
 @interface HSDHttpConnection ()
 
@@ -97,7 +97,8 @@
         response = [dbInspectComponent fetchDatabaseAPIResponsePaths:pathComps parameters:params];
     } else if ([firstPath isEqualToString:kHSDComponentFilePreview]) {
         // file_preview api
-        response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
+        HSDFilePreviewComponent *filePreviewComponent = [HSDManager fetchTheFilePreviewComponent];
+        response = [filePreviewComponent fetchFilePreviewResponse:params forMethod:method URI:path];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentViewDebug]]) {
         // view_debug.html
         response = [super httpResponseForMethod:method URI:path];
