@@ -10,7 +10,6 @@
 #import "HSDDefine.h"
 #import "HTTPFileResponse.h"
 #import "HSDHttpConnection+Explorer.h"
-#import "HSDHttpConnection+Database.h"
 #import "HSDHttpConnection+Preview.h"
 #import "HSDHttpConnection+Info.h"
 #import "HTTPMessage.h"
@@ -19,6 +18,7 @@
 #import "HSDManager+Private.h"
 #import "HSDWebSocket.h"
 #import "HSDViewDebugComponent.h"
+#import "HSDDBInspectComponent.h"
 
 @interface HSDHttpConnection ()
 
@@ -88,10 +88,12 @@
         response = [self fetchFileExplorerAPIResponsePaths:pathComps parameters:params];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentDBInspect]]) {
         // database_inspect.html
-        response = [self fetchDatabaseHTMLResponse:params];
+        HSDDBInspectComponent *dbInspectComponent = [HSDManager fetchTheDBInspectComponent];
+        response = [dbInspectComponent fetchDatabaseHTMLResponse:params withConnection:self];
     } else if ([firstPath isEqualToString:kHSDComponentDBInspect]) {
         // database_inspect api
-        response = [self fetchDatabaseAPIResponsePaths:pathComps parameters:params];
+        HSDDBInspectComponent *dbInspectComponent = [HSDManager fetchTheDBInspectComponent];
+        response = [dbInspectComponent fetchDatabaseAPIResponsePaths:pathComps parameters:params];
     } else if ([firstPath isEqualToString:kHSDComponentFilePreview]) {
         // file_preview api
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];

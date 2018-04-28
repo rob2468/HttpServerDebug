@@ -10,6 +10,7 @@
 @class HSDConsoleLogComponent;
 @class HSDHostNameResolveComponent;
 @class HSDViewDebugComponent;
+@class HSDDBInspectComponent;
 
 @interface HSDManager (Private)
 
@@ -22,6 +23,11 @@
 + (id<HSDDelegate>)fetchHSDDelegate;
 
 + (NSString *)fetchWebUploadDirectoryPath;
+
+/**
+ *
+ */
++ (NSString *)fetchDocumentRoot;
 
 /**
  *  return the HSDConsoleLogComponent singleton instance
@@ -37,6 +43,11 @@
  *
  */
 + (HSDViewDebugComponent *)fetchTheViewDebugComponent;
+
+/**
+ *
+ */
++ (HSDDBInspectComponent *)fetchTheDBInspectComponent;
 
 /**
  *  Content-Type according to file extension, default return value text/plain;charset=utf-8

@@ -15,6 +15,7 @@
 #import "HSDDefine.h"
 #import "HSDHostNameResolveComponent.h"
 #import "HSDViewDebugComponent.h"
+#import "HSDDBInspectComponent.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
@@ -28,6 +29,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 @property (strong, nonatomic) HSDConsoleLogComponent *consoleLogComponent;
 @property (strong, nonatomic) HSDHostNameResolveComponent *hostNameResolveComponent;
 @property (strong, nonatomic) HSDViewDebugComponent *viewDebugComponent;
+@property (strong, nonatomic) HSDDBInspectComponent *dbInspectComponent;
 
 @end
 
@@ -170,6 +172,12 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return path;
 }
 
++ (NSString *)fetchDocumentRoot {
+    HSDManager *manager = [HSDManager sharedInstance];
+    NSString *documentRoot = [manager.server documentRoot];
+    return documentRoot;
+}
+
 #pragma mark - Components
 
 + (HSDConsoleLogComponent *)fetchTheConsoleLogComponent {
@@ -198,6 +206,16 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     if (!component) {
         component = [[HSDViewDebugComponent alloc] init];
         manager.viewDebugComponent = component;
+    }
+    return component;
+}
+
++ (HSDDBInspectComponent *)fetchTheDBInspectComponent {
+    HSDManager *manager = [HSDManager sharedInstance];
+    HSDDBInspectComponent *component = manager.dbInspectComponent;
+    if (!component) {
+        component = [[HSDDBInspectComponent alloc] init];
+        manager.dbInspectComponent = component;
     }
     return component;
 }

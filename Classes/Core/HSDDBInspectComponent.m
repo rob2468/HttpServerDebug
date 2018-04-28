@@ -1,21 +1,21 @@
 //
-//  HSDHttpConnection+Database.m
+//  HSDDBInspectComponent.m
 //  HttpServerDebug
 //
-//  Created by chenjun on 26/07/2017.
-//  Copyright © 2017 Baidu Inc. All rights reserved.
+//  Created by chenjun on 2018/4/28.
+//  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "HSDHttpConnection+Database.h"
-#import "HTTPDataResponse.h"
-#import "HSDDefine.h"
+#import "HSDDBInspectComponent.h"
 #import "FMDB.h"
-#import "HSDManager.h"
 #import "HTTPDynamicFileResponse.h"
+#import "HSDManager+Private.h"
+#import "HSDDefine.h"
+#import "HTTPDataResponse.h"
 
-@implementation HSDHttpConnection (Database)
+@implementation HSDDBInspectComponent
 
-- (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params {
+- (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params withConnection:(HTTPConnection *)connection {
     NSObject<HTTPResponse> *response;
     NSString *dbPath = [params objectForKey:@"db_path"];
     dbPath = [dbPath stringByRemovingPercentEncoding];
@@ -40,12 +40,13 @@
         [rs close];
         [database close];
         
-        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kHSDComponentDBInspect]];
+        NSString *documentRoot = [HSDManager fetchDocumentRoot];
+        NSString *htmlPath = [documentRoot stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kHSDComponentDBInspect]];
         NSDictionary *replacementDict =
         @{@"DB_FILE_PATH": dbPath,
           @"SELECT_HTML": selectHtml
           };
-        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
+        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:connection separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
     }
     return response;
 }
@@ -55,7 +56,7 @@
     if ([paths count] > 1) {
         subModule = [paths objectAtIndex:1];
     }
-
+    
     NSData *data;
     if (subModule.length == 0) {
         // query
