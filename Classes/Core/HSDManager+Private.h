@@ -9,6 +9,7 @@
 #import "HSDManager.h"
 @class HSDConsoleLogComponent;
 @class HSDHostNameResolveComponent;
+@class HSDViewDebugComponent;
 
 @interface HSDManager (Private)
 
@@ -31,6 +32,11 @@
  *  return the HSDHostNameResolveComponent singleton instance
  */
 + (HSDHostNameResolveComponent *)fetchTheHostNameResolveComponent;
+
+/**
+ *
+ */
++ (HSDViewDebugComponent *)fetchTheViewDebugComponent;
 
 /**
  *  Content-Type according to file extension, default return value text/plain;charset=utf-8

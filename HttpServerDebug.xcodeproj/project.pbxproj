@@ -11,7 +11,6 @@
 		8F1218D2207B8AED000C2E48 /* HSDHttpConnection+Explorer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F1218C0207B8AED000C2E48 /* HSDHttpConnection+Explorer.m */; };
 		8F1218D3207B8AED000C2E48 /* HSDHttpConnection+Info.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F1218C2207B8AED000C2E48 /* HSDHttpConnection+Info.m */; };
 		8F1218D4207B8AED000C2E48 /* HSDHttpConnection+Preview.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F1218C4207B8AED000C2E48 /* HSDHttpConnection+Preview.m */; };
-		8F1218D5207B8AED000C2E48 /* HSDHttpConnection+View.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F1218C6207B8AED000C2E48 /* HSDHttpConnection+View.m */; };
 		8F1218D6207B8AED000C2E48 /* HSDHttpConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F1218C8207B8AED000C2E48 /* HSDHttpConnection.m */; };
 		8F1218DB207B8B58000C2E48 /* HttpServerDebug.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F1218C9207B8AED000C2E48 /* HttpServerDebug.h */; };
 		8F1218E6207B8C95000C2E48 /* HSDHttpServerControlPannelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F1218DE207B8C95000C2E48 /* HSDHttpServerControlPannelController.m */; };
@@ -37,6 +36,7 @@
 		8FC544661FBAB41500C1DAFC /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445B1FBAB3F500C1DAFC /* unzip.c */; };
 		8FC544671FBAB41500C1DAFC /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FC5445D1FBAB3F500C1DAFC /* zip.c */; };
 		8FECF33D209316B10070C6CE /* HSDHostNameResolveComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FECF33C209316B10070C6CE /* HSDHostNameResolveComponent.m */; };
+		8FECF3F9209466630070C6CE /* HSDViewDebugComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FECF3F8209466630070C6CE /* HSDViewDebugComponent.m */; };
 		8FF95F371F409D5A00DDC97F /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E01F3C84E500D329B1 /* DDAbstractDatabaseLogger.m */; };
 		8FF95F381F409D5A00DDC97F /* DDASLLogCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E21F3C84E500D329B1 /* DDASLLogCapture.m */; };
 		8FF95F391F409D5A00DDC97F /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E41F3C84E500D329B1 /* DDASLLogger.m */; };
@@ -142,8 +142,6 @@
 		8F1218C2207B8AED000C2E48 /* HSDHttpConnection+Info.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "HSDHttpConnection+Info.m"; sourceTree = "<group>"; };
 		8F1218C3207B8AED000C2E48 /* HSDHttpConnection+Preview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HSDHttpConnection+Preview.h"; sourceTree = "<group>"; };
 		8F1218C4207B8AED000C2E48 /* HSDHttpConnection+Preview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "HSDHttpConnection+Preview.m"; sourceTree = "<group>"; };
-		8F1218C5207B8AED000C2E48 /* HSDHttpConnection+View.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HSDHttpConnection+View.h"; sourceTree = "<group>"; };
-		8F1218C6207B8AED000C2E48 /* HSDHttpConnection+View.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "HSDHttpConnection+View.m"; sourceTree = "<group>"; };
 		8F1218C7207B8AED000C2E48 /* HSDHttpConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDHttpConnection.h; sourceTree = "<group>"; };
 		8F1218C8207B8AED000C2E48 /* HSDHttpConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDHttpConnection.m; sourceTree = "<group>"; };
 		8F1218C9207B8AED000C2E48 /* HttpServerDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpServerDebug.h; sourceTree = "<group>"; };
@@ -267,6 +265,8 @@
 		8FECF3382092C6800070C6CE /* HSDManager+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HSDManager+Private.h"; sourceTree = "<group>"; };
 		8FECF33B209316B10070C6CE /* HSDHostNameResolveComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HSDHostNameResolveComponent.h; sourceTree = "<group>"; };
 		8FECF33C209316B10070C6CE /* HSDHostNameResolveComponent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HSDHostNameResolveComponent.m; sourceTree = "<group>"; };
+		8FECF3F7209466630070C6CE /* HSDViewDebugComponent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HSDViewDebugComponent.h; sourceTree = "<group>"; };
+		8FECF3F8209466630070C6CE /* HSDViewDebugComponent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HSDViewDebugComponent.m; sourceTree = "<group>"; };
 		8FF95F2E1F409D3700DDC97F /* libCocoaLumberjack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaLumberjack.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F7B1F413C8100DDC97F /* libCocoaAsyncSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaAsyncSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF95F8C1F413D9600DDC97F /* libCocoaHttpServer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCocoaHttpServer.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -342,8 +342,6 @@
 				8F1218C2207B8AED000C2E48 /* HSDHttpConnection+Info.m */,
 				8F1218C3207B8AED000C2E48 /* HSDHttpConnection+Preview.h */,
 				8F1218C4207B8AED000C2E48 /* HSDHttpConnection+Preview.m */,
-				8F1218C5207B8AED000C2E48 /* HSDHttpConnection+View.h */,
-				8F1218C6207B8AED000C2E48 /* HSDHttpConnection+View.m */,
 				8F1218C7207B8AED000C2E48 /* HSDHttpConnection.h */,
 				8F1218C8207B8AED000C2E48 /* HSDHttpConnection.m */,
 			);
@@ -353,18 +351,20 @@
 		8F1218DC207B8C95000C2E48 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				8F1218DD207B8C95000C2E48 /* HSDHttpServerControlPannelController.h */,
-				8F1218DE207B8C95000C2E48 /* HSDHttpServerControlPannelController.m */,
-				8F1218DF207B8C95000C2E48 /* HSDDelegate.h */,
+				8F1219B3207C9E97000C2E48 /* HSDConsoleLogComponent.h */,
+				8F1219B4207C9E97000C2E48 /* HSDConsoleLogComponent.m */,
 				8F1218E0207B8C95000C2E48 /* HSDDefine.h */,
 				8F1218E1207B8C95000C2E48 /* HSDDefine.m */,
+				8F1218DF207B8C95000C2E48 /* HSDDelegate.h */,
+				8FECF33B209316B10070C6CE /* HSDHostNameResolveComponent.h */,
+				8FECF33C209316B10070C6CE /* HSDHostNameResolveComponent.m */,
+				8F1218DD207B8C95000C2E48 /* HSDHttpServerControlPannelController.h */,
+				8F1218DE207B8C95000C2E48 /* HSDHttpServerControlPannelController.m */,
 				8F1218E2207B8C95000C2E48 /* HSDManager.h */,
 				8F1218E3207B8C95000C2E48 /* HSDManager.m */,
 				8FECF3382092C6800070C6CE /* HSDManager+Private.h */,
-				8FECF33B209316B10070C6CE /* HSDHostNameResolveComponent.h */,
-				8FECF33C209316B10070C6CE /* HSDHostNameResolveComponent.m */,
-				8F1219B3207C9E97000C2E48 /* HSDConsoleLogComponent.h */,
-				8F1219B4207C9E97000C2E48 /* HSDConsoleLogComponent.m */,
+				8FECF3F7209466630070C6CE /* HSDViewDebugComponent.h */,
+				8FECF3F8209466630070C6CE /* HSDViewDebugComponent.m */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -842,10 +842,10 @@
 				8F1218E8207B8C95000C2E48 /* HSDManager.m in Sources */,
 				8F1218D2207B8AED000C2E48 /* HSDHttpConnection+Explorer.m in Sources */,
 				8F1218D3207B8AED000C2E48 /* HSDHttpConnection+Info.m in Sources */,
+				8FECF3F9209466630070C6CE /* HSDViewDebugComponent.m in Sources */,
 				8F1218E7207B8C95000C2E48 /* HSDDefine.m in Sources */,
 				8FECF33D209316B10070C6CE /* HSDHostNameResolveComponent.m in Sources */,
 				8F1218E6207B8C95000C2E48 /* HSDHttpServerControlPannelController.m in Sources */,
-				8F1218D5207B8AED000C2E48 /* HSDHttpConnection+View.m in Sources */,
 				8F1218D4207B8AED000C2E48 /* HSDHttpConnection+Preview.m in Sources */,
 				8F1218D6207B8AED000C2E48 /* HSDHttpConnection.m in Sources */,
 				8F1218F8207C6357000C2E48 /* HSDWebSocket.m in Sources */,

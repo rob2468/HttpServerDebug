@@ -14,6 +14,7 @@
 #import <UIKit/UIKit.h>
 #import "HSDDefine.h"
 #import "HSDHostNameResolveComponent.h"
+#import "HSDViewDebugComponent.h"
 
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
@@ -26,6 +27,8 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 @property (weak, nonatomic) id<HSDDelegate> delegate;
 @property (strong, nonatomic) HSDConsoleLogComponent *consoleLogComponent;
 @property (strong, nonatomic) HSDHostNameResolveComponent *hostNameResolveComponent;
+@property (strong, nonatomic) HSDViewDebugComponent *viewDebugComponent;
+
 @end
 
 @implementation HSDManager
@@ -167,6 +170,8 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return path;
 }
 
+#pragma mark - Components
+
 + (HSDConsoleLogComponent *)fetchTheConsoleLogComponent {
     HSDManager *manager = [HSDManager sharedInstance];
     HSDConsoleLogComponent *component = manager.consoleLogComponent;
@@ -183,6 +188,16 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     if (!component) {
         component = [[HSDHostNameResolveComponent alloc] init];
         manager.hostNameResolveComponent = component;
+    }
+    return component;
+}
+
++ (HSDViewDebugComponent *)fetchTheViewDebugComponent {
+    HSDManager *manager = [HSDManager sharedInstance];
+    HSDViewDebugComponent *component = manager.viewDebugComponent;
+    if (!component) {
+        component = [[HSDViewDebugComponent alloc] init];
+        manager.viewDebugComponent = component;
     }
     return component;
 }

@@ -12,13 +12,13 @@
 #import "HSDHttpConnection+Explorer.h"
 #import "HSDHttpConnection+Database.h"
 #import "HSDHttpConnection+Preview.h"
-#import "HSDHttpConnection+View.h"
 #import "HSDHttpConnection+Info.h"
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
 #import "HSDManager+Private.h"
 #import "HSDWebSocket.h"
+#import "HSDViewDebugComponent.h"
 
 @interface HSDHttpConnection ()
 
@@ -97,10 +97,11 @@
         response = [self fetchFilePreviewResponse:params forMethod:method URI:path];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentViewDebug]]) {
         // view_debug.html
-        response = [self fetchViewDebugResponseForMethod:method URI:path];
+        response = [super httpResponseForMethod:method URI:path];
     } else if ([firstPath isEqualToString:kHSDComponentViewDebug]) {
         // view_debug api
-        response = [self fetchViewDebugAPIResponsePaths:pathComps parameters:params];
+        HSDViewDebugComponent *viewDebugComponent = [HSDManager fetchTheViewDebugComponent];
+        response = [viewDebugComponent fetchViewDebugAPIResponsePaths:pathComps parameters:params];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentSendInfo]]) {
         // send_info.html
         response = [self fetchSendInfoResponseForMethod:method URI:path];

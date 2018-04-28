@@ -1,22 +1,19 @@
 //
-//  HSDHttpConnection+View.m
+//  HSDViewDebugComponent.m
 //  HttpServerDebug
 //
-//  Created by chenjun on 2017/10/30.
-//  Copyright © 2017年 chenjun. All rights reserved.
+//  Created by chenjun on 2018/4/28.
+//  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "HSDHttpConnection+View.h"
+#import "HSDViewDebugComponent.h"
 #import <UIKit/UIKit.h>
+#import "HTTPDataResponse.h"
 #import <objc/runtime.h>
 
-@implementation HSDHttpConnection (View)
+@implementation HSDViewDebugComponent
 
 #pragma mark - create http response
-
-- (NSObject<HTTPResponse> *)fetchViewDebugResponseForMethod:(NSString *)method URI:(NSString *)path {    
-    return [super httpResponseForMethod:method URI:path];
-}
 
 - (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
     NSObject<HTTPResponse> *response;
@@ -47,7 +44,7 @@
                     view = (UIView *)obj;
                 }
             }
-
+            
             NSString *thirdModule;
             if ([paths count] > 2) {
                 thirdModule = [paths objectAtIndex:2];
@@ -60,7 +57,7 @@
                 } else {
                     
                 }
-
+                
             }
         }
     }
@@ -93,7 +90,7 @@
 - (NSArray *)fetchAllViewsDataInHierarchy {
     NSArray *(^MainThreadBlock)(void) = ^{
         NSMutableArray *allViewsData = [[NSMutableArray alloc] init];
-        NSArray *windows = [HSDHttpConnection fetchAllWindows];
+        NSArray *windows = [HSDViewDebugComponent fetchAllWindows];
         for (UIWindow *window in windows) {
             // generate all views data of displayed window
             if (![[self class] viewBaseClassIsHidden:window]) {
@@ -153,11 +150,11 @@
     // frameRoot
     CGRect frameRoot = [view convertRect:view.bounds toView:window];
     NSDictionary *frameRootDict =
-  @{@"x": @(frameRoot.origin.x),
-    @"y": @(frameRoot.origin.y),
-    @"width": @(frameRoot.size.width),
-    @"height": @(frameRoot.size.height)
-    };
+    @{@"x": @(frameRoot.origin.x),
+      @"y": @(frameRoot.origin.y),
+      @"width": @(frameRoot.size.width),
+      @"height": @(frameRoot.size.height)
+      };
     // snapshot without subviews
     // hide subviews
     NSMutableSet *subviews = [[NSMutableSet alloc] init];
@@ -209,21 +206,21 @@
     // contentMode
     NSString *contentMode = @"";
     NSArray<NSString *> *contentModeArr =
-  @[@"UIViewContentModeScaleToFill",
-    @"UIViewContentModeScaleAspectFit",
-    @"UIViewContentModeScaleAspectFill",
-    @"UIViewContentModeRedraw",
-    @"UIViewContentModeCenter",
-    @"UIViewContentModeTop",
-    @"UIViewContentModeBottom",
-    @"UIViewContentModeLeft",
-    @"UIViewContentModeRight",
-    @"UIViewContentModeTopLeft",
-    @"UIViewContentModeTopRight",
-    @"UIViewContentModeBottomLeft",
-    @"UIViewContentModeBottomRight"];
+    @[@"UIViewContentModeScaleToFill",
+      @"UIViewContentModeScaleAspectFit",
+      @"UIViewContentModeScaleAspectFill",
+      @"UIViewContentModeRedraw",
+      @"UIViewContentModeCenter",
+      @"UIViewContentModeTop",
+      @"UIViewContentModeBottom",
+      @"UIViewContentModeLeft",
+      @"UIViewContentModeRight",
+      @"UIViewContentModeTopLeft",
+      @"UIViewContentModeTopRight",
+      @"UIViewContentModeBottomLeft",
+      @"UIViewContentModeBottomRight"];
     if (view.contentMode >= 0 && view.contentMode < [contentModeArr count]) {
-         contentMode = [contentModeArr objectAtIndex:view.contentMode];
+        contentMode = [contentModeArr objectAtIndex:view.contentMode];
     }
     // Tag
     NSInteger tag = view.tag;
