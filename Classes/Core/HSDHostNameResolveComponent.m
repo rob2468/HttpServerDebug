@@ -7,6 +7,7 @@
 //
 
 #import "HSDHostNameResolveComponent.h"
+#import <arpa/inet.h>
 
 @interface HSDHostNameResolveComponent ()
 <NSNetServiceDelegate>
@@ -50,13 +51,42 @@
 
 - (void)netServiceDidResolveAddress:(NSNetService *)sender {
     if (self.resolveBlock) {
-        NSString *res;
+        NSMutableArray<NSString *> *results = [[NSMutableArray alloc] init];
+        NSInteger port = sender.port;
+
+        // parse ip address
+        NSArray<NSData *> *addresses = sender.addresses;
+        char addressBuffer[INET6_ADDRSTRLEN];
+        for (NSData *data in addresses) {
+            memset(addressBuffer, 0, INET6_ADDRSTRLEN);
+            typedef union {
+                struct sockaddr sa;
+                struct sockaddr_in ipv4;
+                struct sockaddr_in6 ipv6;
+            } ip_socket_address;
+            
+            ip_socket_address *socketAddress = (ip_socket_address *)[data bytes];
+            if (socketAddress) {
+                sa_family_t saFamily = socketAddress->sa.sa_family;
+                if (saFamily == AF_INET) {
+                    // filter only ipv4 address
+                    void *src = (void *)&(socketAddress->ipv4.sin_addr);
+                    const char *addressCStr = inet_ntop(saFamily, src, addressBuffer, sizeof(addressBuffer));
+                    NSString *addressStr = [[NSString alloc] initWithCString:addressCStr encoding:NSUTF8StringEncoding];
+                    if (addressStr.length > 0) {
+                        NSString *tmp = [[NSString alloc] initWithFormat:@"http://%@:%ld", addressStr, (long)port];
+                        [results addObject:tmp];
+                    }
+                }
+            }
+        }
+        // parse host name
         NSString *hostName = sender.hostName;
         if (hostName.length > 0) {
-            NSInteger port = sender.port;
-            res = [NSString stringWithFormat:@"http://%@:%ld", hostName, (long)port];
+            NSString *tmp = [[NSString alloc] initWithFormat:@"http://%@:%ld", hostName, (long)port];
+            [results addObject:tmp];
         }
-        self.resolveBlock(HSDHostNameResolveStateSuccess, res, nil);
+        self.resolveBlock(HSDHostNameResolveStateSuccess, results, nil);
     }
 }
 

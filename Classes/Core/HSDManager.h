@@ -15,7 +15,7 @@ typedef NS_ENUM(NSUInteger, HSDHostNameResolveState) {
     HSDHostNameResolveStateFail,
     HSDHostNameResolveStateStop
 };
-typedef void(^HSDHostNameResolveBlock)(HSDHostNameResolveState state, NSString *result, NSDictionary<NSString *, NSNumber *> *errorDict);
+typedef void(^HSDHostNameResolveBlock)(HSDHostNameResolveState state, NSArray<NSString *> *results, NSDictionary<NSString *, NSNumber *> *errorDict);
 
 @interface HSDManager : NSObject
 

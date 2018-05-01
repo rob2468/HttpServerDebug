@@ -27,7 +27,7 @@ As HSD is started as a http server in your device, you can access it just like b
 
 HSD provides a control pannel, where you can make HSD running in the way that you want.
 
-<div align="center"><img src="http://ozel6a0l7.bkt.clouddn.com/hsd-demo-control-pannel.jpeg" alt="control pannel" width="220px"></div>
+<div align="center"><img src="http://ozel6a0l7.bkt.clouddn.com/hsd-demo-control-pannel.png" alt="control pannel" width="220px"></div>
 
 ### Public Host Name Resolving Interface
 
