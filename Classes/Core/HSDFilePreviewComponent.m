@@ -61,9 +61,11 @@
                     ZipArchive *zipFile = [[ZipArchive alloc] init];
                     [zipFile CreateZipFile2:tmpPath];
                     // add
-                    [self zip:zipFile baseDirectoryPath:filePath fromDirectoryPath:filePath];
+                    NSInteger filesNum = [self zip:zipFile baseDirectoryPath:filePath fromDirectoryPath:filePath];
                     [zipFile CloseZipFile2];
-                    data = [[NSData alloc] initWithContentsOfFile:tmpPath];
+                    if (filesNum > 0) {
+                        data = [[NSData alloc] initWithContentsOfFile:tmpPath];
+                    }
                     // clean tmp file
                     [[NSFileManager defaultManager] removeItemAtPath:tmpPath error:nil];
                 } else {
@@ -84,7 +86,8 @@
     return response;
 }
 
-- (void)zip:(ZipArchive *)zipFile baseDirectoryPath:(NSString *)basePath fromDirectoryPath:(NSString *)directoryPath {
+- (NSInteger)zip:(ZipArchive *)zipFile baseDirectoryPath:(NSString *)basePath fromDirectoryPath:(NSString *)directoryPath {
+    NSInteger filesNum = 0;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSArray<NSString *> *fileNames = [fileManager contentsOfDirectoryAtPath:directoryPath error:nil];
     for (NSString *fileName in fileNames) {
@@ -93,16 +96,20 @@
         [fileManager fileExistsAtPath:fullPath isDirectory:&isDirectory];
         if (isDirectory) {
             // zip recursively
-            [self zip:zipFile baseDirectoryPath:basePath fromDirectoryPath:fullPath];
+            filesNum += [self zip:zipFile baseDirectoryPath:basePath fromDirectoryPath:fullPath];
         } else {
+            // zip file
             NSInteger idx = basePath.length;
             if (![basePath hasSuffix:@"/"]) {
                 idx++;
             }
             NSString *newName = [fullPath substringFromIndex:idx];
             [zipFile addFileToZip:fullPath newname:newName];
+            // increase file num
+            filesNum++;
         }
     }
+    return filesNum;
 }
 
 @end
