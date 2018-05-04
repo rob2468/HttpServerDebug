@@ -4,11 +4,11 @@
 CONFIGURATION_SETTING="Release"
 
 # Dependencies onfiguration
-FMDB_INCLUDE=0
+FMDB_INCLUDE=1
 CocoaLumberjack_INCLUDE=1
 CocoaAsyncSocket_INCLUDE=1
 CocoaHttpServer_INCLUDE=1
-ZipArchive_INCLUDE=0
+ZipArchive_INCLUDE=1
 
 # Constant variables
 PROJECT_NAME="HttpServerDebug"
