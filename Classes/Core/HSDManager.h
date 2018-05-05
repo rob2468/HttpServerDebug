@@ -9,12 +9,23 @@
 #import <Foundation/Foundation.h>
 @protocol HSDDelegate;
 
+// notification name
+extern NSString *kHSDNotificationServerStarted;     // hsd started
+extern NSString *kHSDNotificationServerStopped;     // hsd stopped
+
+// host name resolving state
 typedef NS_ENUM(NSUInteger, HSDHostNameResolveState) {
     HSDHostNameResolveStateReady,
     HSDHostNameResolveStateSuccess,
     HSDHostNameResolveStateFail,
     HSDHostNameResolveStateStop
 };
+
+/**
+ *  host name resolving callback
+ *  @param state  host name resolving state
+ *  @param results  all candidates
+ */
 typedef void(^HSDHostNameResolveBlock)(HSDHostNameResolveState state, NSArray<NSString *> *results, NSDictionary<NSString *, NSNumber *> *errorDict);
 
 @interface HSDManager : NSObject

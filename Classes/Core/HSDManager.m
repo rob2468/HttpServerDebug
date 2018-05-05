@@ -20,6 +20,8 @@
 #import "HSDSendInfoComponent.h"
 #import "HSDFilePreviewComponent.h"
 
+NSString *kHSDNotificationServerStarted = @"kHSDNotificationServerStarted";
+NSString *kHSDNotificationServerStopped = @"kHSDNotificationServerStopped";
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
 
 @interface HSDManager ()
@@ -107,19 +109,19 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
         return;
     }
     
+    // front-end resources
     NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
     NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
-    
+#ifdef DEBUG
+    // develop web in simulator, use files in the project bundle directly
+    //    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/Resources/HttpServerDebug.bundle/web";
+#endif
+
+    // set http server parameters
     HSDManager *manager = [HSDManager sharedInstance];
     HTTPServer *server = [[HTTPServer alloc] init];
     manager.server = server;
     [manager.server setType:@"_http._tcp."];
-    
-#ifdef DEBUG
-    // develop web in simulator, use files in the project bundle directly
-//    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/Resources/HttpServerDebug.bundle/web";
-#endif
-    
     [manager.server setDocumentRoot:webPath];
     NSString *port = manager.serverPort;
     if (port.length > 0) {
@@ -130,10 +132,15 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
         [manager.server setName:name];
     }
     [manager.server setConnectionClass:[HSDHttpConnection class]];
+    
+    // start
     NSError *error;
     BOOL isSucc = [manager.server start:&error];
     
     if (isSucc) {
+        // post notification
+        [[NSNotificationCenter defaultCenter] postNotificationName:kHSDNotificationServerStarted object:nil];
+        
         NSLog(@"http server start, please access with the device ip address and port %d", [HSDManager fetchHttpServerPort]);
         NSLog(@"http server root document: %@", webPath);
     } else {
@@ -145,6 +152,9 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     HSDManager *manager = [HSDManager sharedInstance];
     [manager.server stop];
     manager.server = nil;
+    
+    // post notification
+    [[NSNotificationCenter defaultCenter] postNotificationName:kHSDNotificationServerStopped object:nil];
     
     NSLog(@"http server stopped");
 }

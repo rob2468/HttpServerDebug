@@ -11,14 +11,12 @@
 #import "HSDDefine.h"
 
 @interface HSDHttpServerControlPannelController ()
-<NSNetServiceDelegate>
 
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UITextView *textView;
-@property (strong, nonatomic) UIButton *startButton;
-@property (strong, nonatomic) UIButton *stopButton;
+@property (strong, nonatomic) UISwitch *startSwitchView;
 
-@property (strong, nonatomic) NSMutableString *logText;
+@property (strong, nonatomic) NSMutableString *logText;     // log string, shown in textView
 
 @end
 
@@ -27,9 +25,18 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        // initialize log text
         self.logText = [[NSMutableString alloc] initWithString:@""];
+        
+        // add notification observer
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationReceived:) name:kHSDNotificationServerStarted object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationReceived:) name:kHSDNotificationServerStopped object:nil];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -97,17 +104,17 @@
     
     [self.view addConstraints:@[[NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeLeading) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeLeading) multiplier:1 constant:17], [NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
     
-    UISwitch *switchView = [[UISwitch alloc] init];
-    switchView.translatesAutoresizingMaskIntoConstraints = NO;
-    [switchView addTarget:self action:@selector(startSwitchViewValueChanged:) forControlEvents:UIControlEventValueChanged];
+    self.startSwitchView = [[UISwitch alloc] init];
+    self.startSwitchView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.startSwitchView addTarget:self action:@selector(startSwitchViewValueChanged:) forControlEvents:UIControlEventValueChanged];
     if ([HSDManager isHttpServerRunning]) {
-        switchView.on = YES;
+        self.startSwitchView.on = YES;
     } else {
-        switchView.on = NO;
+        self.startSwitchView.on = NO;
     }
-    [contentView addSubview:switchView];
+    [contentView addSubview:self.startSwitchView];
     
-    [self.view addConstraints:@[[NSLayoutConstraint constraintWithItem:switchView attribute:(NSLayoutAttributeTrailing) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeTrailing) multiplier:1 constant:-17], [NSLayoutConstraint constraintWithItem:switchView attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
+    [self.view addConstraints:@[[NSLayoutConstraint constraintWithItem:self.startSwitchView attribute:(NSLayoutAttributeTrailing) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeTrailing) multiplier:1 constant:-17], [NSLayoutConstraint constraintWithItem:self.startSwitchView attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
     
     // 自动启动
     contentView = [[UIView alloc] init];
@@ -126,7 +133,7 @@
     
     [self.view addConstraints:@[[NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeLeading) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeLeading) multiplier:1 constant:17], [NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
     
-    switchView = [[UISwitch alloc] init];
+    UISwitch *switchView = [[UISwitch alloc] init];
     switchView.translatesAutoresizingMaskIntoConstraints = NO;
     [switchView addTarget:self action:@selector(autoStartSwitchViewValueChanged:) forControlEvents:UIControlEventValueChanged];
     BOOL isAutoStart = [[NSUserDefaults standardUserDefaults] boolForKey:kHSDUserDefaultsKeyAutoStart];
@@ -166,15 +173,8 @@
     BOOL isON = sender.on;
     if (isON) {
         [HSDManager startHttpServer];
-        [self showLog:@"HSD启动\n"];
-        
-        // dispatch after, make sure bonjour has published
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self resolveHostName];
-        });
     } else {
         [HSDManager stopHttpServer];
-        [self showLog:@"HSD关闭\n"];
     }
 }
 
@@ -224,6 +224,24 @@
         NSRange bottom = NSMakeRange(length - 1, 1);
         [self.textView scrollRangeToVisible:bottom];
     }
+}
+
+- (void)notificationReceived:(NSNotification *)notification {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *name = notification.name;
+        if ([name isEqualToString:kHSDNotificationServerStarted]) {
+            self.startSwitchView.on = YES;
+            [self showLog:@"HSD启动\n"];
+            
+            // dispatch after, make sure bonjour has published
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self resolveHostName];
+            });
+        } else if ([name isEqualToString:kHSDNotificationServerStopped]) {
+            self.startSwitchView.on = NO;
+            [self showLog:@"HSD关闭\n"];
+        }
+    });
 }
 
 @end
