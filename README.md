@@ -21,6 +21,41 @@ HSD offers debug utilities (exploring file system, inspecting database, etc.) wi
 
 <div align="center"><img src="http://ozel6a0l7.bkt.clouddn.com/hsd-demo-console-log.gif" alt="console log" width="640px"></div>
 
+## Integration
+
+### Packaging way
+
+In the root directory, there is the "archive.sh" script. `cd` to the root directory, then `bash archive.sh`. This script will generate files in the "output" folder in the same directory. The "output" folder contains three kinds of files, headers, library and bundle. These are all files that needed.
+
+HttpServerDebug utilizes some third party libraries, CocoaHttpServer, CocoaAsyncSocket, CocoaLumberjack, FMDB and SSZipArchive. "archive.sh" script will compile all source files and integrate all contents in one static library, libHttpServerDebug.a. But sometimes you may want to exclude some third party libraries if your project has already import. You can update "archive.sh". For example, if you want to remove FMDB, set `FMDB_INCLUDE=0`.
+
+```shell
+# Dependencies onfiguration
+FMDB_INCLUDE=0            # exclude FMDB
+CocoaLumberjack_INCLUDE=1
+CocoaAsyncSocket_INCLUDE=1
+CocoaHttpServer_INCLUDE=1
+ZipArchive_INCLUDE=1
+```
+
+### Source code way
+
+You can copy source code files to your project directly. `Classes/` and `Resources/` in the root directory contains HSD codes and resources. `ThirdParties/` contains dependent libraries, and you should copy as needed.
+
+The dependent `CocoaHTTPServer` library may need some additional settings. As following shows.
+
+Build Settings -> Header Search Paths: ${SDK_DIR}/usr/include/libxml2
+
+Build Phases -> Link Binary With Libraries: libxml2.tbd
+
+### CocoaPods way
+
+Add following statements in your Podfile.
+
+```
+pod 'HttpServerDebug', '~> 0.1'
+```
+
 ## Access HSD
 
 As HSD is started as a http server in your device, you can access it just like browsing normal websites in your favorite web browser. HSD also provides some useful server apis, you can get these apis' description from `Documents/` Directory. There are several ways you can get the HSD host name.
@@ -56,27 +91,9 @@ DATE: ---Wed 04 Apr 2018---
 10:10:45.879  陈军的iPhone\0327._http._tcp.local. can be reached at chenjundeiPhone-7.local.:5555 (interface 13)
 ```
 
-### Assemble Manually
+### Manually
 
 AS HSD runs on a http server, with your device's ip address and http server's listening port number, you can construct the complete URL.
-
-## Packaging
-
-In the root directory, there is the "archive.sh" script. `cd` to the root directory, then `bash archive.sh`. This script will generate files in the "output" folder in the same directory. The "output" folder contains three kinds of files, headers, library and bundle. These are all files that needed.
-
-You may need add libxml2 to your project after integrating HttpServerDebug. In "Build Phases -> Link Binary With Libraries", add libxml2.
-
-### Customized packaging
-
-HttpServerDebug utilizes some third party libraries, CocoaAsyncSocket, CocoaLumberjack, CocoaHttpServer and FMDB. "archive.sh" script will compile all source files and integrate all contents in one static library, libHttpServerDebug.a. But sometimes you may want to exclude some third party libraries if your project has already import. You can update "archive.sh". For example, if you want to remove FMDB, set `FMDB_INCLUDE=0`.
-
-```shell
-# Dependencies onfiguration
-FMDB_INCLUDE=1
-CocoaLumberjack_INCLUDE=1
-CocoaAsyncSocket_INCLUDE=1
-CocoaHttpServer_INCLUDE=1
-```
 
 ## FAQ
 
