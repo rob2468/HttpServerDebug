@@ -12,6 +12,7 @@
 #import "HSDManager+Private.h"
 #import "HSDDefine.h"
 #import "HTTPDataResponse.h"
+#import <sqlite3.h>
 
 @implementation HSDDBInspectComponent
 
@@ -76,7 +77,7 @@
         NSString *errMsg = @"";
         NSMutableArray *allData = [[NSMutableArray alloc] init];
         if (dbPath.length > 0 && sqlStr.length > 0 && [database open]) {
-            res = [database executeStatements:sqlStr withResultBlock:^int(NSDictionary * _Nonnull resultsDictionary) {
+            res = [HSDDBInspectComponent executeStatements:sqlStr withFMDB:database withResultBlock:^int(NSDictionary *resultsDictionary) {
                 // field names
                 NSArray *fields;
                 if ([allData count] > 0) {
@@ -213,6 +214,46 @@
     
     NSData *data = [NSJSONSerialization dataWithJSONObject:allData options:0 error:nil];
     return data;
+}
+
+#pragma mark - FMDB
+
+/**
+ *  Original -[FMDatabase executeStatements:withResultBlock:] interface has potential crash bugs.
+ *  Reproduction: select records with blob type field
+ */
++ (BOOL)executeStatements:(NSString *)sql withFMDB:(FMDatabase *)db withResultBlock:(int(^)(NSDictionary *))block {
+    int rc;
+    char *errmsg = nil;
+    
+    rc = sqlite3_exec([db sqliteHandle], [sql UTF8String], block ? HSDFMDBExecuteBulkSQLCallback : nil, (__bridge void *)(block), &errmsg);
+    
+    if (errmsg && [db logsErrors]) {
+        NSLog(@"Error inserting batch: %s", errmsg);
+        sqlite3_free(errmsg);
+    }
+    
+    return (rc == SQLITE_OK);
+}
+
+int HSDFMDBExecuteBulkSQLCallback(void *theBlockAsVoid, int columns, char **values, char **names) {
+    if (!theBlockAsVoid) {
+        return SQLITE_OK;
+    }
+    
+    int (^execCallbackBlock)(NSDictionary *resultsDictionary) = (__bridge int (^)(NSDictionary *__strong))(theBlockAsVoid);
+    
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:(NSUInteger)columns];
+    
+    for (NSInteger i = 0; i < columns; i++) {
+        NSString *key = [NSString stringWithUTF8String:names[i]];
+        id value = values[i] ? [NSString stringWithUTF8String:values[i]] : [NSNull null];
+        // value can be nil (when values[i] is blob type)
+        value = value ? value : [NSNull null];
+        [dictionary setObject:value forKey:key];
+    }
+    
+    return execCallbackBlock(dictionary);
 }
 
 @end
