@@ -7,7 +7,6 @@
 //
 
 #import "CJAppDelegate.h"
-#import "Closet-Swift.h"
 #import "HSDManager.h"
 #import "CJRootController.h"
 

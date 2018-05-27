@@ -7,7 +7,9 @@
 //
 
 #import "CJHomeController.h"
-#import "Closet-Swift.h"
+#import "CJCategoryController.h"
+#import "CJExhibitController.h"
+#import "CJCategoryManageController.h"
 #import "HSDHttpServerControlPannelController.h"
 
 @interface CJHomeController ()
