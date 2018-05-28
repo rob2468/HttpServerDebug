@@ -384,8 +384,8 @@ function initTHREE(startIdx) {
         console.log('should render from root view');
         return;
     }
-    var appWidth = viewItem.frameRoot.width;
-    var appHeight = viewItem.frameRoot.height;
+    var appWidth = viewItem.clippedFrameRoot.width;
+    var appHeight = viewItem.clippedFrameRoot.height;
 
     var width = document.getElementById('canvas-frame').clientWidth;
     var height = document.getElementById('canvas-frame').clientHeight;
@@ -412,13 +412,15 @@ function initTHREE(startIdx) {
     for (var i = startIdx; i < allViewsDataLength; i++) {
         viewItem = allViewsData[i];
         var depth = viewItem.hierarchyDepth;
-        if (depth === 0 && i !== startIdx) {
+        var x = viewItem.clippedFrameRoot.x;
+        var y = viewItem.clippedFrameRoot.y;
+        var width = viewItem.clippedFrameRoot.width;
+        var height = viewItem.clippedFrameRoot.height;
+
+        if ((depth === 0 && i !== startIdx)     // only display first UIWindow
+        || (width === 0 && height === 0)) {     // only display visible views
             break;
         }
-        var x = viewItem.frameRoot.x;
-        var y = viewItem.frameRoot.y;
-        var width = viewItem.frameRoot.width;
-        var height = viewItem.frameRoot.height;
         // mesh
         // geometry
         var geometry = new THREE.PlaneGeometry(width * scale, height * scale);

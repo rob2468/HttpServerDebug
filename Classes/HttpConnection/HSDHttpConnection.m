@@ -14,7 +14,7 @@
 #import "HTTPDynamicFileResponse.h"
 #import "HSDManager+Private.h"
 #import "HSDWebSocket.h"
-#import "HSDViewDebugComponent.h"
+#import "HSDComponentMiddleware.h"
 #import "HSDDBInspectComponent.h"
 #import "HSDFileExplorerComponent.h"
 #import "HSDSendInfoComponent.h"
@@ -104,8 +104,7 @@
         response = [super httpResponseForMethod:method URI:path];
     } else if ([firstPath isEqualToString:kHSDComponentViewDebug]) {
         // view_debug api
-        HSDViewDebugComponent *viewDebugComponent = [HSDManager fetchTheViewDebugComponent];
-        response = [viewDebugComponent fetchViewDebugAPIResponsePaths:pathComps parameters:params];
+        response = [HSDComponentMiddleware fetchViewDebugAPIResponsePaths:pathComps parameters:params];
     } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentSendInfo]]) {
         // send_info.html
         response = [super httpResponseForMethod:method URI:path];

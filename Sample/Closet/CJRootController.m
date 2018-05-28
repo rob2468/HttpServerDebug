@@ -25,7 +25,6 @@
     self.rootNav = [[UINavigationController alloc] initWithRootViewController:homeController];
     self.rootNav.view.frame = self.view.bounds;
     self.rootNav.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.rootNav.navigationBarHidden = YES;
     [self.view addSubview:self.rootNav.view];
 }
 

@@ -8,10 +8,12 @@
 //  TODO: decouple from cocoahttpserver
 
 #import <Foundation/Foundation.h>
-@protocol HTTPResponse;
+#import <UIKit/UIKit.h>
 
 @interface HSDViewDebugComponent : NSObject
 
-- (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
++ (NSArray *)fetchAllViewsDataInHierarchy;
+
++ (NSData *)fetchViewSnapshotImageData:(UIView *)view;
 
 @end

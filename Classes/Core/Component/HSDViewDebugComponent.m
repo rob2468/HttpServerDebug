@@ -7,87 +7,11 @@
 //
 
 #import "HSDViewDebugComponent.h"
-#import <UIKit/UIKit.h>
-#import "HTTPDataResponse.h"
 #import <objc/runtime.h>
 
 @implementation HSDViewDebugComponent
 
-#pragma mark - create http response
-
-- (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
-    NSObject<HTTPResponse> *response;
-    NSString *subModule;
-    if ([paths count] > 1) {
-        subModule = [paths objectAtIndex:1];
-    }
-    if (subModule.length > 0) {
-        if ([subModule isEqualToString:@"all_views"]) {
-            // get all views data
-            NSArray *allViewsData = [self fetchAllViewsDataInHierarchy];
-            NSData *data = [NSJSONSerialization dataWithJSONObject:allViewsData options:0 error:nil];
-            response = [[HTTPDataResponse alloc] initWithData:data];
-        } else if ([subModule isEqualToString:@"select_view"]) {
-            NSString *memoryAddress = [params objectForKey:@"memory_address"];
-            NSString *className = [params objectForKey:@"class_name"];
-            UIView *view;
-            
-            unsigned long long addressPtr = ULONG_LONG_MAX;
-            [[NSScanner scannerWithString:memoryAddress] scanHexLongLong:&addressPtr];
-            if (addressPtr != ULONG_LONG_MAX && className.length > 0) {
-                // get oc object according to memory address
-                void *rawObj = (void *)(intptr_t)addressPtr;
-                id obj = (__bridge id)rawObj;
-                
-                // type casting
-                if ([obj isKindOfClass:NSClassFromString(className)]) {
-                    view = (UIView *)obj;
-                }
-            }
-            
-            NSString *thirdModule;
-            if ([paths count] > 2) {
-                thirdModule = [paths objectAtIndex:2];
-            }
-            if (view) {
-                if ([thirdModule isEqualToString:@"snapshot"]) {
-                    // get view snapshot
-                    NSData *data = [self fetchViewSnapshotImageData:view];
-                    response = [[HTTPDataResponse alloc] initWithData:data];
-                } else {
-                    
-                }
-                
-            }
-        }
-    }
-    return response;
-}
-
-#pragma mark -
-
-- (NSData *)fetchViewSnapshotImageData:(UIView *)view {
-    NSData *(^MainThreadBlock)(void) = ^{
-        // get view snapshot
-        UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0);
-        [view.layer renderInContext:UIGraphicsGetCurrentContext()];
-        UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        NSData *data = UIImagePNGRepresentation(snapshot);
-        return data;
-    };
-    __block NSData *imageData;
-    if ([NSThread isMainThread]) {
-        imageData = MainThreadBlock();
-    } else {
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            imageData = MainThreadBlock();
-        });
-    }
-    return imageData;
-}
-
-- (NSArray *)fetchAllViewsDataInHierarchy {
++ (NSArray *)fetchAllViewsDataInHierarchy {
     NSArray *(^MainThreadBlock)(void) = ^{
         NSMutableArray *allViewsData = [[NSMutableArray alloc] init];
         NSArray *windows = [HSDViewDebugComponent fetchAllWindows];
@@ -118,10 +42,11 @@
  *  "className": ,
  *  "memoryAdress: ,
  *  "hierarchyDepth: ": ,      // view hierarchy depth num, 0 indexed
- *  "frameRoot":{"x":"","y":"","width":"","height":""},// frame in window
- *  "snapshotNosub": ,         // snapshot without subviews
+ *  "clippedFrameRoot":{"x":"","y":"","width":"","height":""},  // clipped content
  *  "frame":{"x":"","y":"","width":"","height":""},
  *  "bounds":{"x":"","y":"","width":"","height":""},
+ *  "frameRoot":{"x":"","y":"","width":"","height":""},         // frame in window
+ *  "snapshotNosub": ,                                          // snapshot without subviews
  *  "position":{"x":"","y":""},
  *  "zPosition": ,
  *  "contentMode": ,
@@ -135,66 +60,84 @@
  *  "three": {"mesh": , "wireframe": }, // webgl elements, set in js context
  *  }
  */
-- (NSDictionary *)fetchViewData:(UIView *)view inWindow:(UIWindow *)window {
++ (NSDictionary *)fetchViewData:(UIView *)view inWindow:(UIWindow *)window {
     NSMutableDictionary *viewData = [[NSMutableDictionary alloc] init];
     NSString *description = [[view class] description];
     NSString *className = NSStringFromClass([view class]);
     NSString *memoryAddress = [NSString stringWithFormat:@"%p", view];
-    // hierarchyDepth
-    NSInteger depth = 0;
+    // hierarchyDepth, clippedFrameRoot
+    NSInteger hierarchyDepth = 0;
+    CGPoint tryClippedOrigin = CGPointMake(0, 0);
+    CGSize tryClippedSize = view.frame.size;
     UIView *tryView = view;
     while (tryView.superview) {
-        tryView = tryView.superview;
-        depth++;
-    }
-    // frameRoot
-    CGRect frameRoot = [view convertRect:view.bounds toView:window];
-    NSDictionary *frameRootDict =
-    @{@"x": @(frameRoot.origin.x),
-      @"y": @(frameRoot.origin.y),
-      @"width": @(frameRoot.size.width),
-      @"height": @(frameRoot.size.height)
-      };
-    // snapshot without subviews
-    // hide subviews
-    NSMutableSet *subviews = [[NSMutableSet alloc] init];
-    for (UIView *subview in view.subviews) {
-        BOOL isHidden = [[self class] viewBaseClassIsHidden:subview];
-        if (!isHidden) {
-            // collect
-            [subviews addObject:subview];
-            // hide
-            [[self class] view:subview baseClassSetHidden:YES];
+        UIView *superview = tryView.superview;
+        
+        tryClippedOrigin = [tryView convertPoint:tryClippedOrigin toView:superview];
+        if (!CGSizeEqualToSize(tryClippedSize, CGSizeMake(0, 0))
+            && superview.clipsToBounds) {
+            // calculate clipped content frame
+            CGRect tryClippedFrame = CGRectMake(tryClippedOrigin.x, tryClippedOrigin.y, tryClippedSize.width, tryClippedSize.height);
+            tryClippedFrame = CGRectIntersection(tryClippedFrame, superview.bounds);
+                
+            if (tryClippedOrigin.x < 0) {
+                tryClippedOrigin.x = 0;
+            }
+            if (tryClippedOrigin.y < 0) {
+                tryClippedOrigin.y = 0;
+            }
+            tryClippedSize = tryClippedFrame.size;
         }
+        
+        tryView = superview;
+        hierarchyDepth++;
     }
-    // get view snapshot
-    UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0);
-    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    // show subviews
-    for (UIView *subview in subviews) {
-        [[self class] view:subview baseClassSetHidden:NO];
+    CGRect clippedFrameRoot = CGRectMake(0, 0, 0, 0);   // frame for clipped view in window
+    if (!CGSizeEqualToSize(tryClippedSize, CGSizeMake(0, 0))) {
+        clippedFrameRoot = CGRectMake(tryClippedOrigin.x, tryClippedOrigin.y, tryClippedSize.width, tryClippedSize.height);
     }
-    NSData *snapshotData = UIImagePNGRepresentation(snapshot);
-    NSString *snapshotDataStr = [snapshotData base64EncodedStringWithOptions:(NSDataBase64Encoding64CharacterLineLength)];
-    snapshotDataStr = snapshotDataStr.length > 0? snapshotDataStr: @"";
+    NSDictionary *clippedFrameRootDict = [self convertCGRect:clippedFrameRoot];
+    
+    CGPoint clippedOrigin = [view convertPoint:tryClippedOrigin fromView:window];   // origin for snapshot clipped view
+    
     // frame
     CGRect frame = view.frame;
-    NSDictionary *frameDict =
-    @{@"x": @(frame.origin.x),
-      @"y": @(frame.origin.y),
-      @"width": @(frame.size.width),
-      @"height": @(frame.size.height)
-      };
+    NSDictionary *frameDict = [self convertCGRect:frame];
     // bounds
     CGRect bounds = view.bounds;
-    NSDictionary *boundsDict =
-    @{@"x": @(bounds.origin.x),
-      @"y": @(bounds.origin.y),
-      @"width": @(bounds.size.width),
-      @"height": @(bounds.size.height)
-      };
+    NSDictionary *boundsDict = [self convertCGRect:bounds];
+    // frameRoot
+    CGRect frameRoot = [view convertRect:view.bounds toView:window];
+    NSDictionary *frameRootDict = [self convertCGRect:frameRoot];
+    // snapshot without subviews
+    NSString *snapshotDataStr = @"";
+    if (!CGSizeEqualToSize(clippedFrameRoot.size, CGSizeMake(0, 0))) {
+        // hide subviews
+        NSMutableSet *subviews = [[NSMutableSet alloc] init];
+        for (UIView *subview in view.subviews) {
+            BOOL isHidden = [[self class] viewBaseClassIsHidden:subview];
+            if (!isHidden) {
+                // collect
+                [subviews addObject:subview];
+                // hide
+                [[self class] view:subview baseClassSetHidden:YES];
+            }
+        }
+        // get view snapshot
+        UIGraphicsBeginImageContextWithOptions(clippedFrameRoot.size, NO, 0.0);
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        CGContextConcatCTM(c, CGAffineTransformMakeTranslation(-clippedOrigin.x, -clippedOrigin.y));
+        [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+        UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        // show subviews
+        for (UIView *subview in subviews) {
+            [[self class] view:subview baseClassSetHidden:NO];
+        }
+        NSData *snapshotData = UIImagePNGRepresentation(snapshot);
+        snapshotDataStr = [snapshotData base64EncodedStringWithOptions:(NSDataBase64Encoding64CharacterLineLength)];
+        snapshotDataStr = snapshotDataStr.length > 0 ? snapshotDataStr: @"";
+    }
     // position
     CGPoint position = view.layer.position;
     NSDictionary *positionDict =
@@ -280,11 +223,12 @@
     [viewData setObject:description forKey:@"description"];
     [viewData setObject:className forKey:@"className"];
     [viewData setObject:memoryAddress forKey:@"memoryAddress"];
-    [viewData setObject:[NSNumber numberWithInteger:depth] forKey:@"hierarchyDepth"];
-    [viewData setObject:frameRootDict forKey:@"frameRoot"];
-    [viewData setObject:snapshotDataStr forKey:@"snapshotNosub"];
+    [viewData setObject:[NSNumber numberWithInteger:hierarchyDepth] forKey:@"hierarchyDepth"];
+    [viewData setObject:clippedFrameRootDict forKey:@"clippedFrameRoot"];
     [viewData setObject:frameDict forKey:@"frame"];
     [viewData setObject:boundsDict forKey:@"bounds"];
+    [viewData setObject:frameRootDict forKey:@"frameRoot"];
+    [viewData setObject:snapshotDataStr forKey:@"snapshotNosub"];
     [viewData setObject:positionDict forKey:@"position"];
     [viewData setObject:@(zPosition) forKey:@"zPosition"];
     [viewData setObject:contentMode forKey:@"contentMode"];
@@ -303,7 +247,7 @@
     return viewData;
 }
 
-- (NSArray *)allRecursiveSubviewsInView:(UIView *)view inWindow:(UIWindow *)window {
++ (NSArray *)allRecursiveSubviewsInView:(UIView *)view inWindow:(UIWindow *)window {
     NSMutableArray *subviews = [[NSMutableArray alloc] init];
     for (UIView *subview in view.subviews) {
         // generate data of displayed subview
@@ -337,6 +281,39 @@
     [invocation getReturnValue:&windows];
     return windows;
 }
+
++ (NSData *)fetchViewSnapshotImageData:(UIView *)view {
+    NSData *(^MainThreadBlock)(void) = ^{
+        // get view snapshot
+        UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0);
+        [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+        UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        NSData *data = UIImagePNGRepresentation(snapshot);
+        return data;
+    };
+    __block NSData *imageData;
+    if ([NSThread isMainThread]) {
+        imageData = MainThreadBlock();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            imageData = MainThreadBlock();
+        });
+    }
+    return imageData;
+}
+
++ (NSDictionary *)convertCGRect:(CGRect)rect {
+    NSDictionary *dict =
+    @{@"x": @(rect.origin.x),
+      @"y": @(rect.origin.y),
+      @"width": @(rect.size.width),
+      @"height": @(rect.size.height)
+      };
+    return dict;
+}
+
+#pragma mark -
 
 static BOOL (*baseClassIsHiddenIMP)(id, SEL);
 static void (*baseClassSetHiddenIMP)(id, SEL, BOOL);

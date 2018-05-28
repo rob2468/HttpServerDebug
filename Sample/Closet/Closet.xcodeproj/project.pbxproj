@@ -20,6 +20,7 @@
 		8F32315320BA9EF600E3254B /* CJCategoryManageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F32314F20BA9EF600E3254B /* CJCategoryManageCell.m */; };
 		8F32315420BA9EF600E3254B /* CJCategoryManageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F32315120BA9EF600E3254B /* CJCategoryManageController.m */; };
 		8F32315720BA9F1200E3254B /* CJProductItemEditController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F32315520BA9F1200E3254B /* CJProductItemEditController.m */; };
+		8F32315A20BAA9FE00E3254B /* HSDSampleViewDebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F32315920BAA9FE00E3254B /* HSDSampleViewDebugViewController.m */; };
 		8F5819492091C5EF003ED611 /* HttpServerDebug.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8F5819482091C5EF003ED611 /* HttpServerDebug.bundle */; };
 		8F58196C2091CB4D003ED611 /* CJHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F58196B2091CB4D003ED611 /* CJHomeController.m */; };
 		8F87BBDA208DF8D800FA7E5C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F87BBD9208DF8D800FA7E5C /* main.m */; };
@@ -61,6 +62,8 @@
 		8F32315120BA9EF600E3254B /* CJCategoryManageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CJCategoryManageController.m; sourceTree = "<group>"; };
 		8F32315520BA9F1200E3254B /* CJProductItemEditController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CJProductItemEditController.m; sourceTree = "<group>"; };
 		8F32315620BA9F1200E3254B /* CJProductItemEditController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJProductItemEditController.h; sourceTree = "<group>"; };
+		8F32315820BAA9FE00E3254B /* HSDSampleViewDebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HSDSampleViewDebugViewController.h; sourceTree = "<group>"; };
+		8F32315920BAA9FE00E3254B /* HSDSampleViewDebugViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HSDSampleViewDebugViewController.m; sourceTree = "<group>"; };
 		8F5819482091C5EF003ED611 /* HttpServerDebug.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = HttpServerDebug.bundle; path = ../../Resources/HttpServerDebug.bundle; sourceTree = "<group>"; };
 		8F58196A2091CB4D003ED611 /* CJHomeController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CJHomeController.h; sourceTree = "<group>"; };
 		8F58196B2091CB4D003ED611 /* CJHomeController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CJHomeController.m; sourceTree = "<group>"; };
@@ -141,6 +144,8 @@
 			children = (
 				8F1858501F03EADE00817368 /* Assets.xcassets */,
 				8F1858511F03EADE00817368 /* LaunchScreen.storyboard */,
+				8F32315820BAA9FE00E3254B /* HSDSampleViewDebugViewController.h */,
+				8F32315920BAA9FE00E3254B /* HSDSampleViewDebugViewController.m */,
 				8F4B8EC41F63937000A3938D /* DataModel */,
 				8F13445A1F3B3130008E86CF /* Database */,
 				8FB6F7FD1F05EFBC00786297 /* Home */,
@@ -315,6 +320,7 @@
 				8F32313B20BA9E8900E3254B /* CJProductItemDataModel.m in Sources */,
 				8F87BBDA208DF8D800FA7E5C /* main.m in Sources */,
 				8F32315720BA9F1200E3254B /* CJProductItemEditController.m in Sources */,
+				8F32315A20BAA9FE00E3254B /* HSDSampleViewDebugViewController.m in Sources */,
 				8F32313A20BA9E8900E3254B /* CJCategoryDataModel.m in Sources */,
 				8F32314220BA9EAC00E3254B /* CJDBProductItemManager.m in Sources */,
 				8F32314420BA9EAC00E3254B /* CJDBManager.m in Sources */,

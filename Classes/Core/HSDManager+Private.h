@@ -45,11 +45,6 @@
 /**
  *
  */
-+ (HSDViewDebugComponent *)fetchTheViewDebugComponent;
-
-/**
- *
- */
 + (HSDDBInspectComponent *)fetchTheDBInspectComponent;
 
 /**
