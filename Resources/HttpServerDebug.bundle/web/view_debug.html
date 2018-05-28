@@ -412,52 +412,78 @@ function initTHREE(startIdx) {
     for (var i = startIdx; i < allViewsDataLength; i++) {
         viewItem = allViewsData[i];
         var depth = viewItem.hierarchyDepth;
-        var x = viewItem.clippedFrameRoot.x;
-        var y = viewItem.clippedFrameRoot.y;
         var width = viewItem.clippedFrameRoot.width;
         var height = viewItem.clippedFrameRoot.height;
 
-        if ((depth === 0 && i !== startIdx)     // only display first UIWindow
-        || (width === 0 && height === 0)) {     // only display visible views
+        if (width === 0 && height === 0) {
+            // only display visible views
+            continue;
+        }
+        if (depth === 0 && i !== startIdx) {
+            // only display first UIWindow
             break;
         }
-        // mesh
-        // geometry
-        var geometry = new THREE.PlaneGeometry(width * scale, height * scale);
-        // material
-        var image = document.createElement('img');
-        image.src = 'data:image/png;base64,' + viewItem.snapshotNosub;
-        var texture = new THREE.Texture(image);
-        texture.needsUpdate = true;
-        var material = new THREE.MeshBasicMaterial({
-            map: texture,
-            transparent: true,
-            side: THREE.DoubleSide,
-            wireframe: false});
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set((x + width / 2 - appWidth / 2) * scale,
-            (appHeight / 2 - (y + height / 2)) * scale,
-            currentDepth * depthUnit);
-        // wireframe
-        var geo = new THREE.EdgesGeometry(geometry);
-        var mat = new THREE.LineBasicMaterial({color: MESHBORDERDEFAULTCOLOR, linewidth: 1});
-        var wireframe = new THREE.LineSegments(geo, mat);
-        mesh.add(wireframe);
-        // callback
-        mesh.callback = (function (idx) {
-            return function () {
-                onViewHierarchyNavigationItemClick(idx + 'th-view');
-            };
-        })(i);
 
-        scene.add(mesh);
+        // texture
+        (function (idx, currentDepth) {
+            var viewItem = allViewsData[idx];
+            // load a resource
+            var imageSRC = 'data:image/png;base64,' + viewItem.snapshotNosub;
+            new THREE.TextureLoader().load(
+                // resource URL
+                imageSRC,
+                // onLoad callback
+                function (texture) {
+                    var x = viewItem.clippedFrameRoot.x;
+                    var y = viewItem.clippedFrameRoot.y;
+                    var width = viewItem.clippedFrameRoot.width;
+                    var height = viewItem.clippedFrameRoot.height;
 
-        // add THREE objects to allVIewsData
-        var three = {'mesh': mesh, 'wireframe': wireframe};
-        viewItem.three = three;
+                    // material
+                    var material = new THREE.MeshBasicMaterial({
+                        map: texture,
+                        transparent: true,
+                        side: THREE.DoubleSide,
+                        wireframe: false});
+
+                    // geometry
+                    var geometry = new THREE.PlaneGeometry(width * scale, height * scale);
+
+                    // mesh
+                    var mesh = new THREE.Mesh(geometry, material);
+                        mesh.position.set((x + width / 2 - appWidth / 2) * scale,
+                        (appHeight / 2 - (y + height / 2)) * scale,
+                        currentDepth * depthUnit);
+
+                    // wireframe
+                    var geo = new THREE.EdgesGeometry(geometry);
+                    var mat = new THREE.LineBasicMaterial({color: MESHBORDERDEFAULTCOLOR, linewidth: 1});
+                    var wireframe = new THREE.LineSegments(geo, mat);
+                    mesh.add(wireframe);
+
+                    // callback
+                    mesh.callback = function () {
+                        onViewHierarchyNavigationItemClick(idx + 'th-view');
+                    };
+
+                    scene.add(mesh);
+
+                    // add THREE objects to allVIewsData
+                    var three = {'mesh': mesh, 'wireframe': wireframe};
+                    viewItem.three = three;
+                },
+                // onProgress callback currently not supported
+                undefined,
+                // onError callback
+                function (err) {
+                    console.error('An error happened.');
+                }
+            );
+        })(i, currentDepth);
+
         // depth +1
         currentDepth++;
-    }
+    } // for loop, allViewsData
 
     // OrbitControls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
