@@ -37,7 +37,7 @@
                 id obj = (__bridge id)rawObj;
                 
                 // type casting
-                if ([obj isKindOfClass:NSClassFromString(className)]) {
+                if (obj && [obj isKindOfClass:NSClassFromString(className)]) {
                     view = (UIView *)obj;
                 }
             }
