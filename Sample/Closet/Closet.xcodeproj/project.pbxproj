@@ -442,7 +442,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 6UGZ533E78;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../../httpserverdebug/Classes\"/**",
+					"\"$(SRCROOT)/../../Classes\"/**",
 					"\"$(SRCROOT)/../../ThirdParties/FMDB\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Supporting Files/Info.plist";
@@ -471,7 +471,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 6UGZ533E78;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../../httpserverdebug/Classes\"/**",
+					"\"$(SRCROOT)/../../Classes\"/**",
 					"\"$(SRCROOT)/../../ThirdParties/FMDB\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Supporting Files/Info.plist";
