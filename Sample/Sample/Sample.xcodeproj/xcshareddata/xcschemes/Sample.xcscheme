@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8FD708E01EFA61D900E0547C"
-               BuildableName = "Closet.app"
-               BlueprintName = "Closet"
-               ReferencedContainer = "container:Closet.xcodeproj">
+               BuildableName = "Sample.app"
+               BlueprintName = "Sample"
+               ReferencedContainer = "container:Sample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8FD708E01EFA61D900E0547C"
-            BuildableName = "Closet.app"
-            BlueprintName = "Closet"
-            ReferencedContainer = "container:Closet.xcodeproj">
+            BuildableName = "Sample.app"
+            BlueprintName = "Sample"
+            ReferencedContainer = "container:Sample.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8FD708E01EFA61D900E0547C"
-            BuildableName = "Closet.app"
-            BlueprintName = "Closet"
-            ReferencedContainer = "container:Closet.xcodeproj">
+            BuildableName = "Sample.app"
+            BlueprintName = "Sample"
+            ReferencedContainer = "container:Sample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8FD708E01EFA61D900E0547C"
-            BuildableName = "Closet.app"
-            BlueprintName = "Closet"
-            ReferencedContainer = "container:Closet.xcodeproj">
+            BuildableName = "Sample.app"
+            BlueprintName = "Sample"
+            ReferencedContainer = "container:Sample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

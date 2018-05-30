@@ -13,16 +13,14 @@
 #import "HSDSampleViewDebugViewController.h"
 
 static NSString * const kHSDCtrlPannel = @"HSD Control Pannel";
+static NSString * const kHSDDatabaseInspect = @"Database Inspect";
 static NSString * const kHSDViewDebug = @"View Debug";
 
 @interface CJHomeController ()
-<UITableViewDataSource, UITableViewDelegate, CJCategoryControllerDelegate>
+<UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 @property (copy, nonatomic) NSArray<NSString *> *dataList;
-
-@property (strong, nonatomic) UIButton *expandButton;// 展开分类面板按钮
-@property (strong, nonatomic) CJCategoryController *categoryController;// 分类面板视图控制器
 
 @end
 
@@ -31,7 +29,7 @@ static NSString * const kHSDViewDebug = @"View Debug";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.dataList = @[kHSDCtrlPannel, kHSDViewDebug];
+        self.dataList = @[kHSDCtrlPannel, kHSDDatabaseInspect, kHSDViewDebug];
     }
     return self;
 }
@@ -48,38 +46,6 @@ static NSString * const kHSDViewDebug = @"View Debug";
     [self.view addSubview:self.tableView];
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
-
-    // expandButton
-    self.expandButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.expandButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.expandButton setTitle:@"展开分类" forState:UIControlStateNormal];
-    [self.expandButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [self.expandButton setTitleColor:[[UIColor blackColor] colorWithAlphaComponent:0.2f] forState:UIControlStateHighlighted];
-    [self.expandButton addTarget:self action:@selector(expandButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.expandButton];
-    
-    [self.view addConstraints:[NSArray arrayWithObjects:[NSLayoutConstraint constraintWithItem:self.expandButton attribute:(NSLayoutAttributeLeading) relatedBy:(NSLayoutRelationEqual) toItem:self.view attribute:(NSLayoutAttributeLeading) multiplier:1 constant:17], [NSLayoutConstraint constraintWithItem:self.expandButton attribute:(NSLayoutAttributeTop) relatedBy:(NSLayoutRelationEqual) toItem:self.view attribute:(NSLayoutAttributeTop) multiplier:1 constant:20], nil]];
-}
-
-- (void)expandButtonPressed {
-    // 显示分类面板
-    self.categoryController = [[CJCategoryController alloc] init];
-    self.categoryController.delegate = self;
-    self.categoryController.view.frame = self.view.bounds;
-    self.categoryController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:self.categoryController.view];
-    [self addChildViewController:self.categoryController];
-}
-
-- (void)closePannel {
-    // 关闭分类面板
-    [self.categoryController.view removeFromSuperview];
-    self.categoryController = nil;
-}
-
-- (void)showCategoryManage {
-    CJCategoryManageController *manageController = [[CJCategoryManageController alloc] init];
-    [self.navigationController pushViewController:manageController animated:YES];
 }
 
 #pragma mark - UITableViewDataSource
@@ -107,6 +73,9 @@ static NSString * const kHSDViewDebug = @"View Debug";
         vc.backBlock = ^{
             [self.navigationController popViewControllerAnimated:YES];
         };
+        [self.navigationController pushViewController:vc animated:YES];
+    } else if ([title isEqualToString:kHSDDatabaseInspect]) {
+        CJCategoryController *vc = [[CJCategoryController alloc] init];
         [self.navigationController pushViewController:vc animated:YES];
     } else if ([title isEqualToString:kHSDViewDebug]) {
         HSDSampleViewDebugViewController *vc = [[HSDSampleViewDebugViewController alloc] init];

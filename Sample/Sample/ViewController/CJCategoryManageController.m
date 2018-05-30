@@ -41,6 +41,7 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
+    self.title = @"分类管理";
     
     // headerContentView
     self.headerContentView = [[UIView alloc] init];

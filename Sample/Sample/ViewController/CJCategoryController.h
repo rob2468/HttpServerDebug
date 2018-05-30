@@ -7,18 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-@protocol CJCategoryControllerDelegate;
 
 @interface CJCategoryController : UIViewController
-
-@property (weak, nonatomic) id<CJCategoryControllerDelegate> delegate;
-
-@end
-
-@protocol CJCategoryControllerDelegate <NSObject>
-
-- (void)closePannel;
-
-- (void)showCategoryManage;
 
 @end
