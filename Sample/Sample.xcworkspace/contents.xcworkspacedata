@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Volumes/chenjun_sdcard/workspace/HttpServerDebug/Sample/Sample/Sample.xcodeproj">
+      location = "group:Sample/Sample.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:../HttpServerDebug.xcodeproj">

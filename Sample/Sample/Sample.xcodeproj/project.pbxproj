@@ -18,7 +18,6 @@
 		8F89739A20BED0C60081CA70 /* CJAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F89737320BED0C60081CA70 /* CJAppDelegate.m */; };
 		8F89739B20BED0C60081CA70 /* CJRootController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F89737520BED0C60081CA70 /* CJRootController.m */; };
 		8F8973A520BED0C60081CA70 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F89738C20BED0C60081CA70 /* main.m */; };
-		8F8973A720BED0C60081CA70 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8F89739420BED0C60081CA70 /* Info.plist */; };
 		8F8973C720BED5A80081CA70 /* CJCategoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F8973BA20BED5A70081CA70 /* CJCategoryController.m */; };
 		8F8973C820BED5A80081CA70 /* CJCategoryEditController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F8973BC20BED5A70081CA70 /* CJCategoryEditController.m */; };
 		8F8973C920BED5A80081CA70 /* CJCategoryManageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F8973BE20BED5A70081CA70 /* CJCategoryManageCell.m */; };
@@ -56,7 +55,6 @@
 		8F89737420BED0C60081CA70 /* CJRootController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJRootController.h; sourceTree = "<group>"; };
 		8F89737520BED0C60081CA70 /* CJRootController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CJRootController.m; sourceTree = "<group>"; };
 		8F89738C20BED0C60081CA70 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		8F89739020BED0C60081CA70 /* Sample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Sample.xcodeproj; sourceTree = "<group>"; };
 		8F89739420BED0C60081CA70 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8F8973B920BED5A70081CA70 /* CJCategoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJCategoryController.h; sourceTree = "<group>"; };
 		8F8973BA20BED5A70081CA70 /* CJCategoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CJCategoryController.m; sourceTree = "<group>"; };
@@ -156,15 +154,9 @@
 				8F89737420BED0C60081CA70 /* CJRootController.h */,
 				8F89737520BED0C60081CA70 /* CJRootController.m */,
 				8F89738C20BED0C60081CA70 /* main.m */,
-				8F89739020BED0C60081CA70 /* Sample.xcodeproj */,
 				8F89739320BED0C60081CA70 /* Supporting Files */,
 			);
 			name = Sample;
-			sourceTree = "<group>";
-		};
-		8F89739120BED0C60081CA70 /* Products */ = {
-			isa = PBXGroup;
-			name = Products;
 			sourceTree = "<group>";
 		};
 		8F89739320BED0C60081CA70 /* Supporting Files */ = {
@@ -266,12 +258,6 @@
 			mainGroup = 8FD708D81EFA61D900E0547C;
 			productRefGroup = 8FD708E21EFA61D900E0547C /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 8F89739120BED0C60081CA70 /* Products */;
-					ProjectRef = 8F89739020BED0C60081CA70 /* Sample.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				8FD708E01EFA61D900E0547C /* Sample */,
@@ -284,7 +270,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F8973A720BED0C60081CA70 /* Info.plist in Resources */,
 				8F89739620BED0C60081CA70 /* LaunchScreen.storyboard in Resources */,
 				8F89739520BED0C60081CA70 /* Assets.xcassets in Resources */,
 				8F5819492091C5EF003ED611 /* HttpServerDebug.bundle in Resources */,
@@ -435,7 +420,7 @@
 					"\"$(SRCROOT)/../../ThirdParties/FMDB\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Supporting Files/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -464,7 +449,7 @@
 					"\"$(SRCROOT)/../../ThirdParties/FMDB\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Supporting Files/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
