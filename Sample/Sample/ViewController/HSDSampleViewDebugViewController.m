@@ -17,6 +17,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
+    self.title = @"View Debug";
     
     CGRect viewFrame = CGRectMake(10, 10, 100, 100);
     UIView *redView = [[UIView alloc] initWithFrame:viewFrame];

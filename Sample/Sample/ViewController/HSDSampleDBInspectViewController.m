@@ -1,39 +1,93 @@
 //
-//  CJCategoryManageController.m
+//  HSDSampleDBInspectViewController.m
 //  Closet
 //
 //  Created by chenjun on 2018/5/17.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "CJCategoryManageController.h"
-#import "CJCategoryEditController.h"
-#import "CJCategoryManageCell.h"
-#import "CJCategoryDataModel.h"
-#import "CJDBCategoryManager.h"
-#import "CJRootController.h"
+#import "HSDSampleDBInspectViewController.h"
+#import "HSDSampleCategoryEditController.h"
+#import "HSDSampleCategoryDataModel.h"
+#import "HSDSampleDBCategoryManager.h"
+#import "HSDSampleRootController.h"
+@class HSDSampleCategoryManageCell;
 
 static const CGFloat kHeaderContentViewHeight = 64.0;     // 头部引导视图高度
 static const CGFloat kFooterContentViewHeight = 44.0;
 static const CGFloat kAddButtonEdgeLength = 34.0;
 static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCellReuseIdentifier";
 
-@interface CJCategoryManageController ()
-<CJCategoryEditControllerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, CJCategoryManageCellDelegate>
+@protocol HSDSampleCategoryManageCellDelegate <NSObject>
 
-@property (strong, nonatomic) UIView *headerContentView;
-@property (strong, nonatomic) UIView *footerContentView;
-@property (strong, nonatomic) UICollectionView *collectionView;
-@property (strong, nonatomic) NSMutableArray<CJCategoryDataModel *> *dataList;
+- (void)onManageCellDeleteButtonPressed:(HSDSampleCategoryManageCell *)cell;
 
 @end
 
-@implementation CJCategoryManageController
+@interface HSDSampleCategoryManageCell : UICollectionViewCell
+
+@property (strong, nonatomic) UILabel *nameLabel;
+@property (strong, nonatomic) UIButton *deleteButton;
+@property (weak, nonatomic) id<HSDSampleCategoryManageCellDelegate> delegate;
+
+@end
+
+@implementation HSDSampleCategoryManageCell
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.contentView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.1];
+        
+        // nameLabel
+        self.nameLabel = [[UILabel alloc] init];
+        self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        self.nameLabel.textColor = [UIColor blackColor];
+        self.nameLabel.font = [UIFont systemFontOfSize:14];
+        [self.contentView addSubview:self.nameLabel];
+        
+        [self.contentView addConstraints:
+         @[[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0],
+           [NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1 constant:-5]]];
+        
+        // deleteButton
+        self.deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.deleteButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.deleteButton setTitle:@"X" forState:UIControlStateNormal];
+        [self.deleteButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        [self.deleteButton addTarget:self action:@selector(deleteButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+        [self.contentView addSubview:self.deleteButton];
+        
+        [self.contentView addConstraints:
+         @[[NSLayoutConstraint constraintWithItem:self.deleteButton attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0],
+           [NSLayoutConstraint constraintWithItem:self.deleteButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1 constant:0]]];
+    }
+    return self;
+}
+
+- (void)deleteButtonPressed {
+    if ([self.delegate respondsToSelector:@selector(onManageCellDeleteButtonPressed:)]) {
+        [self.delegate onManageCellDeleteButtonPressed:self];
+    }
+}
+
+@end
+
+@interface HSDSampleDBInspectViewController ()
+<HSDSampleCategoryEditControllerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, HSDSampleCategoryManageCellDelegate>
+
+@property (strong, nonatomic) UIView *footerContentView;
+@property (strong, nonatomic) UICollectionView *collectionView;
+@property (strong, nonatomic) NSMutableArray<HSDSampleCategoryDataModel *> *dataList;
+
+@end
+
+@implementation HSDSampleDBInspectViewController
 
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.dataList = [[CJDBCategoryManager fetchAllCategories] mutableCopy];
+        self.dataList = [[HSDSampleDBCategoryManager fetchAllCategories] mutableCopy];
     }
     return self;
 }
@@ -43,37 +97,19 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"分类管理";
     
-    // headerContentView
-    self.headerContentView = [[UIView alloc] init];
+    // collectionView
     CGRect frame = self.view.bounds;
-    frame.size.height = kHeaderContentViewHeight;
-    self.headerContentView.frame = frame;
-    self.headerContentView.backgroundColor = [UIColor lightGrayColor];
-    [self.view addSubview:self.headerContentView];
-     
-    // “分类管理”
-    UILabel *titleLabel = [[UILabel alloc] init];
-    titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    titleLabel.font = [UIFont systemFontOfSize:18];
-    titleLabel.text = @"分类管理";
-    titleLabel.textColor = [UIColor whiteColor];
-    [self.headerContentView addSubview:titleLabel];
-
-    [self.view addConstraints:
-  @[[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.headerContentView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0],
-    [NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.headerContentView attribute:NSLayoutAttributeCenterY multiplier:1 constant:10]]];
-
-    // "完成"
-    UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    doneButton.translatesAutoresizingMaskIntoConstraints = NO;
-    doneButton.titleLabel.font = [UIFont systemFontOfSize:17];
-    [doneButton setTitle:@"完成" forState:UIControlStateNormal];
-    [doneButton addTarget:self action:@selector(doneButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-    [self.headerContentView addSubview:doneButton];
+    frame.origin.y = kHeaderContentViewHeight;
+    frame.size.height -= kHeaderContentViewHeight + kFooterContentViewHeight;
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+    self.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:flowLayout];
+    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.delegate = self;
+    self.collectionView.dataSource = self;
+    [self.view addSubview:self.collectionView];
     
-    [self.view addConstraints:
-     @[[NSLayoutConstraint constraintWithItem:doneButton attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.headerContentView attribute:NSLayoutAttributeTrailing multiplier:1 constant:-17],
-       [NSLayoutConstraint constraintWithItem:doneButton attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:titleLabel attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]]];
+    [self.collectionView registerClass:[HSDSampleCategoryManageCell class] forCellWithReuseIdentifier:kCollectionViewCellReuseIdentifier];
 
     // footerContentView
     self.footerContentView = [[UIView alloc] init];
@@ -102,25 +138,11 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
     [NSLayoutConstraint constraintWithItem:addButton attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.footerContentView attribute:NSLayoutAttributeCenterY multiplier:1 constant:0],
     [NSLayoutConstraint constraintWithItem:addButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.footerContentView attribute:NSLayoutAttributeWidth multiplier:0 constant:kAddButtonEdgeLength],
     [NSLayoutConstraint constraintWithItem:addButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.footerContentView attribute:NSLayoutAttributeHeight multiplier:0 constant:kAddButtonEdgeLength]]];
-
-    // collectionView
-    frame = self.view.bounds;
-    frame.origin.y = kHeaderContentViewHeight;
-    frame.size.height -= kHeaderContentViewHeight + kFooterContentViewHeight;
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
-    self.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:flowLayout];
-    self.collectionView.backgroundColor = [UIColor whiteColor];
-    self.collectionView.delegate = self;
-    self.collectionView.dataSource = self;
-    [self.view addSubview:self.collectionView];
-    
-    [self.collectionView registerClass:[CJCategoryManageCell class] forCellWithReuseIdentifier:kCollectionViewCellReuseIdentifier];
 }
 
 // 重新读取分类数据，并刷新视图
 - (void)reloadCollectionView {
-    self.dataList = [[CJDBCategoryManager fetchAllCategories] mutableCopy];
+    self.dataList = [[HSDSampleDBCategoryManager fetchAllCategories] mutableCopy];
     [self.collectionView reloadData];
 }
 
@@ -133,9 +155,9 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
 }
 
 - (void)showCategoryEditVC:(CJCategoryDataModel *)category {
-    CJCategoryEditController *addController = [[CJCategoryEditController alloc] initWithCategory:category];
+    HSDSampleCategoryEditController *addController = [[HSDSampleCategoryEditController alloc] initWithCategory:category];
     addController.delegate = self;
-    CJRootController *rootController = [CJRootController fetchRootVC];
+    HSDSampleRootController *rootController = [HSDSampleRootController fetchRootVC];
     [rootController presentViewController:addController animated:YES completion:nil];
 }
 
@@ -157,11 +179,11 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    CJCategoryManageCell *cell = (CJCategoryManageCell *)[collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellReuseIdentifier forIndexPath:indexPath];
+    HSDSampleCategoryManageCell *cell = (HSDSampleCategoryManageCell *)[collectionView dequeueReusableCellWithReuseIdentifier:kCollectionViewCellReuseIdentifier forIndexPath:indexPath];
     cell.delegate = self;
     
     NSInteger item = indexPath.item;
-    CJCategoryDataModel *category = [self.dataList objectAtIndex:item];
+    HSDSampleCategoryDataModel *category = [self.dataList objectAtIndex:item];
     cell.nameLabel.text = category.name;
     return cell;
 }
@@ -170,7 +192,7 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger idx = indexPath.item;
-    CJCategoryDataModel *category = [self.dataList objectAtIndex:idx];
+    HSDSampleCategoryDataModel *category = [self.dataList objectAtIndex:idx];
     [self showCategoryEditVC:category];
 }
 
@@ -188,15 +210,15 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
     return UIEdgeInsetsMake(top, left, bottom, right);
 }
 
-#pragma mark - CJCategoryManageCellDelegate
+#pragma mark - HSDSampleCategoryManageCellDelegate
 
-- (void)onManageCellDeleteButtonPressed:(CJCategoryManageCell *)cell {
+- (void)onManageCellDeleteButtonPressed:(HSDSampleCategoryManageCell *)cell {
     NSIndexPath *idxPath = [self.collectionView indexPathForCell:cell];
     if (idxPath) {
         NSIndexPath *indexPath = idxPath;
         // 获取分类
         NSInteger item = indexPath.item;
-        CJCategoryDataModel *category = [self.dataList objectAtIndex:item];
+        HSDSampleCategoryDataModel *category = [self.dataList objectAtIndex:item];
         NSInteger ID = category.ID;
         NSString *name = category.name;
         
@@ -210,7 +232,7 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
             if (ID != NSNotFound) {
                 NSInteger localID = ID;
                 // 删除数据库中指定分类
-                [CJDBCategoryManager deleteCategoryWithID:localID];
+                [HSDSampleDBCategoryManager deleteCategoryWithID:localID];
                 // 删除内存中指定分类
                 [self.dataList removeObjectAtIndex:item];
                 // 更新视图
@@ -218,7 +240,7 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
             }
         }];
         [alert addAction:confirmAction];
-        CJRootController *rootController = [CJRootController fetchRootVC];
+        HSDSampleRootController *rootController = [HSDSampleRootController fetchRootVC];
         [rootController presentViewController:alert animated:YES completion:nil];
     }
 }

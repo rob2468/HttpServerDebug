@@ -1,22 +1,21 @@
 //
-//  CJHomeController.m
-//  Closet
+//  HSDSampleHomeViewController.m
+//  Sample
 //
 //  Created by chenjun on 2018/4/26.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "CJHomeController.h"
-#import "CJCategoryController.h"
-#import "CJCategoryManageController.h"
+#import "HSDSampleHomeViewController.h"
 #import "HSDHttpServerControlPannelController.h"
+#import "HSDSampleDBInspectViewController.h"
 #import "HSDSampleViewDebugViewController.h"
 
 static NSString * const kHSDCtrlPannel = @"HSD Control Pannel";
 static NSString * const kHSDDatabaseInspect = @"Database Inspect";
 static NSString * const kHSDViewDebug = @"View Debug";
 
-@interface CJHomeController ()
+@interface HSDSampleHomeViewController ()
 <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
@@ -24,7 +23,7 @@ static NSString * const kHSDViewDebug = @"View Debug";
 
 @end
 
-@implementation CJHomeController
+@implementation HSDSampleHomeViewController
 
 - (instancetype)init {
     self = [super init];
@@ -75,7 +74,7 @@ static NSString * const kHSDViewDebug = @"View Debug";
         };
         [self.navigationController pushViewController:vc animated:YES];
     } else if ([title isEqualToString:kHSDDatabaseInspect]) {
-        CJCategoryController *vc = [[CJCategoryController alloc] init];
+        HSDSampleDBInspectViewController *vc = [[HSDSampleDBInspectViewController alloc] init];
         [self.navigationController pushViewController:vc animated:YES];
     } else if ([title isEqualToString:kHSDViewDebug]) {
         HSDSampleViewDebugViewController *vc = [[HSDSampleViewDebugViewController alloc] init];

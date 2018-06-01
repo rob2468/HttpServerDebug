@@ -1,22 +1,22 @@
 //
-//  CJDBCategoryManager.m
-//  Closet
+//  HSDSampleDBCategoryManager.m
+//  Sample
 //
 //  Created by chenjun on 2018/5/17.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "CJDBCategoryManager.h"
-#import "CJCategoryDataModel.h"
+#import "HSDSampleDBCategoryManager.h"
+#import "HSDSampleCategoryDataModel.h"
 #import "FMDB.h"
-#import "CJDBManager.h"
+#import "HSDSampleDBManager.h"
 
-@implementation CJDBCategoryManager
+@implementation HSDSampleDBCategoryManager
 
 // 获取所有“分类”
-+ (NSArray<CJCategoryDataModel *> *)fetchAllCategories {
-    NSMutableArray<CJCategoryDataModel *> *dataList = [[NSMutableArray alloc] init];
-    FMDatabaseQueue *databaseQueue = [CJDBManager sharedInstance].databaseQueue;
++ (NSArray<HSDSampleCategoryDataModel *> *)fetchAllCategories {
+    NSMutableArray<HSDSampleCategoryDataModel *> *dataList = [[NSMutableArray alloc] init];
+    FMDatabaseQueue *databaseQueue = [HSDSampleDBManager sharedInstance].databaseQueue;
     [databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
         NSString *tableCategory = kTABLECATEGORY;
         NSString *stat = [NSString stringWithFormat:@"SELECT * FROM %@;", tableCategory];
@@ -28,7 +28,7 @@
             while ([rs next]) {
                 NSInteger ID = [rs longForColumn:categoryFieldID];
                 NSString *name = [rs stringForColumn:categoryFieldName];
-                CJCategoryDataModel *category = [[CJCategoryDataModel alloc] init];
+                HSDSampleCategoryDataModel *category = [[HSDSampleCategoryDataModel alloc] init];
                 category.ID = ID;
                 category.name = name;
                 [dataList addObject:category];
@@ -40,8 +40,8 @@
 }
 
 // 添加“分类”
-+ (void)addCategory:(CJCategoryDataModel *)category {
-    FMDatabaseQueue *databaseQueue = [CJDBManager sharedInstance].databaseQueue;
++ (void)addCategory:(HSDSampleCategoryDataModel *)category {
+    FMDatabaseQueue *databaseQueue = [HSDSampleDBManager sharedInstance].databaseQueue;
     [databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
         NSString *tableName = kTABLECATEGORY;
         NSString *nameField = kCATEGORYFIELDNAME;
@@ -52,8 +52,8 @@
 }
 
 // 更新“分类”
-+ (void)updateCategory:(CJCategoryDataModel *)category {
-    FMDatabaseQueue *databaseQueue = [CJDBManager sharedInstance].databaseQueue;
++ (void)updateCategory:(HSDSampleCategoryDataModel *)category {
+    FMDatabaseQueue *databaseQueue = [HSDSampleDBManager sharedInstance].databaseQueue;
     [databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
         NSString *tableName = kTABLECATEGORY;
         NSString *idField = kCATEGORYFIELDID;
@@ -67,7 +67,7 @@
 
 // 删除指定“分类”
 + (void)deleteCategoryWithID:(NSInteger)ID {
-    FMDatabaseQueue *databaseQueue = [CJDBManager sharedInstance].databaseQueue;
+    FMDatabaseQueue *databaseQueue = [HSDSampleDBManager sharedInstance].databaseQueue;
     [databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
         NSString *tableCategory = kTABLECATEGORY;
         NSString *categoryFieldID = kCATEGORYFIELDID;

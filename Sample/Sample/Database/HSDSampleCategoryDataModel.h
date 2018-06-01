@@ -1,6 +1,6 @@
 //
-//  CJCategoryDataModel.h
-//  Closet
+//  HSDSampleCategoryDataModel.h
+//  Sample
 //
 //  Created by chenjun on 2018/5/17.
 //  Copyright © 2018年 chenjun. All rights reserved.
@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CJCategoryDataModel : NSObject
+@interface HSDSampleCategoryDataModel : NSObject
 
 @property (assign, nonatomic) NSInteger ID; // 唯一标识符
 @property (copy, nonatomic) NSString *name; // 分类名

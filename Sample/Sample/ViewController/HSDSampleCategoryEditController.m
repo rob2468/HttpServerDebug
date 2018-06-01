@@ -1,30 +1,30 @@
 //
-//  CJCategoryEditController.m
+//  HSDSampleCategoryEditController.m
 //  Closet
 //
 //  Created by chenjun on 2018/5/17.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "CJCategoryEditController.h"
-#import "CJCategoryDataModel.h"
-#import "CJDBCategoryManager.h"
+#import "HSDSampleCategoryEditController.h"
+#import "HSDSampleCategoryDataModel.h"
+#import "HSDSampleDBCategoryManager.h"
 
 static const CGFloat kHeaderContentViewHeight = 64.0;     // 头部引导视图高度
 
-@interface CJCategoryEditController ()
+@interface HSDSampleCategoryEditController ()
 
 // 视图
 @property (strong, nonatomic) UIView *headerContentView;
 @property (strong, nonatomic) UITextField *categoryNameTextField;
 
-@property (strong, nonatomic) CJCategoryDataModel *category;
+@property (strong, nonatomic) HSDSampleCategoryDataModel *category;
 
 @end
 
-@implementation CJCategoryEditController
+@implementation HSDSampleCategoryEditController
 
-- (instancetype)initWithCategory:(CJCategoryDataModel *)category {
+- (instancetype)initWithCategory:(HSDSampleCategoryDataModel *)category {
     self = [super init];
     if (self) {
         self.category = category;
@@ -126,7 +126,7 @@ static const CGFloat kHeaderContentViewHeight = 64.0;     // 头部引导视图�
     categoryName = [categoryName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     if (categoryName.length > 0) {
         if (!self.category) {
-            self.category = [[CJCategoryDataModel alloc] init];
+            self.category = [[HSDSampleCategoryDataModel alloc] init];
         }
         self.category.name = categoryName;
         isSuccess = YES;
@@ -135,10 +135,10 @@ static const CGFloat kHeaderContentViewHeight = 64.0;     // 头部引导视图�
     if (isSuccess) {
         if (self.category.ID == NSNotFound) {
             // 新增分类
-            [CJDBCategoryManager addCategory:self.category];
+            [HSDSampleDBCategoryManager addCategory:self.category];
         } else {
             // 更新分类
-            [CJDBCategoryManager updateCategory:self.category];
+            [HSDSampleDBCategoryManager updateCategory:self.category];
         }
         if ([self.delegate respondsToSelector:@selector(onCategoryEditControllerDismiss)]) {
             [self.delegate onCategoryEditControllerDismiss];

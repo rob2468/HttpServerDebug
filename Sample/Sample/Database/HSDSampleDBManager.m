@@ -1,41 +1,36 @@
 //
-//  CJDBManager.m
-//  Closet
+//  HSDSampleDBManager.m
+//  Sample
 //
 //  Created by chenjun on 2018/5/17.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "CJDBManager.h"
+#import "HSDSampleDBManager.h"
 #import "FMDB.h"
 
 static const NSInteger kCurrentVersion = 1;
 
 // 表名
 NSString * const kTABLECATEGORY = @"category";
-NSString * const kTABLEPRODUCT = @"product";
 // 字段名
 NSString * const kCATEGORYFIELDID = @"id";
 NSString * const kCATEGORYFIELDNAME = @"name";
-NSString * const kPRODUCTFIELDID = @"id";
-NSString * const kPRODUCTFIELDNAME = @"name";
-NSString * const kPRODUCTFIELDPRICE = @"price";
-NSString * const kPRODUCTFIELDIMAGEPATH = @"image_path";
 
-@interface CJDBManager ()
+@interface HSDSampleDBManager ()
 
 @property (strong, nonatomic) NSURL *dbFilePath;
 @property (strong, nonatomic, readwrite) FMDatabaseQueue *databaseQueue;
 
 @end
 
-@implementation CJDBManager
+@implementation HSDSampleDBManager
 
 + (instancetype)sharedInstance {
-    static CJDBManager *instance;
+    static HSDSampleDBManager *instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[CJDBManager alloc] init];
+        instance = [[HSDSampleDBManager alloc] init];
     });
     return instance;
 }
@@ -73,10 +68,6 @@ NSString * const kPRODUCTFIELDIMAGEPATH = @"image_path";
             [self.databaseQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
                 // 创建“分类”表
                 NSString *stat = [NSString stringWithFormat:@"CREATE TABLE %@ (%@ INTEGER PRIMARY KEY AUTOINCREMENT, %@ TEXT);", kTABLECATEGORY, kCATEGORYFIELDID, kCATEGORYFIELDNAME];
-                [db executeUpdate:stat];
-                
-                // 创建“单品”表
-                stat = [NSString stringWithFormat:@"CREATE TABLE %@ (%@ INTEGER PRIMARY KEY AUTOINCREMENT, %@ TEXT, %@ REAL, %@ TEXT);", kTABLEPRODUCT, kPRODUCTFIELDID, kPRODUCTFIELDNAME, kPRODUCTFIELDPRICE, kPRODUCTFIELDIMAGEPATH];
                 [db executeUpdate:stat];
             }];
         }
