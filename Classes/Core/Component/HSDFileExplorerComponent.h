@@ -5,16 +5,21 @@
 //  Created by chenjun on 2018/4/28.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
-//  TODO: decouple from cocoahttpserver
 
 #import <Foundation/Foundation.h>
-@protocol HTTPResponse;
 
 @interface HSDFileExplorerComponent : NSObject
 
 /**
- *  request data
+ *  enumarate directory and construct json data
+ *  @param filePath  the objective directory file path
+ *  @return  json data
  */
-- (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
++ (NSArray<NSDictionary *> *)constructFilesDataListInDirectory:(NSString *)filePath;
+
+/**
+ *
+ */
++ (NSDictionary *)constructFileAttribute:(NSString *)filePath;
 
 @end

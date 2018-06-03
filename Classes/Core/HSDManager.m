@@ -32,9 +32,6 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 @property (weak, nonatomic) id<HSDDelegate> delegate;
 @property (strong, nonatomic) HSDConsoleLogComponent *consoleLogComponent;
 @property (strong, nonatomic) HSDHostNameResolveComponent *hostNameResolveComponent;
-@property (strong, nonatomic) HSDDBInspectComponent *dbInspectComponent;
-@property (strong, nonatomic) HSDFileExplorerComponent *fileExplorerComponent;
-@property (strong, nonatomic) HSDSendInfoComponent *sendInfoComponent;
 @property (strong, nonatomic) HSDFilePreviewComponent *filePreviewComponent;
 
 @end
@@ -112,7 +109,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
 #ifdef DEBUG
     // develop web in simulator, use files in the project bundle directly
-    //    webPath = @"/Volumes/chenjun_sdcard/workspace/httpserverdebug/Resources/HttpServerDebug.bundle/web";
+//    webPath = @"/Volumes/chenjun_sdcard/workspace/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
 #endif
 
     // set http server parameters
@@ -210,36 +207,6 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     if (!component) {
         component = [[HSDHostNameResolveComponent alloc] init];
         manager.hostNameResolveComponent = component;
-    }
-    return component;
-}
-
-+ (HSDDBInspectComponent *)fetchTheDBInspectComponent {
-    HSDManager *manager = [HSDManager sharedInstance];
-    HSDDBInspectComponent *component = manager.dbInspectComponent;
-    if (!component) {
-        component = [[HSDDBInspectComponent alloc] init];
-        manager.dbInspectComponent = component;
-    }
-    return component;
-}
-
-+ (HSDFileExplorerComponent *)fetchTheFileExplorerComponent {
-    HSDManager *manager = [HSDManager sharedInstance];
-    HSDFileExplorerComponent *component = manager.fileExplorerComponent;
-    if (!component) {
-        component = [[HSDFileExplorerComponent alloc] init];
-        manager.fileExplorerComponent = component;
-    }
-    return component;
-}
-
-+ (HSDSendInfoComponent *)fetchTheSendInfoComponent {
-    HSDManager *manager = [HSDManager sharedInstance];
-    HSDSendInfoComponent *component = manager.sendInfoComponent;
-    if (!component) {
-        component = [[HSDSendInfoComponent alloc] init];
-        manager.sendInfoComponent = component;
     }
     return component;
 }

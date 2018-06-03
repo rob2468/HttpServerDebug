@@ -8,15 +8,126 @@
 
 #import "HSDComponentMiddleware.h"
 #import "HTTPDataResponse.h"
+#import "HTTPDynamicFileResponse.h"
+#import "HTTPMessage.h"
+#import "HSDFileExplorerComponent.h"
+#import "HSDDBInspectComponent.h"
 #import "HSDViewDebugComponent.h"
+#import "HSDSendInfoComponent.h"
+#import "HSDManager+Private.h"
+#import "HSDDefine.h"
 
 @implementation HSDComponentMiddleware
 
-+ (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
+#pragma mark - File Explorer
+
+/**
+ *  request data
+ */
++ (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
+    // parse data
+    NSString *filePath = [params objectForKey:@"file_path"];
+    
+    id json;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (filePath.length == 0) {
+        // request root path
+        NSString *homeDirectory = NSHomeDirectory();
+        NSArray *filesDataList = [HSDFileExplorerComponent constructFilesDataListInDirectory:homeDirectory];
+        json = [filesDataList copy];
+    } else {
+        // request specific file path
+        BOOL isDir;
+        if ([fileManager fileExistsAtPath:filePath isDirectory:&isDir]) {
+            if (isDir) {
+                // directory, construct directory contents
+                NSArray *filesDataList = [HSDFileExplorerComponent constructFilesDataListInDirectory:filePath];
+                json = [filesDataList copy];
+            } else {
+                json = [HSDFileExplorerComponent constructFileAttribute:filePath];
+            }
+        }
+    }
+    // serialization
+    NSData *data;
+    if (json) {
+        data = [NSJSONSerialization dataWithJSONObject:json options:0 error:nil];
+    }
+    HTTPDataResponse *response;
+    if (data) {
+        response = [[HTTPDataResponse alloc] initWithData:data];
+    }
+    return response;
+}
+
+#pragma mark - Database Inspect
+
+/**
+ *  fetch html page
+ */
++ (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params withConnection:(HTTPConnection *)connection {
+    NSObject<HTTPResponse> *response;
+    
+    // database file path
+    NSString *dbPath = [params objectForKey:@"db_path"];
+    dbPath = [dbPath stringByRemovingPercentEncoding];
+    
+    if (dbPath.length > 0) {
+        // fetch part of html
+        NSString *selectHtml = [HSDDBInspectComponent fetchTableNamesHTMLString:dbPath];
+        if (selectHtml.length > 0) {
+            NSString *documentRoot = [HSDManager fetchDocumentRoot];
+            NSString *htmlPath = [documentRoot stringByAppendingPathComponent:[NSString stringWithFormat:@"/pages/%@/%@.html", kHSDComponentDBInspect, kHSDComponentDBInspect]];
+            NSDictionary *replacementDict =
+            @{@"DB_FILE_PATH": dbPath,
+              @"SELECT_HTML": selectHtml
+              };
+            response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:connection separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
+        }
+    }
+    return response;
+}
+
+/**
+ *  request table data, database schema; execute sql
+ */
++ (NSObject<HTTPResponse> *)fetchDatabaseAPIResponseModules:(NSArray *)modules parameters:(NSDictionary *)params {
+    NSString *subModule;
+    if ([modules count] > 0) {
+        subModule = [modules objectAtIndex:0];
+    }
+    
+    NSData *data;
+    if (subModule.length == 0) {
+        // query
+        NSString *type = [params objectForKey:@"type"];
+        NSString *dbPath = [params objectForKey:@"db_path"];
+        if ([type isEqualToString:@"schema"]) {
+            data = [HSDDBInspectComponent queryDatabaseSchema:dbPath];
+        } else {
+            NSString *tableName = [params objectForKey:@"table_name"];
+            data = [HSDDBInspectComponent queryTableData:dbPath tableName:tableName];
+        }
+    } else if ([subModule isEqualToString:@"execute_sql"]) {
+        NSString *dbPath = [params objectForKey:@"db_path"];
+        NSString *sqlStr = [params objectForKey:@"sql"];
+        data = [HSDDBInspectComponent executeSQL:dbPath sql:sqlStr];
+    }
+    
+    HTTPDataResponse *response;
+    if (data) {
+        response = [[HTTPDataResponse alloc] initWithData:data];
+    }
+    return response;
+}
+
+#pragma mark - View Debug
+
++ (NSObject<HTTPResponse> *)fetchViewDebugAPIResponseModules:(NSArray *)modules parameters:(NSDictionary *)params {
     NSObject<HTTPResponse> *response;
     NSString *subModule;
-    if ([paths count] > 1) {
-        subModule = [paths objectAtIndex:1];
+    if ([modules count] > 0) {
+        subModule = [modules objectAtIndex:0];
     }
     if (subModule.length > 0) {
         if ([subModule isEqualToString:@"all_views"]) {
@@ -43,8 +154,8 @@
             }
             
             NSString *thirdModule;
-            if ([paths count] > 2) {
-                thirdModule = [paths objectAtIndex:2];
+            if ([modules count] > 1) {
+                thirdModule = [modules objectAtIndex:1];
             }
             if (view) {
                 if ([thirdModule isEqualToString:@"snapshot"]) {
@@ -58,6 +169,39 @@
             }
         }
     }
+    return response;
+}
+
+#pragma mark - Send Info
+
++ (NSObject<HTTPResponse> *)fetchSendInfoAPIResponseForMethod:(NSString *)method paths:(NSArray *)paths parameters:(NSDictionary *)params withRequest:(HTTPMessage *)request {
+    NSDictionary *responseDict;
+    NSString *info;
+    // parse info from request
+    if ([method isEqualToString:@"GET"]) {
+        if (params) {
+            info = [params objectForKey:@"info"];
+            info = [info stringByRemovingPercentEncoding];
+        }
+    } else if ([method isEqualToString:@"POST"]) {
+        NSString *contentType = [request headerField:@"Content-Type"];
+        if ([contentType hasPrefix:@"text/plain"]
+            || [contentType hasPrefix:@"application/x-www-form-urlencoded"]) {
+            NSData *infoData = [request body];
+            info = [[NSString alloc] initWithData:infoData encoding:NSUTF8StringEncoding];
+        }
+    }
+    responseDict =  [HSDSendInfoComponent fetchResultWithInfo:info];
+    
+    // serialization
+    NSData *responseData;
+    if (responseDict) {
+        responseData = [NSJSONSerialization dataWithJSONObject:responseDict options:0 error:nil];
+    }
+    if (!responseData) {
+        responseData = [@"1" dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    NSObject<HTTPResponse> *response = [[HTTPDataResponse alloc] initWithData:responseData];
     return response;
 }
 

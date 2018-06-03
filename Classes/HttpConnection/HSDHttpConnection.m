@@ -33,7 +33,7 @@
 - (BOOL)supportsMethod:(NSString *)method atPath:(NSString *)path {
     BOOL isSupported = [super supportsMethod:method atPath:path];
     if ([method isEqualToString:@"POST"]) {
-        if ([path isEqualToString:[NSString stringWithFormat:@"/%@", kHSDComponentSendInfo]]) {
+        if ([path isEqualToString:[NSString stringWithFormat:@"/api/%@", kHSDComponentSendInfo]]) {
             // "/send_info"
             isSupported = YES;
         }
@@ -57,10 +57,6 @@
         [tmp removeObject:@""];
         pathComps = tmp;
     }
-    NSString *firstPath;
-    if ([pathComps count] > 0) {
-        firstPath = [pathComps firstObject];
-    }
     // parse parameters
     NSMutableDictionary *params;
     if ([comps count] > 1) {
@@ -80,57 +76,61 @@
     // request host
     NSString *requestHost = [request headerField:@"Host"];
 
-    if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentFileExplorer]]) {
-        // file_explorer.html
-        response = [super httpResponseForMethod:method URI:path];
-    } else if ([firstPath isEqualToString:kHSDComponentFileExplorer]) {
-        // file_explorer api
-        HSDFileExplorerComponent *fileExplorerComponent = [HSDManager fetchTheFileExplorerComponent];
-        response = [fileExplorerComponent fetchFileExplorerAPIResponsePaths:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentDBInspect]]) {
-        // database_inspect.html
-        HSDDBInspectComponent *dbInspectComponent = [HSDManager fetchTheDBInspectComponent];
-        response = [dbInspectComponent fetchDatabaseHTMLResponse:params withConnection:self];
-    } else if ([firstPath isEqualToString:kHSDComponentDBInspect]) {
-        // database_inspect api
-        HSDDBInspectComponent *dbInspectComponent = [HSDManager fetchTheDBInspectComponent];
-        response = [dbInspectComponent fetchDatabaseAPIResponsePaths:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:kHSDComponentFilePreview]) {
-        // file_preview api
-        HSDFilePreviewComponent *filePreviewComponent = [HSDManager fetchTheFilePreviewComponent];
-        response = [filePreviewComponent fetchFilePreviewResponse:params forMethod:method URI:path];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentViewDebug]]) {
-        // view_debug.html
-        response = [super httpResponseForMethod:method URI:path];
-    } else if ([firstPath isEqualToString:kHSDComponentViewDebug]) {
-        // view_debug api
-        response = [HSDComponentMiddleware fetchViewDebugAPIResponsePaths:pathComps parameters:params];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentSendInfo]]) {
-        // send_info.html
-        response = [super httpResponseForMethod:method URI:path];
-    } else if ([firstPath isEqualToString:kHSDComponentSendInfo]) {
-        // send_info api
-        HSDSendInfoComponent *sendInfoComponent = [HSDManager fetchTheSendInfoComponent];
-        response = [sendInfoComponent fetchSendInfoAPIResponseForMethod:method paths:pathComps parameters:params withRequest:request];
-    } else if ([firstPath isEqualToString:[NSString stringWithFormat:@"%@.html", kHSDComponentConsoleLog]]) {
-        // console_log.html
-        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"console_log.html"];
-        // construct WebSocket url
-        NSString *webSocketURL = @"";
-        if (requestHost.length > 0) {
-            webSocketURL = [NSString stringWithFormat:@"ws://%@", requestHost];
+    NSString *firstPath;
+    if ([pathComps count] > 0) {
+        firstPath = [pathComps firstObject];
+    }
+    NSString *secondPath;
+    if ([pathComps count] > 1) {
+        secondPath = [pathComps objectAtIndex:1];
+    }
+    if ([firstPath isEqualToString:@"pages"]) {
+        // html pages
+        if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
+            // file_explorer.html
+            response = [super httpResponseForMethod:method URI:path];
+        } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
+            // database_inspect.html
+            response = [HSDComponentMiddleware fetchDatabaseHTMLResponse:params withConnection:self];
+        } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {
+            // view_debug.html
+            response = [super httpResponseForMethod:method URI:path];
+        } else if ([secondPath isEqualToString:kHSDComponentSendInfo]) {
+            // send_info.html
+            response = [super httpResponseForMethod:method URI:path];
+        } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
+            // console_log.html
+            NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"pages/console_log/console_log.html"];
+            // construct WebSocket url
+            NSString *webSocketURL = @"";
+            if (requestHost.length > 0) {
+                webSocketURL = [NSString stringWithFormat:@"ws://%@", requestHost];
+            }
+            NSDictionary *replacementDict =
+            @{@"WEBSOCKET_URL": webSocketURL};
+            response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
         }
-        NSDictionary *replacementDict =
-        @{@"WEBSOCKET_URL": webSocketURL};
-        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
-    } else if (firstPath.length == 0 || [firstPath isEqualToString:@"index.html"]) {
-        // index.html
-        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"index.html"];
-        NSString *dbPath = [HSDManager fetchDefaultInspectDBFilePath];
-        dbPath = dbPath.length > 0? dbPath: @"";
-        NSDictionary *replacementDict =
-        @{@"DB_FILE_PATH": dbPath};
-        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
+    } else if ([firstPath isEqualToString:@"api"]) {
+        // api requests
+        if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
+            // file_explorer api
+            response = [HSDComponentMiddleware fetchFileExplorerAPIResponsePaths:pathComps parameters:params];
+        } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
+            // database_inspect api
+            NSArray *modules = [pathComps subarrayWithRange:NSMakeRange(2, [pathComps count] - 2)];
+            response = [HSDComponentMiddleware fetchDatabaseAPIResponseModules:modules parameters:params];
+        } else if ([secondPath isEqualToString:kHSDComponentFilePreview]) {
+            // file_preview api
+            HSDFilePreviewComponent *filePreviewComponent = [HSDManager fetchTheFilePreviewComponent];
+            response = [filePreviewComponent fetchFilePreviewResponse:params forMethod:method URI:path];
+        } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {
+            // view_debug api
+            NSArray *modules = [pathComps subarrayWithRange:NSMakeRange(2, [pathComps count] - 2)];
+            response = [HSDComponentMiddleware fetchViewDebugAPIResponseModules:modules parameters:params];
+        } else if ([secondPath isEqualToString:kHSDComponentSendInfo]) {
+            // send_info api
+            response = [HSDComponentMiddleware fetchSendInfoAPIResponseForMethod:method paths:pathComps parameters:params withRequest:request];
+        }
     } else if ([firstPath isEqualToString:@"resources"]) {
         // set resources Content-Type manually
         NSString *pathExtension = [[pathComps lastObject] pathExtension];
@@ -138,6 +138,14 @@
         NSString *dataPath = [[config documentRoot] stringByAppendingPathComponent:path];
         NSData *data = [[NSData alloc] initWithContentsOfFile:dataPath];
         response = [[HSDHttpDataResponse alloc] initWithData:data contentType:contentType];
+    } else if (firstPath.length == 0) {
+        // index.html
+        NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"pages/index/index.html"];
+        NSString *dbPath = [HSDManager fetchDefaultInspectDBFilePath];
+        dbPath = dbPath.length > 0? dbPath: @"";
+        NSDictionary *replacementDict =
+        @{@"DB_FILE_PATH": dbPath};
+        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
     } else {
         response = [super httpResponseForMethod:method URI:path];
     }

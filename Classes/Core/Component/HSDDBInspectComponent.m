@@ -8,22 +8,18 @@
 
 #import "HSDDBInspectComponent.h"
 #import "FMDB.h"
-#import "HTTPDynamicFileResponse.h"
 #import "HSDManager+Private.h"
 #import "HSDDefine.h"
-#import "HTTPDataResponse.h"
 #import <sqlite3.h>
 
 @implementation HSDDBInspectComponent
 
-- (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params withConnection:(HTTPConnection *)connection {
-    NSObject<HTTPResponse> *response;
-    NSString *dbPath = [params objectForKey:@"db_path"];
-    dbPath = [dbPath stringByRemovingPercentEncoding];
++ (NSString *)fetchTableNamesHTMLString:(NSString *)dbPath {
+    NSMutableString *selectHtml;
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     if (dbPath.length > 0 && [database open]) {
         // all tables
-        NSMutableString *selectHtml = [[NSMutableString alloc] init];
+        selectHtml = [[NSMutableString alloc] init];
         NSString *stat = [NSString stringWithFormat:@"SELECT * FROM sqlite_master WHERE type='table';"];
         FMResultSet *rs = [database executeQuery:stat];
         while ([rs next]) {
@@ -40,91 +36,11 @@
         }
         [rs close];
         [database close];
-        
-        NSString *documentRoot = [HSDManager fetchDocumentRoot];
-        NSString *htmlPath = [documentRoot stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.html", kHSDComponentDBInspect]];
-        NSDictionary *replacementDict =
-        @{@"DB_FILE_PATH": dbPath,
-          @"SELECT_HTML": selectHtml
-          };
-        response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:connection separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
     }
-    return response;
+    return [selectHtml copy];
 }
 
-- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
-    NSString *subModule;
-    if ([paths count] > 1) {
-        subModule = [paths objectAtIndex:1];
-    }
-    
-    NSData *data;
-    if (subModule.length == 0) {
-        // query
-        NSString *type = [params objectForKey:@"type"];
-        if ([type isEqualToString:@"schema"]) {
-            data = [self queryDatabaseSchema:params];
-        } else {
-            data = [self queryTableData:params];
-        }
-    } else if ([subModule isEqualToString:@"execute_sql"]) {
-        // execute sql
-        NSString *dbPath = [params objectForKey:@"db_path"];
-        NSString *sqlStr = [params objectForKey:@"sql"];
-        sqlStr = [sqlStr stringByRemovingPercentEncoding];
-        FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
-        BOOL res = NO;
-        NSString *errMsg = @"";
-        NSMutableArray *allData = [[NSMutableArray alloc] init];
-        if (dbPath.length > 0 && sqlStr.length > 0 && [database open]) {
-            res = [HSDDBInspectComponent executeStatements:sqlStr withFMDB:database withResultBlock:^int(NSDictionary *resultsDictionary) {
-                // field names
-                NSArray *fields;
-                if ([allData count] > 0) {
-                    fields = [allData firstObject];
-                } else {
-                    fields = [resultsDictionary allKeys];
-                    [allData addObject:fields];
-                }
-                // result set
-                NSMutableArray *record = [[NSMutableArray alloc] init];
-                for (NSString *field in fields) {
-                    id tmp = [resultsDictionary objectForKey:field];
-                    NSString *valueStr = @"";
-                    if ([tmp isKindOfClass:[NSString class]]) {
-                        valueStr = (NSString *)tmp;
-                    }
-                    [record addObject:valueStr];
-                }
-                [allData addObject:record];
-                return 0;
-            }];
-            errMsg = database.lastErrorMessage;
-            [database close];
-        }
-        // construct response json
-        errMsg = errMsg.length > 0? errMsg: @"";
-        NSDictionary *resDict =
-        @{
-          @"status": @(res),
-          @"errMsg": errMsg,
-          @"resultSet": allData
-          };
-        data = [NSJSONSerialization dataWithJSONObject:resDict options:0 error:nil];
-    }
-    
-    HTTPDataResponse *response;
-    if (data) {
-        response = [[HTTPDataResponse alloc] initWithData:data];
-    }
-    return response;
-}
-
-#pragma mark -
-
-- (NSData *)queryTableData:(NSDictionary *)params {
-    NSString *dbPath = [params objectForKey:@"db_path"];
-    NSString *tableName = [params objectForKey:@"table_name"];
++ (NSData *)queryTableData:(NSString *)dbPath tableName:(NSString *)tableName {
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     NSMutableArray *allData = [[NSMutableArray alloc] init];
     if (dbPath.length > 0 && tableName.length > 0 && [database open]) {
@@ -161,8 +77,7 @@
     return data;
 }
 
-- (NSData *)queryDatabaseSchema:(NSDictionary *)params {
-    NSString *dbPath = [params objectForKey:@"db_path"];
++ (NSData *)queryDatabaseSchema:(NSString *)dbPath {
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     NSMutableDictionary *allData = [[NSMutableDictionary alloc] init];
     if (dbPath.length > 0 && [database open]) {
@@ -213,6 +128,51 @@
     }
     
     NSData *data = [NSJSONSerialization dataWithJSONObject:allData options:0 error:nil];
+    return data;
+}
+
++ (NSData *)executeSQL:(NSString *)dbPath sql:(NSString *)sqlStr {
+    // execute sql
+    sqlStr = [sqlStr stringByRemovingPercentEncoding];
+    FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
+    BOOL res = NO;
+    NSString *errMsg = @"";
+    NSMutableArray *allData = [[NSMutableArray alloc] init];
+    if (dbPath.length > 0 && sqlStr.length > 0 && [database open]) {
+        res = [HSDDBInspectComponent executeStatements:sqlStr withFMDB:database withResultBlock:^int(NSDictionary *resultsDictionary) {
+            // field names
+            NSArray *fields;
+            if ([allData count] > 0) {
+                fields = [allData firstObject];
+            } else {
+                fields = [resultsDictionary allKeys];
+                [allData addObject:fields];
+            }
+            // result set
+            NSMutableArray *record = [[NSMutableArray alloc] init];
+            for (NSString *field in fields) {
+                id tmp = [resultsDictionary objectForKey:field];
+                NSString *valueStr = @"";
+                if ([tmp isKindOfClass:[NSString class]]) {
+                    valueStr = (NSString *)tmp;
+                }
+                [record addObject:valueStr];
+            }
+            [allData addObject:record];
+            return 0;
+        }];
+        errMsg = database.lastErrorMessage;
+        [database close];
+    }
+    // construct response json
+    errMsg = errMsg.length > 0? errMsg: @"";
+    NSDictionary *resDict =
+    @{
+      @"status": @(res),
+      @"errMsg": errMsg,
+      @"resultSet": allData
+      };
+    NSData *data = [NSJSONSerialization dataWithJSONObject:resDict options:0 error:nil];
     return data;
 }
 

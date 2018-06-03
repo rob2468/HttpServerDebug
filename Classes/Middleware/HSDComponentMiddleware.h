@@ -7,12 +7,40 @@
 //
 
 #import <Foundation/Foundation.h>
+@class HTTPConnection;
+@class HTTPMessage;
 @protocol HTTPResponse;
 
 @interface HSDComponentMiddleware : NSObject
 
+#pragma mark - File Explorer
+
+/**
+ *  request data
+ */
++ (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
+
+#pragma mark - Database Inspect
+
+/**
+ *  fetch html page
+ */
++ (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params withConnection:(HTTPConnection *)connection;
+
+/**
+ *  request table data, database schema; execute sql
+ */
++ (NSObject<HTTPResponse> *)fetchDatabaseAPIResponseModules:(NSArray *)modules parameters:(NSDictionary *)params;
+
 #pragma mark - View Debug
 
-+ (NSObject<HTTPResponse> *)fetchViewDebugAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
+/**
+ *
+ */
++ (NSObject<HTTPResponse> *)fetchViewDebugAPIResponseModules:(NSArray *)modules parameters:(NSDictionary *)params;
+
+#pragma mark - Send Info
+
++ (NSObject<HTTPResponse> *)fetchSendInfoAPIResponseForMethod:(NSString *)method paths:(NSArray *)paths parameters:(NSDictionary *)params withRequest:(HTTPMessage *)request;
 
 @end

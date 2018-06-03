@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>视图调试</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="libs/three.min.js"></script>
-<script src="libs/OrbitControls.min.js"></script>
+<script src="../../libs/three.min.js"></script>
+<script src="../../libs/OrbitControls.min.js"></script>
 <style type="text/css">
 body {
     font-size: 12px;
@@ -199,7 +199,7 @@ var MESHBORDERSELECTEDCOLOR = 0x457CD3;     // mesh border selected color
 function requestViewHierarchyData() {
     var viewXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/' + ROOTPATH + '/' + ALLVIEWSPATH + '?';
+    + '/api/' + ROOTPATH + '/' + ALLVIEWSPATH + '?';
     viewXHR.open('GET', requestURL);
     viewXHR.onreadystatechange = function () {
         if (viewXHR.readyState === 4) {
@@ -353,7 +353,7 @@ function generateViewPropertyListHTML(viewData) {
     ulStr += '<hr>';
     // Snapshot
     var imgURL = document.location.protocol + '//' + document.location.host
-    + '/' + ROOTPATH + '/' + SELECTVIEWPATH + '/' + SNAPSHOTPATH
+    + '/api/' + ROOTPATH + '/' + SELECTVIEWPATH + '/' + SNAPSHOTPATH
     + '?memory_address=' + memoryAddress + '&class_name=' + className;
     ulStr += '<li><div>Snapshot: </div><div>'
     + '<img id="view-property-snapshot" alt="" src="' + imgURL + '"></div></li>';

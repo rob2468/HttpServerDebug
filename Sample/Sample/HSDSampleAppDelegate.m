@@ -32,7 +32,8 @@
 }
 
 -(NSDictionary *)onHSDReceiveInfo:(NSString *)info {
-    return @{@"a": @"b"};
+    info = info.length > 0 ? info : @"";
+    return @{@"sent_info": info};
 }
 
 @end

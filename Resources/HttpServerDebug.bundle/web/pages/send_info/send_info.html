@@ -23,20 +23,6 @@ textarea {
         <p>Response Data:</p>
         <p id="response_data"></p>
     </div>
-<!--   <div>
-    <p>百度浏览器示例链接：</p>
-    <p>首页：bdbrowser://bdhome/params</p>
-    <p>趣听：flyflow://com.baidu.browser.apps/ting?CMD=open&level=home</p>
-    <p>网址导航：bdb://SiteNavi/params?</p>
-    <p>小说：flyflow://com.baidu.browser.apps/novel?CMD=open?sub_feature=home</p>
-    <p>假日：bdb://holiday/params?holidayDate=</p>
-    <p>播放音频：flyflow://com.baidu.browser.apps/ting?CMD=play&audioId=2070140&albumId=41105</p>
-    <p>漫画：flyflow://com.baidu.browser.apps/comic?CMD=open&level=home&from=home</p>
-  </div>
-  <div>
-    <p>web上传的文件路径：</p>
-    %@
-  </div> -->
 
 <script type="text/javascript">
 function submitForm() {
@@ -44,7 +30,7 @@ function submitForm() {
 
     var infoXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/send_info';
+    + '/api/send_info';
     infoXHR.open('POST', requestURL);
     infoXHR.onreadystatechange = function () {
         if (infoXHR.readyState === 4) {

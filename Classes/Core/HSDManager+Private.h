@@ -45,21 +45,6 @@
 /**
  *
  */
-+ (HSDDBInspectComponent *)fetchTheDBInspectComponent;
-
-/**
- *
- */
-+ (HSDFileExplorerComponent *)fetchTheFileExplorerComponent;
-
-/**
- *
- */
-+ (HSDSendInfoComponent *)fetchTheSendInfoComponent;
-
-/**
- *
- */
 + (HSDFilePreviewComponent *)fetchTheFilePreviewComponent;
 
 /**

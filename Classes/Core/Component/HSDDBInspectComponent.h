@@ -8,19 +8,27 @@
 //  TODO: decouple from cocoahttpserver
 
 #import <Foundation/Foundation.h>
-@protocol HTTPResponse;
-@class HTTPConnection;
 
 @interface HSDDBInspectComponent : NSObject
 
 /**
- *  fetch html page
+ *  all table names list
  */
-- (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params withConnection:(HTTPConnection *)connection;
++ (NSString *)fetchTableNamesHTMLString:(NSString *)dbPath;
 
 /**
- *  request table data, database schema; execute sql
+ *
  */
-- (NSObject<HTTPResponse> *)fetchDatabaseAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
++ (NSData *)queryTableData:(NSString *)dbPath tableName:(NSString *)tableName;
+
+/**
+ *
+ */
++ (NSData *)queryDatabaseSchema:(NSString *)dbPath;
+
+/**
+ *
+ */
++ (NSData *)executeSQL:(NSString *)dbPath sql:(NSString *)sqlStr;
 
 @end

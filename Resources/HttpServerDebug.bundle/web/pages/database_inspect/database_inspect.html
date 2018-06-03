@@ -105,7 +105,7 @@ td {
         <div class="ctrl-head">
         <select id="table-name-select" onchange="onDatabaseTableReload()">%%SELECT_HTML%%</select>
         <button type="button" id="browse-data-reload-button" class="reload reload-normal" onclick="onDatabaseTableReload()">
-            <img src="resources/loading-bubbles.svg" alt="loading"><span>刷新</span>
+            <img src="../../resources/loading-bubbles.svg" alt="loading"><span>刷新</span>
         </button>
         </div>
         <div class="table" id="browse-data-table">
@@ -116,7 +116,7 @@ td {
     <div class="tab-pane" id="execute-sql-tab">
         <div class="ctrl-head">
         <button type="button" id="execute-sql-reload-button" class="reload reload-normal" onclick="onDatabaseExecuteSQL()">
-        <img src="resources/loading-bubbles.svg" alt="loading"><span>执行</span>
+        <img src="../../resources/loading-bubbles.svg" alt="loading"><span>执行</span>
         </button>
         </div>
         <div class="execute-sql-result">
@@ -212,7 +212,7 @@ td {
         // request
         var resultSetXHR = new XMLHttpRequest();
         var requestURL = document.location.protocol + '//' + document.location.host
-        + '/database_inspect?db_path=' + dbPath + '&table_name=' + tableName;
+        + '/api/database_inspect?db_path=' + dbPath + '&table_name=' + tableName;
         resultSetXHR.open('GET', requestURL);
         resultSetXHR.onreadystatechange = function () {
             if (resultSetXHR.readyState === 4) {
@@ -261,7 +261,7 @@ td {
         // request
         var resultSetXHR = new XMLHttpRequest();
         var requestURL = document.location.protocol + '//' + document.location.host
-        + '/database_inspect/execute_sql?db_path=' + dbPath + '&sql=' + encodeURIComponent(sql);
+        + '/api/database_inspect/execute_sql?db_path=' + dbPath + '&sql=' + encodeURIComponent(sql);
         resultSetXHR.open('GET', requestURL);
         resultSetXHR.onreadystatechange = function () {
             if (resultSetXHR.readyState === 4) {
@@ -308,7 +308,7 @@ td {
         // request
         var resultSetXHR = new XMLHttpRequest();
         var requestURL = document.location.protocol + '//' + document.location.host
-        + '/database_inspect?db_path=' + dbPath + '&type=schema';
+        + '/api/database_inspect?db_path=' + dbPath + '&type=schema';
         resultSetXHR.open('GET', requestURL);
         resultSetXHR.onreadystatechange = function () {
             if (resultSetXHR.readyState === 4) {

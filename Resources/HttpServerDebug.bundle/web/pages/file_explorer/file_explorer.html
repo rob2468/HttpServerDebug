@@ -68,10 +68,10 @@ div.split-handler {
     height: 20px;
 }
 .directory-container img.directory-icon {
-    content: url(resources/directory-icon.png);
+    content: url(../../resources/directory-icon.png);
 }
 .directory-container img.file-icon {
-    content: url(resources/file-icon.png);
+    content: url(../../resources/file-icon.png);
 }
 .directory-container li span {
     display: inline-block;
@@ -92,7 +92,7 @@ div.split-handler {
     margin: 0 0 0 1px;
 }
 #property-sidebar img.icon {
-    content: url(resources/file-icon.png);
+    content: url(../../resources/file-icon.png);
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -150,7 +150,7 @@ var allData;
     // request root directory
     var rootDirXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/file_explorer';
+    + '/api/file_explorer';
     rootDirXHR.open('GET', requestURL);
     rootDirXHR.onreadystatechange = function () {
         if (rootDirXHR.readyState === 4) {
@@ -203,7 +203,7 @@ function onItemClicked(element) {
             // request file attributes
             var attrXHR = new XMLHttpRequest();
             var requestURL = document.location.protocol + '//' + document.location.host
-            + '/file_explorer?file_path=' + filePath;
+            + '/api/file_explorer?file_path=' + filePath;
             attrXHR.open('GET', requestURL);
             attrXHR.onreadystatechange = function () {
                 if (attrXHR.readyState === 4) {
@@ -256,17 +256,17 @@ function onItemDoubleClicked(element) {
             || fileExtension === 'sqlite'
             || fileExtension === 'sqlite3') {
             // database inspect
-            url = window.location.origin + '/database_inspect.html?db_path=' + filePath;
+            url = window.location.origin + '/pages/database_inspect/database_inspect.html?db_path=' + filePath;
         } else {
             // file preview
-            url = window.location.origin + '/file_preview/' + fileName + '?file_path=' + filePath;
+            url = window.location.origin + '/api/file_preview/' + fileName + '?file_path=' + filePath;
         }
         window.open(url);
     } else {
         // directory
         var dirXHR = new XMLHttpRequest();
         var requestURL = document.location.protocol + '//' + document.location.host
-        + '/file_explorer?file_path=' + filePath;
+        + '/api/file_explorer?file_path=' + filePath;
         dirXHR.open('GET', requestURL);
         dirXHR.onreadystatechange = function () {
             if (dirXHR.readyState === 4) {
