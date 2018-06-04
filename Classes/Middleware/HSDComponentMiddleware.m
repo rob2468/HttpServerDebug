@@ -10,14 +10,32 @@
 #import "HTTPDataResponse.h"
 #import "HTTPDynamicFileResponse.h"
 #import "HTTPMessage.h"
+#import "HSDHttpConnection.h"
 #import "HSDFileExplorerComponent.h"
 #import "HSDDBInspectComponent.h"
 #import "HSDViewDebugComponent.h"
 #import "HSDSendInfoComponent.h"
+#import "HSDFilePreviewComponent.h"
+#import "HSDConsoleLogComponent.h"
 #import "HSDManager+Private.h"
 #import "HSDDefine.h"
 
+@interface HSDComponentMiddleware ()
+
+@property (strong, nonatomic) HSDConsoleLogComponent *consoleLogComponent;
+
+@end
+
 @implementation HSDComponentMiddleware
+
++ (instancetype)sharedInstance {
+    static HSDComponentMiddleware *singletonMiddleware;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        singletonMiddleware = [[HSDComponentMiddleware alloc] init];
+    });
+    return singletonMiddleware;
+}
 
 #pragma mark - File Explorer
 
@@ -203,6 +221,66 @@
     }
     NSObject<HTTPResponse> *response = [[HTTPDataResponse alloc] initWithData:responseData];
     return response;
+}
+
+#pragma mark - File Preview
+
++ (NSObject<HTTPResponse> *)fetchFilePreviewResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path {
+    HSDHttpDataResponse *response;
+    NSString *contentType = @"text/plain;charset=utf-8";
+    NSString *filePath = [params objectForKey:@"file_path"];
+    if (filePath.length > 0) {
+        filePath = [filePath stringByRemovingPercentEncoding];
+        NSData *data;
+        if ([filePath isEqualToString:@"standardUserDefaults"]) {
+            NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+            NSString *str = [dict description];
+            data = [str dataUsingEncoding:NSUTF8StringEncoding];
+        } else {
+            // response content type
+            NSString *extension = filePath.pathExtension;
+            contentType = [HSDManager fetchContentTypeWithFilePathExtension:extension];
+            // contents of file
+            data = [HSDFilePreviewComponent fetchContentsWithFilePath:filePath];
+        }
+        if (data) {
+            response = [[HSDHttpDataResponse alloc] initWithData:data contentType:contentType];
+        }
+    }
+    if (!response) {
+        NSString *prompt = @"文件不存在或不支持预览";
+        NSData *data = [prompt dataUsingEncoding:NSUTF8StringEncoding];
+        response = [[HSDHttpDataResponse alloc] initWithData:data contentType:contentType];
+    }
+    return response;
+}
+
+#pragma mark - Console Log
+
+/**
+ *  redirect STDERR_FILENO
+ */
++ (void)consoleLogRedirectStandardErrorOutput:(void(^)(NSString *))readCompletionBlock {
+    HSDConsoleLogComponent *consoleLogComponent = [HSDComponentMiddleware sharedInstance].consoleLogComponent;
+    consoleLogComponent.readCompletionBlock = readCompletionBlock;
+    [consoleLogComponent redirectStandardErrorOutput];
+}
+
+/**
+ *  reset STDERR_FILENO
+ */
++ (void)consoleLogRecoverStandardErrorOutput {
+    HSDConsoleLogComponent *consoleLogComponent = [HSDComponentMiddleware sharedInstance].consoleLogComponent;
+    [consoleLogComponent recoverStandardErrorOutput];
+}
+
+#pragma mark - Getter
+
+- (HSDConsoleLogComponent *)consoleLogComponent {
+    if (!_consoleLogComponent) {
+        _consoleLogComponent = [[HSDConsoleLogComponent alloc] init];
+    }
+    return _consoleLogComponent;
 }
 
 @end

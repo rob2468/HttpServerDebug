@@ -121,8 +121,7 @@
             response = [HSDComponentMiddleware fetchDatabaseAPIResponseModules:modules parameters:params];
         } else if ([secondPath isEqualToString:kHSDComponentFilePreview]) {
             // file_preview api
-            HSDFilePreviewComponent *filePreviewComponent = [HSDManager fetchTheFilePreviewComponent];
-            response = [filePreviewComponent fetchFilePreviewResponse:params forMethod:method URI:path];
+            response = [HSDComponentMiddleware fetchFilePreviewResponse:params forMethod:method URI:path];
         } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {
             // view_debug api
             NSArray *modules = [pathComps subarrayWithRange:NSMakeRange(2, [pathComps count] - 2)];

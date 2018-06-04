@@ -13,7 +13,7 @@
 /**
  *  finish reading from stderr
  */
-@property (nonatomic, strong) void(^readCompletionBlock)(NSString *);
+@property (nonatomic, copy) void(^readCompletionBlock)(NSString *);
 
 /**
  *  redirect STDERR_FILENO
@@ -23,6 +23,6 @@
 /**
  *  reset STDERR_FILENO
  */
--(void)recoverStandardErrorOutput;
+- (void)recoverStandardErrorOutput;
 
 @end

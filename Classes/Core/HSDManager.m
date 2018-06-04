@@ -10,14 +10,9 @@
 #import "HTTPServer.h"
 #import "HSDHttpConnection.h"
 #import "HSDDelegate.h"
-#import "HSDConsoleLogComponent.h"
 #import <UIKit/UIKit.h>
 #import "HSDDefine.h"
 #import "HSDHostNameResolveComponent.h"
-#import "HSDDBInspectComponent.h"
-#import "HSDFileExplorerComponent.h"
-#import "HSDSendInfoComponent.h"
-#import "HSDFilePreviewComponent.h"
 
 NSString *kHSDNotificationServerStarted = @"kHSDNotificationServerStarted";
 NSString *kHSDNotificationServerStopped = @"kHSDNotificationServerStopped";
@@ -30,9 +25,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 @property (copy, nonatomic) NSString *serverPort;
 @property (copy, nonatomic) NSString *serverName;
 @property (weak, nonatomic) id<HSDDelegate> delegate;
-@property (strong, nonatomic) HSDConsoleLogComponent *consoleLogComponent;
 @property (strong, nonatomic) HSDHostNameResolveComponent *hostNameResolveComponent;
-@property (strong, nonatomic) HSDFilePreviewComponent *filePreviewComponent;
 
 @end
 
@@ -174,7 +167,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 }
 
 + (void)resolveHostName:(HSDHostNameResolveBlock)block {
-    HSDHostNameResolveComponent *component = [HSDManager fetchTheHostNameResolveComponent];
+    HSDHostNameResolveComponent *component = [HSDManager sharedInstance].hostNameResolveComponent;
     [component resolveHostName:block];
 }
 
@@ -189,36 +182,13 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     return documentRoot;
 }
 
-#pragma mark - Components
+#pragma mark - Getter
 
-+ (HSDConsoleLogComponent *)fetchTheConsoleLogComponent {
-    HSDManager *manager = [HSDManager sharedInstance];
-    HSDConsoleLogComponent *component = manager.consoleLogComponent;
-    if (!component) {
-        component = [[HSDConsoleLogComponent alloc] init];
-        manager.consoleLogComponent = component;
+- (HSDHostNameResolveComponent *)hostNameResolveComponent {
+    if (!_hostNameResolveComponent) {
+        _hostNameResolveComponent = [[HSDHostNameResolveComponent alloc] init];
     }
-    return component;
-}
-
-+ (HSDHostNameResolveComponent *)fetchTheHostNameResolveComponent {
-    HSDManager *manager = [HSDManager sharedInstance];
-    HSDHostNameResolveComponent *component = manager.hostNameResolveComponent;
-    if (!component) {
-        component = [[HSDHostNameResolveComponent alloc] init];
-        manager.hostNameResolveComponent = component;
-    }
-    return component;
-}
-
-+ (HSDFilePreviewComponent *)fetchTheFilePreviewComponent {
-    HSDManager *manager = [HSDManager sharedInstance];
-    HSDFilePreviewComponent *component = [[HSDFilePreviewComponent alloc] init];
-    if (!component) {
-        component = [[HSDFilePreviewComponent alloc] init];
-        manager.filePreviewComponent = component;
-    }
-    return component;
+    return _hostNameResolveComponent;
 }
 
 #pragma mark - Utility

@@ -64,6 +64,8 @@ static int stdErrFd = -1;     // saved origin stderr
 }
 
 -(void)recoverStandardErrorOutput {
+    self.readCompletionBlock = nil;
+
     // remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleReadCompletionNotification object:nil];
     

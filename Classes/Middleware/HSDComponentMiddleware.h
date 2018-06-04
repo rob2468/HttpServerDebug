@@ -43,4 +43,20 @@
 
 + (NSObject<HTTPResponse> *)fetchSendInfoAPIResponseForMethod:(NSString *)method paths:(NSArray *)paths parameters:(NSDictionary *)params withRequest:(HTTPMessage *)request;
 
+#pragma mark - File Preview
+
++ (NSObject<HTTPResponse> *)fetchFilePreviewResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path;
+
+#pragma mark - Console Log
+
+/**
+ *  redirect STDERR_FILENO
+ */
++ (void)consoleLogRedirectStandardErrorOutput:(void(^)(NSString *))readCompletionBlock;
+
+/**
+ *  reset STDERR_FILENO
+ */
++ (void)consoleLogRecoverStandardErrorOutput;
+
 @end

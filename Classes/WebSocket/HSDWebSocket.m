@@ -8,7 +8,7 @@
 
 #import "HSDWebSocket.h"
 #import "HSDManager+Private.h"
-#import "HSDConsoleLogComponent.h"
+#import "HSDComponentMiddleware.h"
 
 @implementation HSDWebSocket
 
@@ -16,13 +16,9 @@
     [super didOpen];
     
     // redirect stderr
-    HSDConsoleLogComponent *consoleLogComponent= [HSDManager fetchTheConsoleLogComponent];
-    [consoleLogComponent redirectStandardErrorOutput];
-    
-    HSDWebSocket __weak *weakSelf = self;
-    consoleLogComponent.readCompletionBlock = ^(NSString *logStr) {
-        [weakSelf sendMessage:logStr];
-    };
+    [HSDComponentMiddleware consoleLogRedirectStandardErrorOutput:^(NSString *logStr) {
+        [self sendMessage:logStr];
+    }];
 }
 
 - (void)didReceiveMessage:(NSString *)msg {
@@ -32,8 +28,7 @@
     [super didClose];
     
     // reset stderr
-    HSDConsoleLogComponent *consoleLogComponent = [HSDManager fetchTheConsoleLogComponent];
-    [consoleLogComponent recoverStandardErrorOutput];
+    [HSDComponentMiddleware consoleLogRecoverStandardErrorOutput];
 }
 
 @end

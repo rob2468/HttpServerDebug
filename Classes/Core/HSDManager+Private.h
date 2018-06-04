@@ -33,21 +33,6 @@
 + (NSString *)fetchDocumentRoot;
 
 /**
- *  return the HSDConsoleLogComponent singleton instance
- */
-+ (HSDConsoleLogComponent *)fetchTheConsoleLogComponent;
-
-/**
- *  return the HSDHostNameResolveComponent singleton instance
- */
-+ (HSDHostNameResolveComponent *)fetchTheHostNameResolveComponent;
-
-/**
- *
- */
-+ (HSDFilePreviewComponent *)fetchTheFilePreviewComponent;
-
-/**
  *  Content-Type according to file extension, default return value text/plain;charset=utf-8
  */
 + (NSString *)fetchContentTypeWithFilePathExtension:(NSString *)pathExtension;
