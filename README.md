@@ -129,6 +129,4 @@ fi
 
 ## Acknowledgments
 
-[CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer)
-
-[FLEX](https://github.com/Flipboard/FLEX)
+[CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer), [FLEX](https://github.com/Flipboard/FLEX), [Custom-Context-Menu](https://github.com/callmenick/Custom-Context-Menu)
