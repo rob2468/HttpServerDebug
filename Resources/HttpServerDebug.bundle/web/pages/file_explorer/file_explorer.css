@@ -1,0 +1,43 @@
+/* context menu */
+.context-menu {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    padding: 8px 0;
+    width: 240px;
+    background-color: #fff;
+    border: solid 1px #dfdfdf;
+    border-radius: 4px;
+    box-shadow: 1px 1px 2px #cfcfcf;
+}
+
+.context-menu-active {
+    display: block;
+}
+
+.context-menu-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.context-menu-item {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.context-menu-item:last-child {
+  margin-bottom: 0;
+}
+
+.context-menu-link {
+  display: block;
+  padding: 4px 12px;
+  color: #000000;
+  text-decoration: none;
+}
+
+.context-menu-link:hover {
+  color: #fff;
+  background-color: #0069d9;
+}

@@ -110,8 +110,7 @@ div.split-handler {
     border-left: 1px solid #E0E0E0;
 }
 </style>
-<script type="text/javascript">
-</script>
+<link rel="stylesheet" style="text/css" href="file_explorer.css" >
 </head>
 <body>
 <div id="file-explorer">
@@ -120,6 +119,16 @@ div.split-handler {
     <div class="split-handler" onmousedown="initResizeDrag(event)"></div>
     <div class="content-container"></div>
 </div>
+<nav id="context-menu" class="context-menu">
+    <ul class="context-menu-items">
+        <li class="context-menu-item">
+            <a href="#" class="context-menu-link" data-action="open">打开</a>
+        </li>
+        <li class="context-menu-item">
+            <a href="#" class="context-menu-link" data-action="download">下载</a>
+        </li>
+    </ul>
+</nav>
 <script type="text/javascript">
 /* Data Model */
 var DirectoryContainerItem = {
@@ -171,12 +180,7 @@ var allData;
     rootDirXHR.send(null);
 })();
 
-var clickTimerOut;
-function onItemClicked(element) {
-    if (clickTimerOut) {
-        clearTimeout(clickTimerOut);
-    }
-    clickTimerOut = setTimeout(function () {
+function parseDataOfElement(element) {
         // parse data
         var eleID = element.id;
         var separatedArr = eleID.split('-');
@@ -186,6 +190,24 @@ function onItemClicked(element) {
         section = parseInt(section, 10);
         var itemList = allData[section].items;
         var item = itemList[row];
+        return {
+            'data': item,
+            'section': section,
+            'row': row
+        };
+}
+
+var clickTimerOut;
+function onItemClicked(element) {
+    if (clickTimerOut) {
+        clearTimeout(clickTimerOut);
+    }
+    clickTimerOut = setTimeout(function () {
+        // parse data
+        var parsedData = parseDataOfElement(element)
+        var item = parsedData.data;
+        var section = parsedData.section;
+        var row = parsedData.row;
         var isDir = item.is_directory;
         var fileName = item.file_name;
         var filePath = item.file_path;
@@ -226,14 +248,10 @@ function onItemDoubleClicked(element) {
         clearTimeout(clickTimerOut);
     }
     // parse data
-    var eleID = element.id;
-    var separatedArr = eleID.split('-');
-    var row = separatedArr.pop();
-    row = parseInt(row, 10);
-    var section = separatedArr.pop();
-    section = parseInt(section, 10);
-    var itemList = allData[section].items;
-    var item = itemList[row];
+    var parsedData = parseDataOfElement(element);
+    var item = parsedData.data;
+    var section = parsedData.section;
+    var row = parsedData.row;
     var isDir = item.is_directory;
     var fileName = item.file_name;
     var filePath = item.file_path;
@@ -327,7 +345,7 @@ function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
     var isDir = item.is_directory;
     var fileName = item.file_name;
 
-    var htmlStr = '<li id="directory-container-' + dirIdx + '-' + fileIdx
+    var htmlStr = '<li class="file-item" id="directory-container-' + dirIdx + '-' + fileIdx
     + '" title="' + fileName
     + '" onclick="onItemClicked(this)" ondblclick="onItemDoubleClicked(this)"><img class=';
     // is directory
@@ -457,7 +475,7 @@ function updateSelectedState(section, row) {
     selectedEle = document.getElementById('directory-container-' + section + '-' + row);
     selectedEle.classList.add('selected');
 }
-
 </script>
+<script type="text/javascript" src="file_explorer.js"></script>
 </body>
 </html>
