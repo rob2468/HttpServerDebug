@@ -130,6 +130,11 @@
             // send_info api
             response = [HSDComponentMiddleware fetchSendInfoAPIResponseForMethod:method paths:pathComps parameters:params withRequest:request];
         }
+    } else if ([firstPath isEqualToString:@"favicon.ico"]) {
+        // favicon
+        NSString *relativePath = [NSString stringWithFormat:@"resources/favicon.ico"];
+        NSString *dataPath = [[config documentRoot] stringByAppendingPathComponent:relativePath];
+        response = [[HTTPFileResponse alloc] initWithFilePath:dataPath forConnection:self];
     } else if ([firstPath isEqualToString:@"resources"]) {
         // set resources Content-Type manually
         NSString *pathExtension = [[pathComps lastObject] pathExtension];
