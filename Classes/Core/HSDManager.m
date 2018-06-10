@@ -196,8 +196,15 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 + (NSString *)fetchContentTypeWithFilePathExtension:(NSString *)pathExtension {
     pathExtension = [pathExtension lowercaseString];
     
-    NSString *contentType = @"text/plain;charset=utf-8";
-    if ([pathExtension isEqualToString:@"png"]) {
+//    NSString *contentType = @"text/plain;charset=utf-8";
+    NSString *contentType;
+    if ([pathExtension isEqualToString:@"html"]) {
+        contentType = @"text/html";
+    } else if ([pathExtension isEqualToString:@"js"]) {
+        contentType = @"text/javascript";
+    } else if ([pathExtension isEqualToString:@"css"]) {
+        contentType = @"text/css";
+    } else if ([pathExtension isEqualToString:@"png"]) {
         contentType = @"image/png";
     } else if ([pathExtension isEqualToString:@"jpg"] ||
                [pathExtension isEqualToString:@"jpeg"]) {

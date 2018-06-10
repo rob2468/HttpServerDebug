@@ -8,7 +8,6 @@
 
 #import "HSDHttpConnection.h"
 #import "HSDDefine.h"
-#import "HTTPFileResponse.h"
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
@@ -19,6 +18,7 @@
 #import "HSDFileExplorerComponent.h"
 #import "HSDSendInfoComponent.h"
 #import "HSDFilePreviewComponent.h"
+#import <objc/runtime.h>
 
 @interface HSDHttpConnection ()
 
@@ -28,7 +28,7 @@
 
 @implementation HSDHttpConnection
 
-#pragma mark -- override methods
+#pragma mark - override methods
 
 - (BOOL)supportsMethod:(NSString *)method atPath:(NSString *)path {
     BOOL isSupported = [super supportsMethod:method atPath:path];
@@ -88,16 +88,16 @@
         // html pages
         if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
             // file_explorer.html
-            response = [super httpResponseForMethod:method URI:path];
+            response = [self hsdHttpResponseForMethod:method URI:path];
         } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
             // database_inspect.html
             response = [HSDComponentMiddleware fetchDatabaseHTMLResponse:params withConnection:self];
         } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {
             // view_debug.html
-            response = [super httpResponseForMethod:method URI:path];
+            response = [self hsdHttpResponseForMethod:method URI:path];
         } else if ([secondPath isEqualToString:kHSDComponentSendInfo]) {
             // send_info.html
-            response = [super httpResponseForMethod:method URI:path];
+            response = [self hsdHttpResponseForMethod:method URI:path];
         } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
             // console_log.html
             NSString *htmlPath = [[config documentRoot] stringByAppendingPathComponent:@"pages/console_log/console_log.html"];
@@ -151,7 +151,7 @@
         @{@"DB_FILE_PATH": dbPath};
         response = [[HTTPDynamicFileResponse alloc] initWithFilePath:htmlPath forConnection:self separator:kHSDTemplateSeparator replacementDictionary:replacementDict];
     } else {
-        response = [super httpResponseForMethod:method URI:path];
+        response = [self hsdHttpResponseForMethod:method URI:path];
     }
     return response;
 }
@@ -168,6 +168,24 @@
 - (void)processBodyData:(NSData *)postDataChunk {
     // TODO: here, assuming only one data chunk
     [request setBody:postDataChunk];
+}
+
+#pragma mark - custom methods
+
+/**
+ *  interface between subclass and base class
+ */
+- (NSObject<HTTPResponse> *)hsdHttpResponseForMethod:(NSString *)method URI:(NSString *)path {
+    NSObject<HTTPResponse> *response = [super httpResponseForMethod:method URI:path];
+    
+    // add content type for response
+    NSString *extension = path.pathExtension;
+    NSString *contentType = [HSDManager fetchContentTypeWithFilePathExtension:extension];
+    if (contentType.length > 0 && [response isKindOfClass:[HTTPFileResponse class]]) {
+        HTTPFileResponse *fileResponse = (HTTPFileResponse *)response;
+        [fileResponse setHSDContentType:contentType];
+    }
+    return response;
 }
 
 @end
@@ -196,3 +214,19 @@
 
 @end
 
+@implementation HTTPFileResponse (Generic)
+
+- (void)setHSDContentType:(NSString *)contentType {
+    objc_setAssociatedObject(self, @selector(httpHeaders), contentType, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (NSDictionary *)httpHeaders {
+    NSDictionary *httpHeaders;
+    NSString *type = objc_getAssociatedObject(self, @selector(httpHeaders));
+    if (type.length > 0) {
+        httpHeaders = @{@"Content-Type": type};
+    }
+    return httpHeaders;
+}
+
+@end

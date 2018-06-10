@@ -8,6 +8,7 @@
 
 #import "HTTPConnection.h"
 #import "HTTPDataResponse.h"
+#import "HTTPFileResponse.h"
 
 @interface HSDHttpConnection : HTTPConnection
 
@@ -21,3 +22,13 @@
 
 @end
 
+@interface HTTPFileResponse (Generic)
+
+- (void)setHSDContentType:(NSString *)contentType;
+
+/**
+ *  add unrealized HTTPResponse method httpHeaders for HTTPFileResponse
+ */
+- (NSDictionary *)httpHeaders;
+
+@end
