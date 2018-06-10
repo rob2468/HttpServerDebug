@@ -204,6 +204,8 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
         contentType = @"image/jpeg";
     } else if ([pathExtension isEqualToString:@"svg"]) {
         contentType = @"image/svg+xml";
+    } else if ([pathExtension isEqualToString:@"zip"]) {
+        contentType = @"application/zip";
     }
     return contentType;
 }

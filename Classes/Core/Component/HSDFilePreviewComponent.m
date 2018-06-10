@@ -8,10 +8,11 @@
 
 #import "HSDFilePreviewComponent.h"
 #import "ZipArchive.h"
+#import "HSDManager+Private.h"
 
 @implementation HSDFilePreviewComponent
 
-+ (NSData *)fetchContentsWithFilePath:(NSString *)filePath {
++ (NSData *)fetchContentsWithFilePath:(NSString *)filePath contentType:(NSString **)contentType {
     NSData *data;
     // generate response data
     if (![filePath hasPrefix:@"/"]) {
@@ -36,22 +37,32 @@
     BOOL isDirectory;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
     
+    NSString *fileContentType;
+
     if (isExist) {
         if (isDirectory) {
             // request directory, zip archive directory and response
             if ([[NSFileManager defaultManager] contentsOfDirectoryAtPath:filePath error:nil].count > 0) {
-                NSString *tmpFileName = [NSString stringWithFormat:@"hsd_file_preview_%@", filePath.lastPathComponent];
+                NSString *tmpFileName = [NSString stringWithFormat:@"hsd_file_preview_%@.zip", filePath.lastPathComponent];
                 NSString *tmpPath = [NSTemporaryDirectory() stringByAppendingPathComponent:tmpFileName];
                 [SSZipArchive createZipFileAtPath:tmpPath withContentsOfDirectory:filePath];
                 data = [[NSData alloc] initWithContentsOfFile:tmpPath];
+                // content type
+                NSString *fileExtension = tmpPath.pathExtension;
+                fileContentType = [HSDManager fetchContentTypeWithFilePathExtension:fileExtension];
                 // clean tmp file
                 [[NSFileManager defaultManager] removeItemAtPath:tmpPath error:nil];
             }
         } else {
             // request file
             data = [[NSData alloc] initWithContentsOfFile:filePath];
+            
+            // content type
+            NSString *fileExtension = filePath.pathExtension;
+            fileContentType = [HSDManager fetchContentTypeWithFilePathExtension:fileExtension];
         }
     }
+    *contentType = fileContentType;
     return data;
 }
 

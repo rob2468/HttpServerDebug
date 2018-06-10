@@ -11,8 +11,8 @@
 @interface HSDFilePreviewComponent : NSObject
 
 /**
- *
+ *  return contents of file
  */
-+ (NSData *)fetchContentsWithFilePath:(NSString *)filePath;
++ (NSData *)fetchContentsWithFilePath:(NSString *)filePath contentType:(NSString **)contentType;
 
 @end

@@ -236,11 +236,8 @@
             NSString *str = [dict description];
             data = [str dataUsingEncoding:NSUTF8StringEncoding];
         } else {
-            // response content type
-            NSString *extension = filePath.pathExtension;
-            contentType = [HSDManager fetchContentTypeWithFilePathExtension:extension];
             // contents of file
-            data = [HSDFilePreviewComponent fetchContentsWithFilePath:filePath];
+            data = [HSDFilePreviewComponent fetchContentsWithFilePath:filePath contentType:&contentType];
         }
         if (data) {
             response = [[HSDHttpDataResponse alloc] initWithData:data contentType:contentType];

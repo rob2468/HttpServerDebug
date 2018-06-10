@@ -205,15 +205,19 @@
         if (action === 'open') {
             onItemDoubleClicked(fileItemInContext);
         } else if (action === 'download') {
-            var dataItem = dataItemOfElement(fileItemInContext).data;
+            // parse data
+            var dataItem = parseDataOfElement(fileItemInContext).data;
             var isDir = dataItem.is_directory;
             var fileName = dataItem.file_name;
             var filePath = dataItem.file_path;
-            
-            var url = window.location.origin + '/api/file_preview/' + fileName + '?file_path=' + filePath;
-
+            var url = window.location.origin + '/api/file_preview?file_path=' + filePath;
+            // download
+            var event = new MouseEvent('click');
+            var aEle = document.createElement('a');
+            aEle.download = fileName;
+            aEle.href = url;
+            aEle.dispatchEvent(event);
         }
-        console.log('Task ID - ' + fileItemInContext.getAttribute('data-id') + ', Task action - ' + action);
         toggleMenuOff();
     }
   
