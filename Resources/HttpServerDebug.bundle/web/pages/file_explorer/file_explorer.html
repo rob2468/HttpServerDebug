@@ -22,8 +22,12 @@ body {
     white-space: nowrap;
 }
 #property-sidebar {
+    display: none;
     right: 0;
-    width: 0;
+    width: 200px;
+}
+#property-sidebar.active {
+    display: block;
 }
 .directory-container {
     display: inline-block;
@@ -52,7 +56,7 @@ div.split-handler {
     height: 26px;
     border: 1px solid transparent;
     color: #000;
-    background-color: #0000;
+    background-color: #000000;
 }
 .directory-container li.selected {
     color: #fff;
@@ -372,14 +376,14 @@ function showPropertySidebar(item, attrs) {
     var fileSize = attrs.file_size;
     var creationTime = attrs.creation_time;
     var modificationTime = attrs.modification_time;
+    var widthStr = '200px';
 
     var fileExpEle = document.getElementById('file-explorer');
     var propertySidebarEle = document.getElementById('property-sidebar');
-    var widthStr = '200px';
 
     // expand property side bar area
     fileExpEle.style.right = widthStr;
-    propertySidebarEle.style.width = widthStr;
+    propertySidebarEle.classList.add('active');
 
     // construct html
     var htmlStr = '<img class="icon">';
@@ -399,7 +403,7 @@ function hidePropertySidebar() {
     var propertySidebarEle = document.getElementById('property-sidebar');
 
     fileExpEle.style.right = '0';
-    propertySidebarEle.style.width = '0';
+    propertySidebarEle.classList.remove('active');
     propertySidebarEle.getElementsByClassName('content-container')[0].innerHTML = '';
 }
 
