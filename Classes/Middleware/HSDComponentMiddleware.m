@@ -226,12 +226,14 @@
 
 + (NSObject<HTTPResponse> *)fetchFilePreviewResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path {
     HSDHttpDataResponse *response;
-    NSString *contentType = @"text/plain;charset=utf-8";
+    NSString *contentType;
     NSString *filePath = [params objectForKey:@"file_path"];
     if (filePath.length > 0) {
         filePath = [filePath stringByRemovingPercentEncoding];
         NSData *data;
         if ([filePath isEqualToString:@"standardUserDefaults"]) {
+            contentType = @"text/plain;charset=utf-8";
+            
             NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
             NSString *str = [dict description];
             data = [str dataUsingEncoding:NSUTF8StringEncoding];
@@ -244,6 +246,8 @@
         }
     }
     if (!response) {
+        contentType = @"text/plain;charset=utf-8";
+        
         NSString *prompt = @"文件不存在或不支持预览";
         NSData *data = [prompt dataUsingEncoding:NSUTF8StringEncoding];
         response = [[HSDHttpDataResponse alloc] initWithData:data contentType:contentType];
