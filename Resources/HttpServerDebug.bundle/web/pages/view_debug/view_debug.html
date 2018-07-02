@@ -6,142 +6,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="../../libs/three.min.js"></script>
 <script src="../../libs/OrbitControls.min.js"></script>
-<style type="text/css">
-body {
-    font-size: 12px;
-}
-.sidebar {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-}
-.sidebar ul {
-    list-style-type: none;
-    margin: 0;
-}
-.sidebar.navigation-sidebar {
-    left: 0;
-    width: 350px;
-    background-color: #f6f6f6;
-}
-.sidebar.property-sidebar {
-    right: 0;
-    width: 350px;
-    background-color: #f2f2f2;
-}
-.sidebar .container {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    overflow: scroll;
-}
-.navigation-sidebar .container {
-    left: 0;
-    right: 3px;
-}
-.property-sidebar .container {
-    left: 3px;
-    right: 0;
-}
-.sidebar .split-handler {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    height: 100%;
-    cursor: col-resize;
-}
-.navigation-sidebar .split-handler {
-    right: 0;
-    border-right: 1px solid #e0e0e0;
-}
-.property-sidebar .split-handler {
-    left: 0;
-    border-left: 1px solid #e0e0e0;
-}
-#view-hierarchy-list ul {
-    padding: 0 0 0 10px;
-}
-#view-hierarchy-list li {
-    white-space: nowrap;
-    line-height: 35px;
-    cursor: pointer;
-}
-#view-hierarchy-list li.active {
-    background-color: #dad5d5;
-}
-#view-hierarchy-list li span {
-    border-left: 1px solid;
-    padding-left: 4px;
-    display: inline-block;
-}
-#view-property-list ul {
-    padding: 0;
-}
-#view-property-list img {
-    width: 75%;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-}
-/* Middle Area */
-div.view-hierarchy-area {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-#canvas-frame {
-    width: 100%;
-    height: 100%;
-}
-#canvas-toolbar {
-    position: absolute;
-    height: 35px;
-    bottom: 0;
-    left: 30%;
-    right: 30%;
-    background-color: #f0f0f0;
-}
-#canvas-toolbar .control-tool {
-    display: inline-block;
-}
-#depth-unit-text {
-    width: 50px;
-    text-align: center;
-}
-</style>
+<link rel="stylesheet" href="view_debug.css">
 </head>
 <body>
-<div class="view-hierarchy-area">
-    <div id="canvas-frame"></div>
-    <div id="canvas-toolbar">
-        <div class="control-tool" title="Adjust the spacing between views">
-        <button type="button" class="depth-unit" onclick="onDepthUnitClick('-')">-</button>
-        <label><input type="text" name="depth-unit" id="depth-unit-text" onchange="onDepthUnitChange()"></label>
-        <button type="button" class="depth-unit" onclick="onDepthUnitClick('+')">+</button>
-        </div>
-        <div class="control-tool" title="Orient to 2D">
-        <button type="button" onclick="onOrientTo2DClick()">R</button>
-        </div>
-    </div>
-</div>
 
-<div class="sidebar navigation-sidebar">
-    <div class="container">
-        <div id="view-hierarchy-list">
+<div class="table-container">
+    <div class="table-row">
+        <div class="table-cell sidebar navigation-sidebar">
+            <div class="container">
+                <div id="view-hierarchy-list">
+                </div>
+            </div>
+            <div class="split-handler"></div>
         </div>
-    </div>
-    <div class="split-handler"></div>
-</div>
-<div class="sidebar property-sidebar">
-    <div class="container">
-        <div id="view-property-list">
+
+        <div class="table-cell">
+            <div class="view-hierarchy-area">
+                <div id="canvas-frame"></div>
+            </div>
+            <div id="canvas-toolbar">
+                <div class="control-tool" title="Adjust the spacing between views">
+                    <button type="button" class="depth-unit" onclick="onDepthUnitClick('-')">-</button>
+                    <label><input type="text" name="depth-unit" id="depth-unit-text" onchange="onDepthUnitChange()"></label>
+                    <button type="button" class="depth-unit" onclick="onDepthUnitClick('+')">+</button>
+                </div>
+                <div class="control-tool" title="Orient to 2D">
+                    <button type="button" onclick="onOrientTo2DClick()">R</button>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="split-handler"></div>
-</div>
+
+        <div class="table-cell sidebar property-sidebar">
+            <div class="container">
+                <div id="view-property-list">
+                </div>
+            </div>
+            <div class="split-handler"></div>
+        </div>
+    </div><!-- table-row -->
+</div><!-- table-container -->
 
 <script type="text/javascript">
 (function sideBarAdjust() {
@@ -220,6 +123,10 @@ function onViewHierarchyNavigationItemClick(id) {
     if (selectedID === id) {
         return;
     }
+
+    var event = window.event;
+    event.stopPropagation();
+
     // update selected state
     if (selectedID) {
         // update navigation
@@ -505,10 +412,26 @@ document.addEventListener('click', onDocumentMouseClick, false);
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 function onDocumentMouseClick(event) {
+    // origin data
+    var domRect = renderer.domElement.getBoundingClientRect();
+    var domX = domRect.x;
+    var domY = domRect.y;
+    var clientX = event.clientX;
+    var clientY = event.clientY;
+    var domWidth = renderer.domElement.clientWidth;
+    var domHeight = renderer.domElement.clientHeight;
+
+    if (clientX < domX || clientX > domX + domWidth
+    || clientY < domY || clientY > domY + domHeight) {
+        // click postion out of canvas
+        return;
+    }
+
     event.preventDefault();
 
-    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+    // coordinate in THREE.js world
+    mouse.x = (clientX - domX - domWidth / 2) / (domWidth / 2);
+    mouse.y = (domHeight / 2 - (clientY - domY)) / (domHeight / 2);
 
     raycaster.setFromCamera(mouse, camera);
     var intersects = raycaster.intersectObjects(scene.children);

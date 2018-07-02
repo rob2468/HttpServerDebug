@@ -1,0 +1,120 @@
+/* global */
+body {
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+}
+
+/* canvas area */
+div.view-hierarchy-area {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+#canvas-frame {
+    width: 100%;
+    height: 100%;
+}
+
+/* table layout */
+.table-container {
+    display: table;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+.table-row {
+    display: table-row;
+}
+.table-cell {
+    display: table-cell;
+    position: relative;
+}
+
+/* sidebar */
+.sidebar {
+    width: 300px;
+    background-color: #f2f2f2;
+}
+.sidebar .container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow: scroll;
+    height: 100%;
+}
+.navigation-sidebar .container {
+    left: 0;
+    right: 3px;
+}
+.property-sidebar .container {
+    left: 3px;
+    right: 0;
+}
+.sidebar ul {
+    list-style-type: none;
+    margin: 0;
+}
+.sidebar .split-handler {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    cursor: col-resize;
+}
+.navigation-sidebar .split-handler {
+    right: 0;
+    border-right: 1px solid #e0e0e0;
+}
+.property-sidebar .split-handler {
+    left: 0;
+    border-left: 1px solid #e0e0e0;
+}
+#view-hierarchy-list ul {
+    padding: 0 0 0 10px;
+}
+#view-hierarchy-list li {
+    white-space: nowrap;
+    line-height: 35px;
+    cursor: pointer;
+}
+#view-hierarchy-list li.active {
+    background-color: #dad5d5;
+}
+#view-hierarchy-list li span {
+    border-left: 1px solid;
+    padding-left: 4px;
+    display: inline-block;
+}
+#view-property-list ul {
+    padding: 0;
+}
+#view-property-list img {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+/* toolbar */
+#canvas-toolbar {
+    position: absolute;
+    height: 35px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #f0f0f0;
+}
+#canvas-toolbar .control-tool {
+    display: inline-block;
+}
+#depth-unit-text {
+    width: 50px;
+    text-align: center;
+}
