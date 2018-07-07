@@ -23,13 +23,13 @@
 </div>
 
 <div id="canvas-toolbar">
-    <div class="control-tool" title="Adjust the spacing between views">
-        <button type="button" class="depth-unit" onclick="onDepthUnitClick('-')">-</button>
-        <label><input type="text" name="depth-unit" id="depth-unit-text" onchange="onDepthUnitChange()"></label>
-        <button type="button" class="depth-unit" onclick="onDepthUnitClick('+')">+</button>
+    <div class="control-tool depth-unit" title="Adjust the spacing between views">
+        <input type="range" class="depth-unit" min="5" max="150" value="50" step="5" onchange="onDepthUnitChange()">
     </div>
-    <div class="control-tool" title="Orient to 2D">
-        <button type="button" onclick="onOrientTo2DClick()">R</button>
+    <div class="tools-collection">
+        <div class="control-tool" title="Orient to 2D">
+            <button type="button" onclick="onOrientTo2DClick()">R</button>
+        </div>
     </div>
 </div>
 
@@ -406,8 +406,8 @@ function initTHREE(startIdx) {
     controls = new THREE.OrbitControls(camera, renderer.domElement);
 
     // update input html
-    var textEle = document.getElementById('depth-unit-text');
-    textEle.value = depthUnit;
+    var depthUnitEle = document.querySelector('input[type="range"].depth-unit');
+    depthUnitEle.value = depthUnit;
 }
 
 function animateTHREE() {
@@ -451,21 +451,10 @@ function onDocumentMouseClick(event) {
 }
 
 /* canvas toolbar control */
-// click increase or decrease button
-function onDepthUnitClick(action) {
-    var newDepthUnit = depthUnit;
-    if (action === '-') {
-        newDepthUnit -= 5;
-    } else if (action === '+') {
-        newDepthUnit += 5;
-    }
-
-    updateMeshDepthUnit(newDepthUnit);
-}
-// change text input
+// range input, value changed
 function onDepthUnitChange() {
-    var textEle = document.getElementById('depth-unit-text');
-    var newDepthUnit = textEle.value;
+    var depthUnitEle = document.querySelector('input[type="range"].depth-unit');
+    var newDepthUnit = depthUnitEle.value;
     newDepthUnit = parseInt(newDepthUnit, 10);
     if (isNaN(newDepthUnit)) {
         newDepthUnit = depthUnit;
