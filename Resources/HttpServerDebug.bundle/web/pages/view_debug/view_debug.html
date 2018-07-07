@@ -10,49 +10,48 @@
 </head>
 <body>
 
-<div class="table-container">
-    <div class="table-row">
-        <div class="table-cell sidebar navigation-sidebar">
-            <div class="container">
-                <div id="view-hierarchy-list">
-                </div>
-            </div>
-            <div class="split-handler"></div>
-        </div>
+<div class="view-hierarchy-area">
+    <div id="canvas-frame"></div>
+</div>
 
-        <div class="table-cell">
-            <div class="view-hierarchy-area">
-                <div id="canvas-frame"></div>
-            </div>
-            <div id="canvas-toolbar">
-                <div class="control-tool" title="Adjust the spacing between views">
-                    <button type="button" class="depth-unit" onclick="onDepthUnitClick('-')">-</button>
-                    <label><input type="text" name="depth-unit" id="depth-unit-text" onchange="onDepthUnitChange()"></label>
-                    <button type="button" class="depth-unit" onclick="onDepthUnitClick('+')">+</button>
-                </div>
-                <div class="control-tool" title="Orient to 2D">
-                    <button type="button" onclick="onOrientTo2DClick()">R</button>
-                </div>
-            </div>
+<div class="sidebar navigation-sidebar">
+    <div class="container">
+        <div id="view-hierarchy-list">
         </div>
+    </div>
+    <div class="split-handler"></div>
+</div>
 
-        <div class="table-cell sidebar property-sidebar">
-            <div class="container">
-                <div id="view-property-list">
-                </div>
-            </div>
-            <div class="split-handler"></div>
+<div id="canvas-toolbar">
+    <div class="control-tool" title="Adjust the spacing between views">
+        <button type="button" class="depth-unit" onclick="onDepthUnitClick('-')">-</button>
+        <label><input type="text" name="depth-unit" id="depth-unit-text" onchange="onDepthUnitChange()"></label>
+        <button type="button" class="depth-unit" onclick="onDepthUnitClick('+')">+</button>
+    </div>
+    <div class="control-tool" title="Orient to 2D">
+        <button type="button" onclick="onOrientTo2DClick()">R</button>
+    </div>
+</div>
+
+<div class="sidebar property-sidebar">
+    <div class="container">
+        <div id="view-property-list">
         </div>
-    </div><!-- table-row -->
-</div><!-- table-container -->
+    </div>
+    <div class="split-handler"></div>
+</div>
 
 <script type="text/javascript">
 (function sideBarAdjust() {
+    // sidebar
     var navSideBarEle = document.getElementsByClassName('navigation-sidebar')[0];
     var navSplitHandlerEle = navSideBarEle.getElementsByClassName('split-handler')[0];
     var propertySideBarEle = document.getElementsByClassName('property-sidebar')[0];
     var propertySplitHandlerEle = propertySideBarEle.getElementsByClassName('split-handler')[0];
+    // toolbar
+    var toolbarEle = document.querySelector('#canvas-toolbar');
 
+    // addEventListener
     navSplitHandlerEle.addEventListener('mousedown', initDrag, false);
     propertySplitHandlerEle.addEventListener('mousedown', initDrag, false);
 
@@ -61,6 +60,7 @@
     var sideBarEle;
     var splitHandlerEle;
     function initDrag(e) {
+        // initialize data
         splitHandlerEle = e.currentTarget;
         if (splitHandlerEle === navSplitHandlerEle) {
             sideBarEle = navSideBarEle;
@@ -69,15 +69,25 @@
         }
         startX = e.clientX;
         startWidth = parseInt(document.defaultView.getComputedStyle(sideBarEle).width, 10);
+
+        // addEventListener
         document.documentElement.addEventListener('mousemove', doDrag, false);
         document.documentElement.addEventListener('mouseup', stopDrag, false);
     }
 
     function doDrag(e) {
+        var offset = e.clientX - startX;
+        var length;
         if (sideBarEle === navSideBarEle) {
-            sideBarEle.style.width = (startWidth + e.clientX - startX) + 'px';
+            // navigation siderbar
+            length = startWidth + offset
+            sideBarEle.style.width = length + 'px';
+            toolbarEle.style.left = length + 'px';
         } else {
-            sideBarEle.style.width = (startWidth - e.clientX + startX) + 'px';
+            // property siderbar
+            length = startWidth - offset;
+            sideBarEle.style.width = length + 'px';
+            toolbarEle.style.right = length + 'px';
         }
 
         if (e.preventDefault) {
