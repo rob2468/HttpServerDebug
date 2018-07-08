@@ -102,7 +102,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
 #ifdef DEBUG
     // develop web in simulator, use files in the project bundle directly
-//    webPath = @"/Volumes/chenjun_sdcard/workspace/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+//    webPath = @"/Users/chenjun/Desktop/workspace/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
 #endif
 
     // set http server parameters

@@ -21,18 +21,21 @@
     </div>
     <div class="split-handler"></div>
 </div>
-
+<!-- toolbar -->
 <div id="canvas-toolbar">
-    <div class="control-tool depth-unit" title="Adjust the spacing between views">
+    <div class="control-tool depth-unit available" title="Adjust the spacing between views">
         <input type="range" class="depth-unit" min="5" max="150" value="50" step="5" onchange="onDepthUnitChange()">
     </div>
     <div class="tools-collection">
-        <div class="control-tool" title="Orient to 2D">
-            <button type="button" onclick="onOrientTo2DClick()">R</button>
+        <div class="control-tool orient-to-2d" title="Orient to 2D">
+            <button type="button" onclick="onOrientTo2DClick()"><img src="/resources/db_icon_view_orient_2d.png"></button>
+        </div>
+        <div class="control-tool orient-to-3d available" title="Orient to 3D">
+            <button type="button" onclick="onOrientTo3DClick()"><img src="/resources/db_icon_view_orient_3d.png"></button>
         </div>
     </div>
 </div>
-
+<!-- property siderbar -->
 <div class="sidebar property-sidebar">
     <div class="container">
         <div id="view-property-list">
@@ -285,6 +288,7 @@ requestViewHierarchyData();
 // Debug View Hierarchy
 /* globals THREE */
 var camera;
+var cameraDefaultPosition = {x: 0, y: 0, z: 1000000};
 var scene;
 var renderer;
 var controls;
@@ -320,7 +324,7 @@ function initTHREE(startIdx) {
 
     // camera
     camera = new THREE.OrthographicCamera(- width / 2, width / 2, height / 2, - height / 2, 0, 2000000);
-    camera.position.set(0, 0, 1000000);
+    camera.position.set(cameraDefaultPosition.x, cameraDefaultPosition.y, cameraDefaultPosition.z);
     camera.up.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -404,6 +408,7 @@ function initTHREE(startIdx) {
 
     // OrbitControls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.autoRotate = false;
 
     // update input html
     var depthUnitEle = document.querySelector('input[type="range"].depth-unit');
@@ -481,8 +486,31 @@ function updateMeshDepthUnit(newDepthUnit) {
     textEle.value = depthUnit;
 }
 
+/* orient to 2D or 3D*/
 function onOrientTo2DClick() {
-    controls.reset();
+    var x = cameraDefaultPosition.x;
+    var y = cameraDefaultPosition.y;
+    var z = cameraDefaultPosition.z;
+    camera.position.set(x, y, z);
+    
+    // update control tool
+    var orient2DEle = document.querySelector('.control-tool.orient-to-2d');
+    var orient3DEle = document.querySelector('.control-tool.orient-to-3d');
+    orient2DEle.classList.remove('available');
+    orient3DEle.classList.add('available');
+}
+
+function onOrientTo3DClick() {
+    var z = cameraDefaultPosition.z;
+    var x = -z * 0.1;
+    var y = z * 0.02;
+    camera.position.set(x, y, z);
+
+    // update control tool
+    var orient2DEle = document.querySelector('.control-tool.orient-to-2d');
+    var orient3DEle = document.querySelector('.control-tool.orient-to-3d');
+    orient2DEle.classList.add('available');
+    orient3DEle.classList.remove('available');
 }
 </script>
 </body>

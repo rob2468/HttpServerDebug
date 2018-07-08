@@ -106,6 +106,9 @@ div.view-hierarchy-area {
     background-color: #f0f0f0;
 }
 #canvas-toolbar .control-tool {
+    display: none;
+}
+#canvas-toolbar .control-tool.available {
     display: inline-block;
 }
 #canvas-toolbar .control-tool.depth-unit {
@@ -131,5 +134,10 @@ div.view-hierarchy-area {
     margin-top: 3px;
 }
 #canvas-toolbar button {
+    padding-top: 4.5px;
     height: 100%;
+}
+#canvas-toolbar button img {
+    width: 13px;
+    height: 13px;
 }
