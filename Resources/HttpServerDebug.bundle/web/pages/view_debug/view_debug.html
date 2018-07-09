@@ -27,12 +27,15 @@
         <input type="range" class="depth-unit" min="5" max="150" value="50" step="5" onchange="onDepthUnitChange()">
     </div>
     <div class="tools-collection">
-        <div class="control-tool orient-to-2d" title="Orient to 2D">
-            <button type="button" onclick="onOrientTo2DClick()"><img src="/resources/db_icon_view_orient_2d.png"></button>
-        </div>
-        <div class="control-tool orient-to-3d available" title="Orient to 3D">
-            <button type="button" onclick="onOrientTo3DClick()"><img src="/resources/db_icon_view_orient_3d.png"></button>
-        </div>
+        <button type="button" class="control-tool show-clipped-content available selected" title="TODO: Show Clipped Content">
+            <div><img src="/resources/db_icon_view_show_clipped.png"></div>
+        </button>
+        <button type="button" onclick="onOrientTo2DClick()" class="control-tool orient-to-2d" title="Orient to 2D">
+            <div><img src="/resources/db_icon_view_orient_2d.png"></div>
+        </button>
+        <button type="button" onclick="onOrientTo3DClick()" class="control-tool orient-to-3d available" title="Orient to 3D">
+            <div><img src="/resources/db_icon_view_orient_3d.png"></div>
+        </button>
     </div>
 </div>
 <!-- property siderbar -->
