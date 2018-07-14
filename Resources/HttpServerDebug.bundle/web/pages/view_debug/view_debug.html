@@ -27,7 +27,7 @@
         <input type="range" class="depth-unit" min="5" max="150" value="50" step="5" onchange="onDepthUnitChange()">
     </div>
     <div class="tools-collection">
-        <button type="button" class="control-tool show-clipped-content available selected" title="TODO: Show Clipped Content">
+        <button type="button" onclick="onShowClippedContentClick()" class="control-tool show-clipped-content available" title="Show Clipped Content">
             <div><img src="/resources/db_icon_view_show_clipped.png"></div>
         </button>
         <button type="button" onclick="onOrientTo2DClick()" class="control-tool orient-to-2d" title="Orient to 2D">
@@ -109,12 +109,16 @@
 
 var allViewsData;
 var selectedID; // view-hierarchy-list active list item id
+var isClippedContentShown = true;
+
+// constant variables
 var ROOTPATH = 'view_debug';
 var ALLVIEWSPATH = 'all_views';
 var SELECTVIEWPATH = 'select_view';
 var SNAPSHOTPATH = 'snapshot';
 var MESHBORDERDEFAULTCOLOR = 0xA9A9A9;      // mesh border default color
 var MESHBORDERSELECTEDCOLOR = 0x457CD3;     // mesh border selected color
+
 function requestViewHierarchyData() {
     var viewXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
@@ -514,6 +518,22 @@ function onOrientTo3DClick() {
     var orient3DEle = document.querySelector('.control-tool.orient-to-3d');
     orient2DEle.classList.add('available');
     orient3DEle.classList.remove('available');
+}
+
+function onShowClippedContentClick() {
+    var ele = document.querySelector('#canvas-toolbar button.show-clipped-content');
+
+    // update view
+    if (isClippedContentShown) {
+        // not clip content
+        ele.classList.add('selected');
+    } else {
+        // clip content
+        ele.classList.remove('selected');
+    }
+    
+    // update data
+    isClippedContentShown = !isClippedContentShown;
 }
 </script>
 </body>
