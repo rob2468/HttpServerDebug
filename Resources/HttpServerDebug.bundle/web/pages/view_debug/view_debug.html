@@ -14,13 +14,14 @@
     <div id="canvas-frame"></div>
 </div>
 
-<div class="sidebar navigation-sidebar">
+<div class="sidebar navigation-sidebar active">
     <div class="container">
         <div id="view-hierarchy-list">
         </div>
     </div>
     <div class="split-handler"></div>
 </div>
+
 <!-- toolbar -->
 <div id="canvas-toolbar">
     <div class="control-tool depth-unit available" title="Adjust the spacing between views">
@@ -37,7 +38,16 @@
             <div><img src="/resources/db_icon_view_orient_3d.png"></div>
         </button>
     </div>
+    <div class="area-control-collection">
+        <button type="button" onclick="onShowNavigationSidebarClick()" class="control-tool available navigator-control selected" title="Hide or show the Navigator">
+            <div><img src="/resources/XC_O_area_button_navigator.png"></div>
+        </button>
+        <button type="button" onclick="onShowPropertySidebarClick()" class="control-tool available utilities-control" title="Hide or show the Utilities">
+            <div><img src="/resources/XC_O_utilities_button.png"></div>
+        </button>
+    </div>
 </div>
+
 <!-- property siderbar -->
 <div class="sidebar property-sidebar">
     <div class="container">
@@ -50,7 +60,7 @@
 <script type="text/javascript">
 (function sideBarAdjust() {
     // sidebar
-    var navSideBarEle = document.getElementsByClassName('navigation-sidebar')[0];
+    var navSideBarEle = document.querySelector('.navigation-sidebar');
     var navSplitHandlerEle = navSideBarEle.getElementsByClassName('split-handler')[0];
     var propertySideBarEle = document.getElementsByClassName('property-sidebar')[0];
     var propertySplitHandlerEle = propertySideBarEle.getElementsByClassName('split-handler')[0];
@@ -107,9 +117,13 @@
     }
 })();
 
+// global variables
 var allViewsData;
 var selectedID; // view-hierarchy-list active list item id
+// default settings
 var isClippedContentShown = true;
+var isNavigationSidebarShown = true;
+var isPropertySidebarShown = false;
 
 // constant variables
 var ROOTPATH = 'view_debug';
@@ -118,6 +132,7 @@ var SELECTVIEWPATH = 'select_view';
 var SNAPSHOTPATH = 'snapshot';
 var MESHBORDERDEFAULTCOLOR = 0xA9A9A9;      // mesh border default color
 var MESHBORDERSELECTEDCOLOR = 0x457CD3;     // mesh border selected color
+var kSiderbarWidth = 300;
 
 function requestViewHierarchyData() {
     var viewXHR = new XMLHttpRequest();
@@ -534,6 +549,52 @@ function onShowClippedContentClick() {
     
     // update data
     isClippedContentShown = !isClippedContentShown;
+}
+
+function onShowNavigationSidebarClick() {
+    var navSidebarEle = document.querySelector('.navigation-sidebar');
+    var navToolbarEle = document.querySelector('#canvas-toolbar button.navigator-control');
+    var toolbarEle = document.querySelector('#canvas-toolbar');
+
+    // update view
+    if (isNavigationSidebarShown) {
+        // hide
+        navSidebarEle.classList.remove('active');
+        navToolbarEle.classList.remove('selected');
+        toolbarEle.style.left = 0;
+    } else {
+        // show
+        navSidebarEle.classList.add('active');
+        navSidebarEle.style.width = kSiderbarWidth + 'px';
+        navToolbarEle.classList.add('selected');
+        toolbarEle.style.left = kSiderbarWidth + 'px';
+    }
+
+    // update data
+    isNavigationSidebarShown = !isNavigationSidebarShown;
+}
+
+function onShowPropertySidebarClick() {
+    var propSidebarEle = document.querySelector('.property-sidebar');
+    var propToolbarEle = document.querySelector('#canvas-toolbar button.utilities-control');
+    var toolbarEle = document.querySelector('#canvas-toolbar');
+
+    // update view
+    if (isPropertySidebarShown) {
+        // hide
+        propSidebarEle.classList.remove('active');
+        propToolbarEle.classList.remove('selected');
+        toolbarEle.style.right = 0;
+    } else {
+        // show
+        propSidebarEle.classList.add('active');
+        propSidebarEle.style.width = kSiderbarWidth + 'px';
+        propToolbarEle.classList.add('selected');
+        toolbarEle.style.right = kSiderbarWidth + 'px';
+    }
+
+    // update data
+    isPropertySidebarShown = !isPropertySidebarShown;
 }
 </script>
 </body>

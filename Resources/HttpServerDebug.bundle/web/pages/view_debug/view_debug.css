@@ -27,8 +27,13 @@ div.view-hierarchy-area {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 300px;
+    width: 0;
     background-color: #f2f2f2;
+    display: none;
+}
+.sidebar.active {
+    display: block;
+    width: 300px;
 }
 .sidebar.navigation-sidebar {
     left: 0;
@@ -102,7 +107,7 @@ div.view-hierarchy-area {
     height: 30px;
     bottom: 0;
     left: 300px;
-    right: 300px;
+    right: 0;
     background-color: #f0f0f0;
 }
 #canvas-toolbar .control-tool {
@@ -130,7 +135,7 @@ div.view-hierarchy-area {
     margin-left: auto;
     margin-right: auto;
 }
-#canvas-toolbar .tools-collection .control-tool {
+#canvas-toolbar button.control-tool {
     width: 24px;
     height: 24px;
     margin-top: 3px;
@@ -150,8 +155,46 @@ div.view-hierarchy-area {
     display: inline-block;
     position: relative;
 }
-#canvas-toolbar button.selected img {
+/* area control */
+#canvas-toolbar .area-control-collection {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 10px;
+    width: 100px;
+}
+#canvas-toolbar .area-control-collection button {
+    width: 27px;
+    height: 24px;
+    margin-top: 3px;
+    padding: 1px 0 0 0;
+    text-align: center;
+}
+#canvas-toolbar .area-control-collection button div,
+#canvas-toolbar .area-control-collection button div img {
+    width: 25px;
+    height: 20px;
+}
+#canvas-toolbar button.navigator-control,
+#canvas-toolbar button.utilities-control {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+#canvas-toolbar button.navigator-control {
+    right: 32px;
+}
+#canvas-toolbar button.utilities-control {
+    right: 0;
+}
+#canvas-toolbar .tools-collection button.selected img {
     left: -13px;
     border-right: 13px solid transparent;
     filter: drop-shadow(13px 0 0 rgb(53, 130, 242));
+}
+#canvas-toolbar .area-control-collection button.selected img {
+    left: -25px;
+    border-right: 25px solid transparent;
+    filter: drop-shadow(25px 0 0 rgb(53, 130, 242));
 }
