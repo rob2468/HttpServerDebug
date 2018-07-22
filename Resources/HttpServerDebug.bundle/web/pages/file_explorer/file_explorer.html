@@ -135,20 +135,13 @@ div.split-handler {
     </ul>
 </nav>
 <script type="text/javascript">
-/* Data Model */
-var DirectoryContainerItem = {
-    /**
-     *  create one directory container instance
-     *  @param dirData  Array, sub-directories and files
-     */
-    createInstance: function (dirData) {
-        var directoryContainerItem = {};
-
-        directoryContainerItem.items = dirData; // sub-directories and files
-        directoryContainerItem.selectedIdx = -1; // user selected item index, 0-index (-1: default value, no item selected)
-
-        return directoryContainerItem;
-    }
+/* Data Model constructor */
+/**
+ *  create one directory container instance
+ */
+function DirectoryContainerItem(dirData) {
+    this.items = dirData;   // sub-directories and files
+    this.selectedIdx = -1;  // user selected item index, 0-index (-1: default value, no item selected)
 };
 
 /**
@@ -173,7 +166,8 @@ var allData;
                 rootDirData = JSON.parse(responseText);
                 if (rootDirData.length > 0) {
                     // save data
-                    allData = [DirectoryContainerItem.createInstance(rootDirData)];
+                    allData = [new DirectoryContainerItem(rootDirData)];
+
                     // construct html
                     htmlStr = constructDirectoryHTML(rootDirData, 0);
                     fileExpEle = document.getElementById('file-explorer');
@@ -300,7 +294,8 @@ function onItemDoubleClicked(element) {
                         tmpDirData = [];
                     }
                     // save data
-                    allData.push(DirectoryContainerItem.createInstance(tmpDirData));
+                    allData.push(new DirectoryContainerItem(tmpDirData));
+;
                     // construct html
                     var htmlStr = constructDirectoryHTML(tmpDirData, section + 1);
                     var fileExpEle = document.getElementById('file-explorer');
