@@ -373,21 +373,44 @@ function showPropertySidebar(item, attrs) {
     var modificationTime = attrs.modification_time;
     var widthStr = '200px';
 
-    var fileExpEle = document.getElementById('file-explorer');
-    var propertySidebarEle = document.getElementById('property-sidebar');
+    var fileExpEle = document.querySelector('#file-explorer');
+    var propertySidebarEle = document.querySelector('#property-sidebar');
+    var contentContainerEle = propertySidebarEle.querySelector('.content-container');
 
     // expand property side bar area
     fileExpEle.style.right = widthStr;
     propertySidebarEle.classList.add('active');
 
-    // construct html
-    var htmlStr = '<img class="icon">';
-    htmlStr += '<p class="file-name">' + fileName + '</p>';
-    htmlStr += '<p>' + fileSize + '</p>';
-    htmlStr += '<p>创建时间：' + creationTime + '</p>';
-    htmlStr += '<p>修改时间：' + modificationTime + '</p>';
-    htmlStr += '<p>文件路径：' + filePath + '</p>';
-    propertySidebarEle.getElementsByClassName('content-container')[0].innerHTML = htmlStr;
+    // clear old elements
+    while (contentContainerEle.firstChild) {
+        contentContainerEle.removeChild(contentContainerEle.firstChild);
+    }
+
+    // add elements
+    var ele = document.createElement('img');
+    ele.setAttribute('class', 'icon');
+    contentContainerEle.appendChild(ele);
+
+    ele = document.createElement('p');
+    ele.setAttribute('class', 'file-name');
+    ele.innerHTML = fileName;
+    contentContainerEle.appendChild(ele);
+
+    ele = document.createElement('p');
+    ele.innerHTML = fileSize;
+    contentContainerEle.appendChild(ele);
+
+    ele = document.createElement('p');
+    ele.innerHTML = '创建时间：' + creationTime;
+    contentContainerEle.appendChild(ele);
+
+    ele = document.createElement('p');
+    ele.innerHTML = '修改时间：' + modificationTime;
+    contentContainerEle.appendChild(ele);
+
+    ele = document.createElement('p');
+    ele.innerHTML = '文件路径：' + filePath;
+    contentContainerEle.appendChild(ele);
 }
 
 /**
