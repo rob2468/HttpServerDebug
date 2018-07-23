@@ -152,7 +152,6 @@ var allData;
 
 (function init() {
     var rootDirData;
-    var htmlStr;
     var fileExpEle;
     // request root directory
     var rootDirXHR = new XMLHttpRequest();
@@ -168,10 +167,12 @@ var allData;
                     // save data
                     allData = [new DirectoryContainerItem(rootDirData)];
 
-                    // construct html
-                    htmlStr = constructDirectoryHTML(rootDirData, 0);
-                    fileExpEle = document.getElementById('file-explorer');
-                    fileExpEle.insertAdjacentHTML('beforeend', htmlStr);
+                    // initialize show
+                    fileExpEle = document.querySelector('#file-explorer');
+                    while (fileExpEle.firstChild) {
+                        fileExpEle.removeChild(fileExpEle.firstChild);
+                    }
+                    fileExpEle.appendChild(constructDirectoryHTML(rootDirData, 0));
                 }
             }
         }
@@ -295,11 +296,10 @@ function onItemDoubleClicked(element) {
                     }
                     // save data
                     allData.push(new DirectoryContainerItem(tmpDirData));
-;
-                    // construct html
-                    var htmlStr = constructDirectoryHTML(tmpDirData, section + 1);
-                    var fileExpEle = document.getElementById('file-explorer');
-                    fileExpEle.insertAdjacentHTML('beforeend', htmlStr);
+
+                    // append view
+                    var fileExpEle = document.querySelector('#file-explorer');
+                    fileExpEle.appendChild(constructDirectoryHTML(tmpDirData, section + 1));
                 }
             }
         };
@@ -310,53 +310,76 @@ function onItemDoubleClicked(element) {
 /**
  *  @param dirData  Array, items in the directory
  *  @param dirIdx  directory index, 0-index
- *  @return String, html string
+ *  @return DOM element
  */
 function constructDirectoryHTML(dirData, dirIdx) {
     var itemNum = dirData.length;
     var item;       // an item in the directory
-    var htmlStr = '<div class="directory-container">';
+    var dirContainerEle = document.createElement('div');
+    dirContainerEle.setAttribute('class', 'directory-container');
 
     // file list view
-    htmlStr += '<ul>';
+    var fileListEle = document.createElement('ul');
     for (var i = 0; i < itemNum; i++) {
         item = dirData[i];
         if (item) {
-            htmlStr += constructDirectoryItemHTML(item, dirIdx, i);
+            fileListEle.appendChild(constructDirectoryItemHTML(item, dirIdx, i));
         }
     }
-    htmlStr += '</ul>';
+    dirContainerEle.appendChild(fileListEle);
 
     // split handler view
-    htmlStr += '<div class="split-handler" onmousedown="initResizeDrag(event)"></div>';
+    var splitHandlerEle = document.createElement('div');
+    splitHandlerEle.setAttribute('class', 'split-handler');
+    splitHandlerEle.addEventListener('onmousedown', function (event) {
+        initResizeDrag(event);
+    });
+    dirContainerEle.appendChild(splitHandlerEle);
 
-    htmlStr += '</div>';
-    return htmlStr;
+    return dirContainerEle;
 }
 
 /**
  *  @param item  Dictionary, an item in the directory
  *  @param dirIdx  directory index, 0-index
  *  @param fileIdx  file index, 0-index
- *  @return String, html string
+ *  @return DOM element
  */
 function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
     // origin data
     var isDir = item.is_directory;
     var fileName = item.file_name;
 
-    var htmlStr = '<li class="file-item" id="directory-container-' + dirIdx + '-' + fileIdx
-    + '" title="' + fileName
-    + '" onclick="onItemClicked(this)" ondblclick="onItemDoubleClicked(this)"><img class=';
+    // li element
+    var liEle = document.createElement('li');
+    liEle.setAttribute('class', 'file-item');
+    liEle.setAttribute('id', 'directory-container-' + dirIdx + '-' + fileIdx);
+    liEle.title = fileName;
+    liEle.onclick = function () {
+        onItemClicked(this);
+    };
+    liEle.ondblclick = function () {
+        onItemDoubleClicked(this);
+    };
+
+    // img element
+    var imgEle = document.createElement('img');
+    var imgClass;
     // is directory
     if (isDir) {
-        htmlStr += '"icon directory-icon"';
+        imgClass = 'icon directory-icon';
     } else {
-        htmlStr += '"icon file-icon"';
+        imgClass = 'icon file-icon';
     }
-    // file name
-    htmlStr += '><span>' + fileName + '</span></li>';
-    return htmlStr;
+    imgEle.setAttribute('class', imgClass);
+    liEle.appendChild(imgEle);
+
+    // file name element
+    var fileNameEle = document.createElement('span');
+    fileNameEle.innerHTML = fileName;
+    liEle.appendChild(fileNameEle);
+
+    return liEle;
 }
 
 /**
