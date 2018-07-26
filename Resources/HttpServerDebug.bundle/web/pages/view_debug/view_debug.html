@@ -139,17 +139,15 @@ function requestViewHierarchyData() {
     var requestURL = document.location.protocol + '//' + document.location.host
     + '/api/' + ROOTPATH + '/' + ALLVIEWSPATH + '?';
     viewXHR.open('GET', requestURL);
-    viewXHR.onreadystatechange = function () {
-        if (viewXHR.readyState === 4) {
-            if (viewXHR.status === 200) {
-                var responseText = viewXHR.responseText;
-                allViewsData = JSON.parse(responseText);
+    viewXHR.onload = function () {
+        if (viewXHR.status === 200) {
+            var responseText = viewXHR.responseText;
+            allViewsData = JSON.parse(responseText);
 
-                // construct h5 views with app views data
-                generateViewHierarchyListHTML();
-                initTHREE(0);
-                animateTHREE();
-            }
+            // construct h5 views with app views data
+            generateViewHierarchyListHTML();
+            initTHREE(0);
+            animateTHREE();
         }
     };
     viewXHR.send(null);
