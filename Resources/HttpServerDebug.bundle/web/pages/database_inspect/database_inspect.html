@@ -215,17 +215,16 @@ td {
         var requestURL = document.location.protocol + '//' + document.location.host
         + '/api/database_inspect?db_path=' + dbPath + '&table_name=' + tableName;
         resultSetXHR.open('GET', requestURL);
-        resultSetXHR.onreadystatechange = function () {
-            if (resultSetXHR.readyState === 4) {
-                if (resultSetXHR.status === 200) {
-                    var responseText = resultSetXHR.responseText;
-                    var responseJSON = JSON.parse(responseText);
-                    // generate table html with table information
-                    var tableHTML = createTableHTML(responseJSON);
-                    var tableEle = document.getElementById('browse-data-table');
-                    tableEle.innerHTML = tableHTML;
-                }
+        resultSetXHR.onload = function () {
+            if (resultSetXHR.status === 200) {
+                var responseText = resultSetXHR.responseText;
+                var responseJSON = JSON.parse(responseText);
+                // generate table html with table information
+                var tableHTML = createTableHTML(responseJSON);
+                var tableEle = document.getElementById('browse-data-table');
+                tableEle.innerHTML = tableHTML;
             }
+
             // update reload button to normal state
             reloadBtnEle.classList.remove('reload-loading');
             reloadBtnEle.classList.add('reload-normal');
@@ -264,35 +263,34 @@ td {
         var requestURL = document.location.protocol + '//' + document.location.host
         + '/api/database_inspect/execute_sql?db_path=' + dbPath + '&sql=' + encodeURIComponent(sql);
         resultSetXHR.open('GET', requestURL);
-        resultSetXHR.onreadystatechange = function () {
-            if (resultSetXHR.readyState === 4) {
-                if (resultSetXHR.status === 200) {
-                    var responseText = resultSetXHR.responseText;
-                    var responseJSON = JSON.parse(responseText);
-                    // parse data
-                    var resMsg;
-                    var tableHTML = '';
-                    var tableEle = document.getElementById('execute-sql-table');
-                    var status = responseJSON.status;
-                    var errMsg = responseJSON.errMsg;
-                    var tableData = responseJSON.resultSet;
-                    // status message
-                    if (status) {
-                        resMsg = 'success';
-                    } else {
-                        resMsg = 'failure';
-                    }
-                    if (errMsg.length > 0) {
-                        resMsg += ', ' + errMsg;
-                    }
-                    resultEle.innerText = resMsg;
-                    // result set
-                    if (tableData.length > 0) {
-                        tableHTML = createTableHTML(tableData);
-                    }
-                    tableEle.innerHTML = tableHTML;
+        resultSetXHR.onload = function () {
+            if (resultSetXHR.status === 200) {
+                var responseText = resultSetXHR.responseText;
+                var responseJSON = JSON.parse(responseText);
+                // parse data
+                var resMsg;
+                var tableHTML = '';
+                var tableEle = document.getElementById('execute-sql-table');
+                var status = responseJSON.status;
+                var errMsg = responseJSON.errMsg;
+                var tableData = responseJSON.resultSet;
+                // status message
+               if (status) {
+                    resMsg = 'success';
+                } else {
+                    resMsg = 'failure';
                 }
+                if (errMsg.length > 0) {
+                    resMsg += ', ' + errMsg;
+                }
+                resultEle.innerText = resMsg;
+                // result set
+                if (tableData.length > 0) {
+                    tableHTML = createTableHTML(tableData);
+                }
+                tableEle.innerHTML = tableHTML;
             }
+
             // update reload button to normal state
             reloadBtnEle.classList.remove('reload-loading');
             reloadBtnEle.classList.add('reload-normal');
@@ -311,13 +309,11 @@ td {
         var requestURL = document.location.protocol + '//' + document.location.host
         + '/api/database_inspect?db_path=' + dbPath + '&type=schema';
         resultSetXHR.open('GET', requestURL);
-        resultSetXHR.onreadystatechange = function () {
-            if (resultSetXHR.readyState === 4) {
-                if (resultSetXHR.status === 200) {
-                    var responseText = resultSetXHR.responseText;
-                    var responseJSON = JSON.parse(responseText);
-                    generateDatabaseSchemaHTML(responseJSON);
-                }
+        resultSetXHR.onload = function () {
+            if (resultSetXHR.status === 200) {
+                var responseText = resultSetXHR.responseText;
+                var responseJSON = JSON.parse(responseText);
+                generateDatabaseSchemaHTML(responseJSON);
             }
         };
         resultSetXHR.send(null);
