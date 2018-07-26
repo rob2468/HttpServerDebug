@@ -21,22 +21,20 @@ var allData;
     var requestURL = document.location.protocol + '//' + document.location.host
     + '/api/file_explorer';
     rootDirXHR.open('GET', requestURL);
-    rootDirXHR.onreadystatechange = function () {
-        if (rootDirXHR.readyState === 4) {
-            if (rootDirXHR.status === 200) {
-                var responseText = rootDirXHR.responseText;
-                rootDirData = JSON.parse(responseText);
-                if (rootDirData.length > 0) {
-                    // save data
-                    allData = [new DirectoryContainerItem(rootDirData)];
+    rootDirXHR.onload = function () {
+        if (rootDirXHR.status === 200) {
+            var responseText = rootDirXHR.responseText;
+            rootDirData = JSON.parse(responseText);
+            if (rootDirData.length > 0) {
+                // save data
+                allData = [new DirectoryContainerItem(rootDirData)];
 
-                    // initialize show
-                    fileExpEle = document.querySelector('#file-explorer');
-                    while (fileExpEle.firstChild) {
-                        fileExpEle.removeChild(fileExpEle.firstChild);
-                    }
-                    fileExpEle.appendChild(constructDirectoryHTML(rootDirData, 0));
+                // initialize show
+                fileExpEle = document.querySelector('#file-explorer');
+                while (fileExpEle.firstChild) {
+                    fileExpEle.removeChild(fileExpEle.firstChild);
                 }
+                fileExpEle.appendChild(constructDirectoryHTML(rootDirData, 0));
             }
         }
     };
@@ -90,14 +88,12 @@ function onItemClicked(element) {
             var requestURL = document.location.protocol + '//' + document.location.host
             + '/api/file_explorer?file_path=' + filePath;
             attrXHR.open('GET', requestURL);
-            attrXHR.onreadystatechange = function () {
-                if (attrXHR.readyState === 4) {
-                    if (attrXHR.status === 200) {
-                        var responseText = attrXHR.responseText;
-                        var attrs = JSON.parse(responseText);
+            attrXHR.onload = function () {
+                if (attrXHR.status === 200) {
+                    var responseText = attrXHR.responseText;
+                    var attrs = JSON.parse(responseText);
 
-                        showPropertySidebar(item, attrs);
-                    }
+                    showPropertySidebar(item, attrs);
                 }
             };
             attrXHR.send(null);
@@ -149,21 +145,19 @@ function onItemDoubleClicked(element) {
         var requestURL = document.location.protocol + '//' + document.location.host
         + '/api/file_explorer?file_path=' + filePath;
         dirXHR.open('GET', requestURL);
-        dirXHR.onreadystatechange = function () {
-            if (dirXHR.readyState === 4) {
-                if (dirXHR.status === 200) {
-                    var responseText = dirXHR.responseText;
-                    var tmpDirData = JSON.parse(responseText);
-                    if (tmpDirData.length === 0) {
-                        tmpDirData = [];
-                    }
-                    // save data
-                    allData.push(new DirectoryContainerItem(tmpDirData));
-
-                    // append view
-                    var fileExpEle = document.querySelector('#file-explorer');
-                    fileExpEle.appendChild(constructDirectoryHTML(tmpDirData, section + 1));
+        dirXHR.onload = function () {
+            if (dirXHR.status === 200) {
+                var responseText = dirXHR.responseText;
+                var tmpDirData = JSON.parse(responseText);
+                if (tmpDirData.length === 0) {
+                    tmpDirData = [];
                 }
+                // save data
+                allData.push(new DirectoryContainerItem(tmpDirData));
+
+                // append view
+                var fileExpEle = document.querySelector('#file-explorer');
+                fileExpEle.appendChild(constructDirectoryHTML(tmpDirData, section + 1));
             }
         };
         dirXHR.send(null);
