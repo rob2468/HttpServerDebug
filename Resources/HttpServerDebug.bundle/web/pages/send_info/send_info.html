@@ -33,13 +33,11 @@ function submitForm() {
     var requestURL = document.location.protocol + '//' + document.location.host
     + '/api/send_info';
     infoXHR.open('POST', requestURL);
-    infoXHR.onreadystatechange = function () {
-        if (infoXHR.readyState === 4) {
-            if (infoXHR.status === 200) {
-                var responseText = infoXHR.responseText;
-                var responseEle = document.getElementById('response_data');
-                responseEle.innerText = responseText;
-            }
+    infoXHR.onload = function () {
+        if (infoXHR.status === 200) {
+            var responseText = infoXHR.responseText;
+            var responseEle = document.getElementById('response_data');
+            responseEle.innerText = responseText;
         }
     };
     infoXHR.send(infoStr);
