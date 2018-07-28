@@ -91,7 +91,11 @@
             response = [self hsdHttpResponseForMethod:method URI:path];
         } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
             // database_inspect.html
-            response = [HSDComponentMiddleware fetchDatabaseHTMLResponse:params withConnection:self];
+            if (params) {
+                response = [HSDComponentMiddleware fetchDatabaseHTMLResponse:params withConnection:self];
+            } else {
+                response = [self hsdHttpResponseForMethod:method URI:path];
+            }
         } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {
             // view_debug.html
             response = [self hsdHttpResponseForMethod:method URI:path];
