@@ -21,7 +21,7 @@
 #include <unistd.h>
 #endif
 
-#include "ioapi.h"
+#include "HSDioapi.h"
 
 #if defined(_WIN32)
 #  define snprintf _snprintf

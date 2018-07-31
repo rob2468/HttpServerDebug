@@ -8,7 +8,6 @@ FMDB_INCLUDE=1
 CocoaLumberjack_INCLUDE=1
 CocoaAsyncSocket_INCLUDE=1
 CocoaHttpServer_INCLUDE=1
-ZipArchive_INCLUDE=1
 
 # Constant variables
 PROJECT_NAME="HttpServerDebug"
@@ -42,10 +41,6 @@ build_combine() {
     if [[ CocoaHttpServer_INCLUDE -eq 1 ]]; then
         eval ${build_cmd}' -target "CocoaHttpServer"'
         combine_cmd=${combine_cmd}' "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${SDK}/libCocoaHttpServer.a"'
-    fi
-    if [[ ZipArchive_INCLUDE -eq 1 ]]; then
-        eval ${build_cmd}' -target "ZipArchive"'
-        combine_cmd=${combine_cmd}' "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${SDK}/libZipArchive.a"'
     fi
     eval ${combine_cmd}
 }

@@ -26,7 +26,6 @@
 		8FF652501FBBDAA200E4F924 /* libCocoaLumberjack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652561FBBDAA200E4F924 /* libCocoaLumberjack.a */; };
 		8FF652511FBBDAA200E4F924 /* libFMDB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652571FBBDAA200E4F924 /* libFMDB.a */; };
 		8FF652521FBBDAA200E4F924 /* libHttpServerDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652581FBBDAA200E4F924 /* libHttpServerDebug.a */; };
-		8FF652531FBBDAA200E4F924 /* libZipArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652591FBBDAA200E4F924 /* libZipArchive.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -79,7 +78,6 @@
 				8FF652501FBBDAA200E4F924 /* libCocoaLumberjack.a in Frameworks */,
 				8FF652511FBBDAA200E4F924 /* libFMDB.a in Frameworks */,
 				8FF652521FBBDAA200E4F924 /* libHttpServerDebug.a in Frameworks */,
-				8FF652531FBBDAA200E4F924 /* libZipArchive.a in Frameworks */,
 				8FEFE7091F3D6FE100D841E0 /* libxml2.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -7,7 +7,7 @@
 //
 
 #import "HSDFilePreviewComponent.h"
-#import "ZipArchive.h"
+#import "HSDZipArchive.h"
 #import "HSDManager+Private.h"
 
 @implementation HSDFilePreviewComponent
@@ -45,7 +45,7 @@
             if ([[NSFileManager defaultManager] contentsOfDirectoryAtPath:filePath error:nil].count > 0) {
                 NSString *tmpFileName = [NSString stringWithFormat:@"hsd_file_preview_%@.zip", filePath.lastPathComponent];
                 NSString *tmpPath = [NSTemporaryDirectory() stringByAppendingPathComponent:tmpFileName];
-                [SSZipArchive createZipFileAtPath:tmpPath withContentsOfDirectory:filePath];
+                [HSDZipArchive createZipFileAtPath:tmpPath withContentsOfDirectory:filePath];
                 data = [[NSData alloc] initWithContentsOfFile:tmpPath];
                 // content type
                 NSString *fileExtension = tmpPath.pathExtension;

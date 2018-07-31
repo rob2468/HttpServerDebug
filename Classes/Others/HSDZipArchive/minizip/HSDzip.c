@@ -23,7 +23,7 @@
 #include <assert.h>
 
 #include "zlib.h"
-#include "zip.h"
+#include "HSDzip.h"
 
 #ifdef HAVE_AES
 #  define AES_METHOD          (99)
@@ -41,9 +41,10 @@
 #  include <compression.h>
 #endif
 
-#ifndef NOCRYPT
-#  include "crypt.h"
-#endif
+#define NOCRYPT
+//#ifndef NOCRYPT
+//#  include "crypt.h"
+//#endif
 
 #define SIZEDATA_INDATABLOCK        (4096-(4*4))
 

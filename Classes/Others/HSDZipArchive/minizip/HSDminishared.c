@@ -7,7 +7,7 @@
 #include <fcntl.h>
 
 #include "zlib.h"
-#include "ioapi.h"
+#include "HSDioapi.h"
 
 #ifdef _WIN32
 #  include <direct.h>
@@ -19,7 +19,7 @@
 #  include <sys/stat.h>
 #endif
 
-#include "minishared.h"
+#include "HSDminishared.h"
 
 #ifdef _WIN32
 #  define USEWIN32IOAPI

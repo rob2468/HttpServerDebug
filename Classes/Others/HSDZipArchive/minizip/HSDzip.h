@@ -17,8 +17,6 @@
 #ifndef _ZIP_H
 #define _ZIP_H
 
-#define HAVE_AES
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,7 +26,7 @@ extern "C" {
 #endif
 
 #ifndef _ZLIBIOAPI_H
-#  include "ioapi.h"
+#  include "HSDioapi.h"
 #endif
 
 #ifdef HAVE_BZIP2
