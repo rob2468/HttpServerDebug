@@ -35,7 +35,6 @@
 		8F704BB91F3D52DD002E1FAF /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F704BA41F3D5275002E1FAF /* FMResultSet.m */; };
 		8FF8DBE92110782000060B44 /* HSDzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FF8DBC32110781F00060B44 /* HSDzip.c */; };
 		8FF8DBEA2110782000060B44 /* HSDioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FF8DBC52110781F00060B44 /* HSDioapi.c */; };
-		8FF8DBED2110782000060B44 /* HSDminishared.c in Sources */ = {isa = PBXBuildFile; fileRef = 8FF8DBCC2110781F00060B44 /* HSDminishared.c */; };
 		8FF8DBF72110782000060B44 /* HSDZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FF8DBE42110781F00060B44 /* HSDZipArchive.m */; };
 		8FF95F371F409D5A00DDC97F /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E01F3C84E500D329B1 /* DDAbstractDatabaseLogger.m */; };
 		8FF95F381F409D5A00DDC97F /* DDASLLogCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC09E21F3C84E500D329B1 /* DDASLLogCapture.m */; };
@@ -249,10 +248,8 @@
 		8FAC09F61F3C84E500D329B1 /* DDMultiFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDMultiFormatter.h; sourceTree = "<group>"; };
 		8FAC09F71F3C84E500D329B1 /* DDMultiFormatter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDMultiFormatter.m; sourceTree = "<group>"; };
 		8FF8DBC32110781F00060B44 /* HSDzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HSDzip.c; sourceTree = "<group>"; };
-		8FF8DBC42110781F00060B44 /* HSDminishared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDminishared.h; sourceTree = "<group>"; };
 		8FF8DBC52110781F00060B44 /* HSDioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HSDioapi.c; sourceTree = "<group>"; };
 		8FF8DBC92110781F00060B44 /* HSDzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDzip.h; sourceTree = "<group>"; };
-		8FF8DBCC2110781F00060B44 /* HSDminishared.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HSDminishared.c; sourceTree = "<group>"; };
 		8FF8DBCD2110781F00060B44 /* HSDioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDioapi.h; sourceTree = "<group>"; };
 		8FF8DBE42110781F00060B44 /* HSDZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDZipArchive.m; sourceTree = "<group>"; };
 		8FF8DBE62110781F00060B44 /* HSDZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDZipArchive.h; sourceTree = "<group>"; };
@@ -659,8 +656,6 @@
 			children = (
 				8FF8DBC92110781F00060B44 /* HSDzip.h */,
 				8FF8DBC32110781F00060B44 /* HSDzip.c */,
-				8FF8DBC42110781F00060B44 /* HSDminishared.h */,
-				8FF8DBCC2110781F00060B44 /* HSDminishared.c */,
 				8FF8DBCD2110781F00060B44 /* HSDioapi.h */,
 				8FF8DBC52110781F00060B44 /* HSDioapi.c */,
 			);
@@ -828,7 +823,6 @@
 				8F1218F8207C6357000C2E48 /* HSDWebSocket.m in Sources */,
 				8FF8DBF72110782000060B44 /* HSDZipArchive.m in Sources */,
 				8F32318420BAEF5800E3254B /* HSDHttpServerControlPannelController.m in Sources */,
-				8FF8DBED2110782000060B44 /* HSDminishared.c in Sources */,
 				8FF8DBE92110782000060B44 /* HSDzip.c in Sources */,
 				8F32318020BAEF5800E3254B /* HSDHostNameResolveComponent.m in Sources */,
 				8F32318220BAEF5800E3254B /* HSDViewDebugComponent.m in Sources */,

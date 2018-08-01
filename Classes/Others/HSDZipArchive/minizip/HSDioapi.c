@@ -27,21 +27,21 @@
 #  define snprintf _snprintf
 #endif
 
-voidpf call_zopen64(const zlib_filefunc64_32_def *pfilefunc, const void *filename, int mode)
+voidpf hsd_call_zopen64(const zlib_filefunc64_32_def *pfilefunc, const void *filename, int mode)
 {
     if (pfilefunc->zfile_func64.zopen64_file != NULL)
         return (*(pfilefunc->zfile_func64.zopen64_file)) (pfilefunc->zfile_func64.opaque, filename, mode);
     return (*(pfilefunc->zopen32_file))(pfilefunc->zfile_func64.opaque, (const char*)filename, mode);
 }
 
-voidpf call_zopendisk64(const zlib_filefunc64_32_def *pfilefunc, voidpf filestream, uint32_t number_disk, int mode)
+voidpf hsd_call_zopendisk64(const zlib_filefunc64_32_def *pfilefunc, voidpf filestream, uint32_t number_disk, int mode)
 {
     if (pfilefunc->zfile_func64.zopendisk64_file != NULL)
         return (*(pfilefunc->zfile_func64.zopendisk64_file)) (pfilefunc->zfile_func64.opaque, filestream, number_disk, mode);
     return (*(pfilefunc->zopendisk32_file))(pfilefunc->zfile_func64.opaque, filestream, number_disk, mode);
 }
 
-long call_zseek64(const zlib_filefunc64_32_def *pfilefunc, voidpf filestream, uint64_t offset, int origin)
+long hsd_call_zseek64(const zlib_filefunc64_32_def *pfilefunc, voidpf filestream, uint64_t offset, int origin)
 {
     uint32_t offset_truncated = 0;
     if (pfilefunc->zfile_func64.zseek64_file != NULL)
@@ -52,7 +52,7 @@ long call_zseek64(const zlib_filefunc64_32_def *pfilefunc, voidpf filestream, ui
     return (*(pfilefunc->zseek32_file))(pfilefunc->zfile_func64.opaque,filestream, offset_truncated, origin);
 }
 
-uint64_t call_ztell64(const zlib_filefunc64_32_def *pfilefunc, voidpf filestream)
+uint64_t hsd_call_ztell64(const zlib_filefunc64_32_def *pfilefunc, voidpf filestream)
 {
     uint64_t position;
     if (pfilefunc->zfile_func64.zseek64_file != NULL)
@@ -63,7 +63,7 @@ uint64_t call_ztell64(const zlib_filefunc64_32_def *pfilefunc, voidpf filestream
     return position;
 }
 
-void fill_zlib_filefunc64_32_def_from_filefunc32(zlib_filefunc64_32_def *p_filefunc64_32, const zlib_filefunc_def *p_filefunc32)
+void hsd_fill_zlib_filefunc64_32_def_from_filefunc32(zlib_filefunc64_32_def *p_filefunc64_32, const zlib_filefunc_def *p_filefunc32)
 {
     p_filefunc64_32->zfile_func64.zopen64_file = NULL;
     p_filefunc64_32->zfile_func64.zopendisk64_file = NULL;
@@ -326,20 +326,7 @@ static int ZCALLBACK ferror_file_func(ZIP_UNUSED voidpf opaque, voidpf stream)
     return ret;
 }
 
-void fill_fopen_filefunc(zlib_filefunc_def *pzlib_filefunc_def)
-{
-    pzlib_filefunc_def->zopen_file = fopen_file_func;
-    pzlib_filefunc_def->zopendisk_file = fopendisk_file_func;
-    pzlib_filefunc_def->zread_file = fread_file_func;
-    pzlib_filefunc_def->zwrite_file = fwrite_file_func;
-    pzlib_filefunc_def->ztell_file = ftell_file_func;
-    pzlib_filefunc_def->zseek_file = fseek_file_func;
-    pzlib_filefunc_def->zclose_file = fclose_file_func;
-    pzlib_filefunc_def->zerror_file = ferror_file_func;
-    pzlib_filefunc_def->opaque = NULL;
-}
-
-void fill_fopen64_filefunc(zlib_filefunc64_def *pzlib_filefunc_def)
+void hsd_fill_fopen64_filefunc(zlib_filefunc64_def *pzlib_filefunc_def)
 {
     pzlib_filefunc_def->zopen64_file = fopen64_file_func;
     pzlib_filefunc_def->zopendisk64_file = fopendisk64_file_func;

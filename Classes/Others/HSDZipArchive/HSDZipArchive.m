@@ -8,12 +8,14 @@
 
 #import "HSDZipArchive.h"
 #include "HSDzip.h"
-#include "HSDminishared.h"
+//#include "HSDminishared.h"
 #include <sys/stat.h>
 
 #define CHUNK 16384
 
 int _zipOpenEntry(zipFile entry, NSString *name, const zip_fileinfo *zipfi, int level, NSString *password, BOOL aes);
+uint32_t tm_to_dosdate(const struct tm *ptm);
+int invalid_date(const struct tm *ptm);
 
 @interface HSDZipArchive ()
 
@@ -105,7 +107,7 @@ int _zipOpenEntry(zipFile entry, NSString *name, const zip_fileinfo *zipfi, int 
 
 - (BOOL)open {
     NSAssert((_zip == NULL), @"Attempting to open an archive which is already open");
-    _zip = zipOpen(_path.fileSystemRepresentation, APPEND_STATUS_CREATE);
+    _zip = hsd_zipOpen(_path.fileSystemRepresentation, APPEND_STATUS_CREATE);
     return (NULL != _zip);
 }
 
@@ -118,8 +120,8 @@ int _zipOpenEntry(zipFile entry, NSString *name, const zip_fileinfo *zipfi, int 
     
     int error = _zipOpenEntry(_zip, [folderName stringByAppendingString:@"/"], &zipInfo, Z_NO_COMPRESSION, nil, 0);
     const void *buffer = NULL;
-    zipWriteInFileInZip(_zip, buffer, 0);
-    zipCloseFileInZip(_zip);
+    hsd_zipWriteInFileInZip(_zip, buffer, 0);
+    hsd_zipCloseFileInZip(_zip);
     return error == ZIP_OK;
 }
 
@@ -162,10 +164,10 @@ int _zipOpenEntry(zipFile entry, NSString *name, const zip_fileinfo *zipfi, int 
     while (!feof(input) && !ferror(input))
     {
         unsigned int len = (unsigned int) fread(buffer, 1, CHUNK, input);
-        zipWriteInFileInZip(_zip, buffer, len);
+        hsd_zipWriteInFileInZip(_zip, buffer, len);
     }
     
-    zipCloseFileInZip(_zip);
+    hsd_zipCloseFileInZip(_zip);
     free(buffer);
     fclose(input);
     return error == ZIP_OK;
@@ -173,7 +175,7 @@ int _zipOpenEntry(zipFile entry, NSString *name, const zip_fileinfo *zipfi, int 
 
 - (BOOL)close {
     NSAssert((_zip != NULL), @"[HSDZipArchive] Attempting to close an archive which was never opened");
-    int error = zipClose(_zip, NULL);
+    int error = hsd_zipClose(_zip, NULL);
     _zip = nil;
     return error == ZIP_OK;
 }
@@ -240,5 +242,43 @@ int _zipOpenEntry(zipFile entry, NSString *name, const zip_fileinfo *zipfi, int 
 
 int _zipOpenEntry(zipFile entry, NSString *name, const zip_fileinfo *zipfi, int level, NSString *password, BOOL aes)
 {
-    return zipOpenNewFileInZip5(entry, name.fileSystemRepresentation, zipfi, NULL, 0, NULL, 0, NULL, 0, 0, Z_DEFLATED, level, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password.UTF8String, aes, 0);
+    return hsd_zipOpenNewFileInZip5(entry, name.fileSystemRepresentation, zipfi, NULL, 0, NULL, 0, NULL, 0, 0, Z_DEFLATED, level, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password.UTF8String, aes, 0);
+}
+
+uint32_t tm_to_dosdate(const struct tm *ptm)
+{
+    struct tm fixed_tm;
+
+    /* Years supported:
+     * [00, 79]      (assumed to be between 2000 and 2079)
+     * [80, 207]     (assumed to be between 1980 and 2107, typical output of old
+     software that does 'year-1900' to get a double digit year)
+     * [1980, 2107]  (due to the date format limitations, only years between 1980 and 2107 can be stored.)
+     */
+
+    memcpy(&fixed_tm, ptm, sizeof(struct tm));
+    if (fixed_tm.tm_year >= 1980) /* range [1980, 2107] */
+        fixed_tm.tm_year -= 1980;
+    else if (fixed_tm.tm_year >= 80) /* range [80, 99] */
+        fixed_tm.tm_year -= 80;
+    else /* range [00, 79] */
+        fixed_tm.tm_year += 20;
+
+    if (invalid_date(ptm))
+        return 0;
+
+    return (uint32_t)(((fixed_tm.tm_mday) + (32 * (fixed_tm.tm_mon + 1)) + (512 * fixed_tm.tm_year)) << 16) |
+    ((fixed_tm.tm_sec / 2) + (32 * fixed_tm.tm_min) + (2048 * (uint32_t)fixed_tm.tm_hour));
+}
+
+int invalid_date(const struct tm *ptm)
+{
+#define datevalue_in_range(min, max, value) ((min) <= (value) && (value) <= (max))
+    return (!datevalue_in_range(0, 207, ptm->tm_year) ||
+            !datevalue_in_range(0, 11, ptm->tm_mon) ||
+            !datevalue_in_range(1, 31, ptm->tm_mday) ||
+            !datevalue_in_range(0, 23, ptm->tm_hour) ||
+            !datevalue_in_range(0, 59, ptm->tm_min) ||
+            !datevalue_in_range(0, 59, ptm->tm_sec));
+#undef datevalue_in_range
 }
