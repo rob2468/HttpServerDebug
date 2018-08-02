@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.author             = { "jam.chenjun" => "jam.chenjun@gmail.com" }
   s.social_media_url   = "https://weibo.com/rob2468"
   s.platform     = :ios, "7.0"
-  s.source       = { :git => "https://github.com/rob2468/HttpServerDebug.git", :commit => "284faf518f50cea88cffd1663e534912ed4c999d" }
+  s.source       = { :git => "https://github.com/rob2468/HttpServerDebug.git", :commit => "3a67a3b26a0519b1ab994c2ae66212cee3bc5d6b" }
   s.source_files  = "Classes/**/*.{h,m,c}"
   s.public_header_files = "Classes/**/{HSDDelegate,HSDHttpServerControlPannelController,HSDManager,HttpServerDebug}.h"
   s.resources = "Resources/HttpServerDebug.bundle"
