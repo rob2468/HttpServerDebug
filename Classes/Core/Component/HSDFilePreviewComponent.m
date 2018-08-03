@@ -42,17 +42,17 @@
     if (isExist) {
         if (isDirectory) {
             // request directory, zip archive directory and response
-            if ([[NSFileManager defaultManager] contentsOfDirectoryAtPath:filePath error:nil].count > 0) {
-                NSString *tmpFileName = [NSString stringWithFormat:@"hsd_file_preview_%@.zip", filePath.lastPathComponent];
-                NSString *tmpPath = [NSTemporaryDirectory() stringByAppendingPathComponent:tmpFileName];
-                [HSDZipArchive createZipFileAtPath:tmpPath withContentsOfDirectory:filePath];
-                data = [[NSData alloc] initWithContentsOfFile:tmpPath];
-                // content type
-                NSString *fileExtension = tmpPath.pathExtension;
-                fileContentType = [HSDManager fetchContentTypeWithFilePathExtension:fileExtension];
-                // clean tmp file
-                [[NSFileManager defaultManager] removeItemAtPath:tmpPath error:nil];
-            }
+            NSString *tmpFileName = [NSString stringWithFormat:@"hsd_file_preview_%@.zip", filePath.lastPathComponent];
+            NSString *tmpPath = [NSTemporaryDirectory() stringByAppendingPathComponent:tmpFileName];
+            [HSDZipArchive createZipFileAtPath:tmpPath withContentsOfDirectory:filePath keepParentDirectory:YES];
+            data = [[NSData alloc] initWithContentsOfFile:tmpPath];
+
+            // content type
+            NSString *fileExtension = tmpPath.pathExtension;
+            fileContentType = [HSDManager fetchContentTypeWithFilePathExtension:fileExtension];
+
+            // clean tmp file
+            [[NSFileManager defaultManager] removeItemAtPath:tmpPath error:nil];
         } else {
             // request file
             data = [[NSData alloc] initWithContentsOfFile:filePath];

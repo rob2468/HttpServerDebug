@@ -63,30 +63,41 @@ int invalid_date(const struct tm *ptm);
         NSFileManager *fileManager = [[NSFileManager alloc] init];
         NSDirectoryEnumerator *dirEnumerator = [fileManager enumeratorAtPath:directoryPath];
         NSArray<NSString *> *allObjects = dirEnumerator.allObjects;
-        NSUInteger total = allObjects.count, complete = 0;
-        NSString *fileName;
-        for (fileName in allObjects) {
-            BOOL isDir;
-            NSString *fullFilePath = [directoryPath stringByAppendingPathComponent:fileName];
-            [fileManager fileExistsAtPath:fullFilePath isDirectory:&isDir];
-            
-            if (keepParentDirectory) {
-                fileName = [directoryPath.lastPathComponent stringByAppendingPathComponent:fileName];
-            }
-            
-            if (!isDir) {
-                // file
-                success &= [zipArchive writeFileAtPath:fullFilePath withFileName:fileName compressionLevel:compressionLevel];
-            } else {
-                // directory
-                if ([fileManager contentsOfDirectoryAtPath:fullFilePath error:nil].count == 0) {
-                    // empty directory
-                    success &= [zipArchive writeFolderAtPath:fullFilePath withFolderName:fileName];
+        if (dirEnumerator && allObjects) {
+            // existing path
+            if (allObjects.count == 0) {
+                // empty directory
+                if (keepParentDirectory) {
+                    success &= [zipArchive writeFolderAtPath:directoryPath withFolderName:directoryPath.lastPathComponent];
                 }
-            }
-            complete++;
-            if (progressHandler) {
-                progressHandler(complete, total);
+            } else {
+                // not empty directory
+                NSUInteger total = allObjects.count, complete = 0;
+                NSString *fileName;
+                for (fileName in allObjects) {
+                    BOOL isDir;
+                    NSString *fullFilePath = [directoryPath stringByAppendingPathComponent:fileName];
+                    [fileManager fileExistsAtPath:fullFilePath isDirectory:&isDir];
+
+                    if (keepParentDirectory) {
+                        fileName = [directoryPath.lastPathComponent stringByAppendingPathComponent:fileName];
+                    }
+
+                    if (!isDir) {
+                        // file
+                        success &= [zipArchive writeFileAtPath:fullFilePath withFileName:fileName compressionLevel:compressionLevel];
+                    } else {
+                        // directory
+                        if ([fileManager contentsOfDirectoryAtPath:fullFilePath error:nil].count == 0) {
+                            // empty directory
+                            success &= [zipArchive writeFolderAtPath:fullFilePath withFolderName:fileName];
+                        }
+                    }
+                    complete++;
+                    if (progressHandler) {
+                        progressHandler(complete, total);
+                    }
+                } // for loop
             }
         }
         success &= [zipArchive close];
