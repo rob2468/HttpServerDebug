@@ -8,7 +8,7 @@
 //  used to resolve HttpServerDebug host name
 
 #import <Foundation/Foundation.h>
-#import "HSDManager+Private.h"
+#import "HSDManager+Project.h"
 
 @interface HSDHostNameResolveComponent : NSObject
 

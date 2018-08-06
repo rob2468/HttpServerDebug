@@ -7,7 +7,7 @@
 //
 
 #import "HSDWebSocket.h"
-#import "HSDManager+Private.h"
+#import "HSDManager+Project.h"
 #import "HSDComponentMiddleware.h"
 
 @implementation HSDWebSocket

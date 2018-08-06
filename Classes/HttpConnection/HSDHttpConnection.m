@@ -11,7 +11,7 @@
 #import "HTTPMessage.h"
 #import "MultipartFormDataParser.h"
 #import "HTTPDynamicFileResponse.h"
-#import "HSDManager+Private.h"
+#import "HSDManager+Project.h"
 #import "HSDWebSocket.h"
 #import "HSDComponentMiddleware.h"
 #import "HSDDBInspectComponent.h"

@@ -8,7 +8,7 @@
 
 #import "HSDDBInspectComponent.h"
 #import "FMDB.h"
-#import "HSDManager+Private.h"
+#import "HSDManager+Project.h"
 #import "HSDDefine.h"
 #import <sqlite3.h>
 

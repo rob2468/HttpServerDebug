@@ -151,7 +151,7 @@
 		8F32317320BAEF5800E3254B /* HSDDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDDelegate.h; sourceTree = "<group>"; };
 		8F32317420BAEF5800E3254B /* HSDHttpServerControlPannelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDHttpServerControlPannelController.h; sourceTree = "<group>"; };
 		8F32317520BAEF5800E3254B /* HSDHttpServerControlPannelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDHttpServerControlPannelController.m; sourceTree = "<group>"; };
-		8F32317620BAEF5800E3254B /* HSDManager+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HSDManager+Private.h"; sourceTree = "<group>"; };
+		8F32317620BAEF5800E3254B /* HSDManager+Project.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HSDManager+Project.h"; sourceTree = "<group>"; };
 		8F32317720BAEF5800E3254B /* HSDManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDManager.h; sourceTree = "<group>"; };
 		8F32317820BAEF5800E3254B /* HSDManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDManager.m; sourceTree = "<group>"; };
 		8F32318820BAEFA600E3254B /* HSDComponentMiddleware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDComponentMiddleware.h; sourceTree = "<group>"; };
@@ -380,7 +380,7 @@
 				8F32317320BAEF5800E3254B /* HSDDelegate.h */,
 				8F32317420BAEF5800E3254B /* HSDHttpServerControlPannelController.h */,
 				8F32317520BAEF5800E3254B /* HSDHttpServerControlPannelController.m */,
-				8F32317620BAEF5800E3254B /* HSDManager+Private.h */,
+				8F32317620BAEF5800E3254B /* HSDManager+Project.h */,
 				8F32317720BAEF5800E3254B /* HSDManager.h */,
 				8F32317820BAEF5800E3254B /* HSDManager.m */,
 			);

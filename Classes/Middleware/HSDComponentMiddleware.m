@@ -17,7 +17,7 @@
 #import "HSDSendInfoComponent.h"
 #import "HSDFilePreviewComponent.h"
 #import "HSDConsoleLogComponent.h"
-#import "HSDManager+Private.h"
+#import "HSDManager+Project.h"
 #import "HSDDefine.h"
 
 @interface HSDComponentMiddleware ()

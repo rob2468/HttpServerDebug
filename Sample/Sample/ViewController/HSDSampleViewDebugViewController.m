@@ -18,19 +18,24 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"View Debug";
+
+    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
+    scrollView.backgroundColor = [UIColor lightGrayColor];
+    [self.view addSubview:scrollView];
+    [scrollView setContentSize:CGSizeMake(CGRectGetWidth(self.view.bounds), 1000)];
     
     // redView
     CGRect viewFrame = CGRectMake(10, 10, 100, 100);
     UIView *redView = [[UIView alloc] initWithFrame:viewFrame];
     redView.backgroundColor = [UIColor redColor];
-    [self.view addSubview:redView];
+    [scrollView addSubview:redView];
     
     // greenView
     viewFrame.origin.y = 120;
     UIView *greenView = [[UIView alloc] initWithFrame:viewFrame];
     greenView.backgroundColor = [UIColor greenColor];
     greenView.clipsToBounds = YES;
-    [self.view addSubview:greenView];
+    [scrollView addSubview:greenView];
     
     // greenSubView1
     viewFrame = CGRectMake(110, 110, 100, 100);
@@ -43,6 +48,8 @@
     UIView *greenSubView2 = [[UIView alloc] initWithFrame:viewFrame];
     greenSubView2.backgroundColor = [UIColor yellowColor];
     [greenView addSubview:greenSubView2];
+
+
 }
 
 - (void)didReceiveMemoryWarning {

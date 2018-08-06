@@ -7,7 +7,7 @@
 //
 
 #import "HSDHttpServerControlPannelController.h"
-#import "HSDManager+Private.h"
+#import "HSDManager+Project.h"
 #import "HSDDefine.h"
 
 @interface HSDHttpServerControlPannelController ()

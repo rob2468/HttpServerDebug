@@ -1,5 +1,5 @@
 //
-//  HSDManager+Private.h
+//  HSDManager+Project.h
 //  HttpServerDebug
 //
 //  Created by chenjun on 2018/4/27.
@@ -15,7 +15,7 @@
 @class HSDSendInfoComponent;
 @class HSDFilePreviewComponent;
 
-@interface HSDManager (Private)
+@interface HSDManager (Project)
 
 + (void)updateHttpServerName:(NSString *)name;
 

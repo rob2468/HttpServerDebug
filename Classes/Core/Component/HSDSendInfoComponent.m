@@ -7,7 +7,7 @@
 //
 
 #import "HSDSendInfoComponent.h"
-#import "HSDManager+Private.h"
+#import "HSDManager+Project.h"
 #import "HSDDelegate.h"
 
 @implementation HSDSendInfoComponent

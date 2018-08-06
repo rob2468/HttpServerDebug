@@ -8,7 +8,7 @@
 
 #import "HSDFilePreviewComponent.h"
 #import "HSDZipArchive.h"
-#import "HSDManager+Private.h"
+#import "HSDManager+Project.h"
 
 @implementation HSDFilePreviewComponent
 
