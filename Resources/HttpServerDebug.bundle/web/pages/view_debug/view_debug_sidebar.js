@@ -1,4 +1,4 @@
-(function sideBarAdjust() {
+function initSideBarAdjust() {
     // sidebar
     var navSideBarEle = document.querySelector('.navigation-sidebar');
     var navSplitHandlerEle = navSideBarEle.getElementsByClassName('split-handler')[0];
@@ -55,4 +55,4 @@
         document.documentElement.removeEventListener('mousemove', doDrag, false);
         document.documentElement.removeEventListener('mouseup', stopDrag, false);
     }
-})();
+}
