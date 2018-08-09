@@ -215,3 +215,20 @@ function onShowClippedContentClick() {
     // update data
     isClippedContentShown = !isClippedContentShown;
 }
+
+/* Zoom */
+function onZoomOutClick() {
+    camera.zoom *= 0.9;
+    camera.updateProjectionMatrix();
+}
+
+function onActualSizeClick() {
+    camera.zoom = 1;
+    camera.updateProjectionMatrix();
+}
+
+function onZoomInClick() {
+    camera.zoom *= 1.1;
+    camera.updateProjectionMatrix();
+}
+
