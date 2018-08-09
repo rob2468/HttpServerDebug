@@ -36,6 +36,7 @@ function initTHREE(startIdx) {
     // OrbitControls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.autoRotate = false;
+    controls.enableZoom = false;
 
     // axes helper
     // var axesHelper = new THREE.AxesHelper(height / 2);
@@ -166,10 +167,6 @@ function updateMeshDepthUnit(newDepthUnit) {
         }
     }
     depthUnit = newDepthUnit;
-
-    // update input html
-    var textEle = document.getElementById('depth-unit-text');
-    textEle.value = depthUnit;
 }
 
 /* orient to 2D or 3D */
@@ -203,33 +200,18 @@ function onOrientTo3DClick() {
     orient3DEle.classList.remove('available');
 }
 
-/* canvas toolbar control */
-// range input, value changed
-function onDepthUnitChange() {
-    var depthUnitEle = document.querySelector('input[type="range"].depth-unit');
-    var newDepthUnit = depthUnitEle.value;
-    newDepthUnit = parseInt(newDepthUnit, 10);
-    if (isNaN(newDepthUnit)) {
-        newDepthUnit = depthUnit;
-    }
-    updateMeshDepthUnit(newDepthUnit);
-}
+function onShowClippedContentClick() {
+    var ele = document.querySelector('#canvas-toolbar button.show-clipped-content');
 
-function updateMeshDepthUnit(newDepthUnit) {
-    if (newDepthUnit !== depthUnit) {
-        newDepthUnit = newDepthUnit < 5 ? 5 : newDepthUnit;
-        for (var i = allViewsData.length - 1; i >= 0; i--) {
-            var viewItem = allViewsData[i];
-            if (viewItem.hasOwnProperty('three')) {
-                var mesh = viewItem.three.mesh;
-                var tmp = mesh.position.z;
-                mesh.position.setZ(newDepthUnit * tmp / depthUnit);
-            }
-        }
+    // update view
+    if (isClippedContentShown) {
+        // not clip content
+        ele.classList.add('selected');
+    } else {
+        // clip content
+        ele.classList.remove('selected');
     }
-    depthUnit = newDepthUnit;
 
-    // update input html
-    var textEle = document.getElementById('depth-unit-text');
-    textEle.value = depthUnit;
+    // update data
+    isClippedContentShown = !isClippedContentShown;
 }
