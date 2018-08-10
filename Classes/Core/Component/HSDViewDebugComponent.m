@@ -286,9 +286,20 @@
     NSData *(^MainThreadBlock)(void) = ^{
         // get view snapshot
         UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0);
-        [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+        CGContextRef context = UIGraphicsGetCurrentContext();
+
+        // handle UIScrollView
+        if ([view isKindOfClass:[UIScrollView class]]) {
+            UIScrollView *scrollView = (UIScrollView *)view;
+            CGPoint contentOffset = scrollView.contentOffset;
+            CGContextTranslateCTM(context, -contentOffset.x, -contentOffset.y);
+        }
+
+        [view.layer renderInContext:context];
         UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
+
+        // image data
         NSData *data = UIImagePNGRepresentation(snapshot);
         return data;
     };
