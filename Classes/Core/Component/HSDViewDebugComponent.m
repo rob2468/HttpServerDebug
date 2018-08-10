@@ -36,6 +36,41 @@
     return allViews;
 }
 
++ (NSArray *)allRecursiveSubviewsInView:(UIView *)view inWindow:(UIWindow *)window {
+    NSMutableArray *subviews = [[NSMutableArray alloc] init];
+    for (UIView *subview in view.subviews) {
+        // generate data of displayed subview
+        if (![[self class] viewBaseClassIsHidden:subview]) {
+            NSDictionary *subviewData = [self fetchViewData:subview inWindow:window];
+            [subviews addObject:subviewData];
+            [subviews addObjectsFromArray:[self allRecursiveSubviewsInView:subview inWindow:window]];
+        }
+    }
+    return subviews;
+}
+
++ (NSArray *)fetchAllWindows {
+    // allWindowsIncludingInternalWindows:YES onlyVisibleWindows:NO
+    BOOL includeInternalWindows = YES;
+    BOOL onlyVisibleWindows = NO;
+
+    NSArray *allWindowsComponents = @[@"al", @"lWindo", @"wsIncl", @"udingInt", @"ernalWin", @"dows:o", @"nlyVisi", @"bleWin", @"dows:"];
+    SEL allWindowsSelector = NSSelectorFromString([allWindowsComponents componentsJoinedByString:@""]);
+
+    NSMethodSignature *methodSignature = [[UIWindow class] methodSignatureForSelector:allWindowsSelector];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+
+    invocation.target = [UIWindow class];
+    invocation.selector = allWindowsSelector;
+    [invocation setArgument:&includeInternalWindows atIndex:2];
+    [invocation setArgument:&onlyVisibleWindows atIndex:3];
+    [invocation invoke];
+
+    __unsafe_unretained NSArray *windows = nil;
+    [invocation getReturnValue:&windows];
+    return windows;
+}
+
 /**
  *  {
  *  "description": ,
@@ -65,30 +100,44 @@
     NSString *description = [[view class] description];
     NSString *className = NSStringFromClass([view class]);
     NSString *memoryAddress = [NSString stringWithFormat:@"%p", view];
+
     // hierarchyDepth, clippedFrameRoot
     NSInteger hierarchyDepth = 0;
-    CGPoint tryClippedOrigin = CGPointMake(0, 0);
-    CGSize tryClippedSize = view.frame.size;
+    CGPoint tryClippedOrigin = CGPointMake(0, 0);           // origin will be updated
+    if ([view isKindOfClass:[UIScrollView class]]) {
+        // scroll view case
+        UIScrollView *scrollView = (UIScrollView *)view;
+        CGPoint contentOffset = scrollView.contentOffset;
+        tryClippedOrigin = contentOffset;
+    }
+    CGSize tryClippedSize = view.frame.size;                // size will be updated
     UIView *tryView = view;
     while (tryView.superview) {
         UIView *superview = tryView.superview;
-        
+
+        // convert origin
         tryClippedOrigin = [tryView convertPoint:tryClippedOrigin toView:superview];
-        if (!CGSizeEqualToSize(tryClippedSize, CGSizeMake(0, 0))
-            && superview.clipsToBounds) {
-            // calculate clipped content frame
+
+        if (!CGSizeEqualToSize(tryClippedSize, CGSizeMake(0, 0)) &&
+            superview.clipsToBounds) {
+            // convert size
             CGRect tryClippedFrame = CGRectMake(tryClippedOrigin.x, tryClippedOrigin.y, tryClippedSize.width, tryClippedSize.height);
-            tryClippedFrame = CGRectIntersection(tryClippedFrame, superview.bounds);
-                
+            CGRect frame = CGRectMake(0, 0, 0, 0);
+            frame.size = superview.bounds.size;
+            tryClippedFrame = CGRectIntersection(tryClippedFrame, frame);
+
+            // update origin
             if (tryClippedOrigin.x < 0) {
                 tryClippedOrigin.x = 0;
             }
             if (tryClippedOrigin.y < 0) {
                 tryClippedOrigin.y = 0;
             }
+
+            // parse size from frame
             tryClippedSize = tryClippedFrame.size;
         }
-        
+
         tryView = superview;
         hierarchyDepth++;
     }
@@ -97,18 +146,21 @@
         clippedFrameRoot = CGRectMake(tryClippedOrigin.x, tryClippedOrigin.y, tryClippedSize.width, tryClippedSize.height);
     }
     NSDictionary *clippedFrameRootDict = [self convertCGRect:clippedFrameRoot];
-    
+
     CGPoint clippedOrigin = [view convertPoint:tryClippedOrigin fromView:window];   // origin for snapshot clipped view
-    
+
     // frame
     CGRect frame = view.frame;
     NSDictionary *frameDict = [self convertCGRect:frame];
+
     // bounds
     CGRect bounds = view.bounds;
     NSDictionary *boundsDict = [self convertCGRect:bounds];
+
     // frameRoot
     CGRect frameRoot = [view convertRect:view.bounds toView:window];
     NSDictionary *frameRootDict = [self convertCGRect:frameRoot];
+
     // snapshot without subviews
     NSString *snapshotDataStr = @"";
     if (!CGSizeEqualToSize(clippedFrameRoot.size, CGSizeMake(0, 0))) {
@@ -119,21 +171,28 @@
             if (!isHidden) {
                 // collect
                 [subviews addObject:subview];
+
                 // hide
                 [[self class] view:subview baseClassSetHidden:YES];
             }
         }
+
         // get view snapshot
         UIGraphicsBeginImageContextWithOptions(clippedFrameRoot.size, NO, 0.0);
-        CGContextRef c = UIGraphicsGetCurrentContext();
-        CGContextConcatCTM(c, CGAffineTransformMakeTranslation(-clippedOrigin.x, -clippedOrigin.y));
-        [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGFloat tx = -clippedOrigin.x;
+        CGFloat ty = -clippedOrigin.y;
+        CGContextTranslateCTM(context, tx, ty);
+        [view.layer renderInContext:context];
         UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
+
         // show subviews
         for (UIView *subview in subviews) {
             [[self class] view:subview baseClassSetHidden:NO];
         }
+
+        // image data
         NSData *snapshotData = UIImagePNGRepresentation(snapshot);
         snapshotDataStr = [snapshotData base64EncodedStringWithOptions:(NSDataBase64Encoding64CharacterLineLength)];
         snapshotDataStr = snapshotDataStr.length > 0 ? snapshotDataStr: @"";
@@ -218,7 +277,7 @@
               };
         }
     }
-    
+
     // construct data
     [viewData setObject:description forKey:@"description"];
     [viewData setObject:className forKey:@"className"];
@@ -243,43 +302,8 @@
     [viewData setObject:layerClassName forKey:@"layerClassName"];
     [viewData setObject:@(alpha) forKey:@"alpha"];
     [viewData setObject:backgroundColorDict forKey:@"backgroundColor"];
-    
+
     return viewData;
-}
-
-+ (NSArray *)allRecursiveSubviewsInView:(UIView *)view inWindow:(UIWindow *)window {
-    NSMutableArray *subviews = [[NSMutableArray alloc] init];
-    for (UIView *subview in view.subviews) {
-        // generate data of displayed subview
-        if (![[self class] viewBaseClassIsHidden:subview]) {
-            NSDictionary *subviewData = [self fetchViewData:subview inWindow:window];
-            [subviews addObject:subviewData];
-            [subviews addObjectsFromArray:[self allRecursiveSubviewsInView:subview inWindow:window]];
-        }
-    }
-    return subviews;
-}
-
-+ (NSArray *)fetchAllWindows {
-    // allWindowsIncludingInternalWindows:YES onlyVisibleWindows:NO
-    BOOL includeInternalWindows = YES;
-    BOOL onlyVisibleWindows = NO;
-    
-    NSArray *allWindowsComponents = @[@"al", @"lWindo", @"wsIncl", @"udingInt", @"ernalWin", @"dows:o", @"nlyVisi", @"bleWin", @"dows:"];
-    SEL allWindowsSelector = NSSelectorFromString([allWindowsComponents componentsJoinedByString:@""]);
-    
-    NSMethodSignature *methodSignature = [[UIWindow class] methodSignatureForSelector:allWindowsSelector];
-    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-    
-    invocation.target = [UIWindow class];
-    invocation.selector = allWindowsSelector;
-    [invocation setArgument:&includeInternalWindows atIndex:2];
-    [invocation setArgument:&onlyVisibleWindows atIndex:3];
-    [invocation invoke];
-    
-    __unsafe_unretained NSArray *windows = nil;
-    [invocation getReturnValue:&windows];
-    return windows;
 }
 
 + (NSData *)fetchViewSnapshotImageData:(UIView *)view {
@@ -324,7 +348,7 @@
     return dict;
 }
 
-#pragma mark -
+#pragma mark - Method IMP
 
 static BOOL (*baseClassIsHiddenIMP)(id, SEL);
 static void (*baseClassSetHiddenIMP)(id, SEL, BOOL);
