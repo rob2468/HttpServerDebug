@@ -4,8 +4,6 @@ var selectedID; // view-hierarchy-list active list item id
 
 // default settings
 var isClippedContentShown = true;
-var isNavigationSidebarShown = true;
-var isPropertySidebarShown = false;
 
 // constant variables
 var ROOTPATH = 'view_debug';
@@ -15,6 +13,8 @@ var SNAPSHOTPATH = 'snapshot';
 var MESHBORDERDEFAULTCOLOR = 0xA9A9A9;      // mesh border default color
 var MESHBORDERSELECTEDCOLOR = 0x457CD3;     // mesh border selected color
 var kSiderbarWidth = 300;
+var kNavigationSidebarShownKey = 'kNavigationSidebarShownKey';
+var kPropertySidebarShownKey = 'kPropertySidebarShownKey';
 
 /* THREE */
 var camera;
@@ -32,7 +32,34 @@ window.onload = function () {
     // sidebar
     initSideBarAdjust();
 
+    // add click event listener
     document.addEventListener('click', onDocumentMouseClick, false);
+
+    // navigation sidebar
+    var isNavigationSidebarShown = this.localStorage.getItem(kNavigationSidebarShownKey);
+    if (!isNavigationSidebarShown) {
+        // default shown
+        isNavigationSidebarShown = '1';
+        this.localStorage.setItem(kNavigationSidebarShownKey, isNavigationSidebarShown);
+    }
+    if (isNavigationSidebarShown === '0') {
+        showNavigationSidebar(false);
+    } else {
+        showNavigationSidebar(true);
+    }
+
+    // property sidebar
+    var isPropertySidebarShown = this.localStorage.getItem(kPropertySidebarShownKey);
+    if (!isPropertySidebarShown) {
+        // default hidden
+        isPropertySidebarShown = '0';
+        this.localStorage.setItem(kPropertySidebarShownKey, isPropertySidebarShown);
+    }
+    if (isPropertySidebarShown === '0') {
+        showPropertySidebar(false);
+    } else {
+        showPropertySidebar(true);
+    }
 };
 
 function requestViewHierarchyData() {
@@ -336,47 +363,83 @@ function onDocumentMouseClick(event) {
 }
 
 function onShowNavigationSidebarClick() {
+    var isNavigationSidebarShown = localStorage.getItem(kNavigationSidebarShownKey);
+    if (!isNavigationSidebarShown) {
+        isNavigationSidebarShown = '0';
+    }
+
+    var show;
+    if (isNavigationSidebarShown === '0') {
+        show = true;
+        isNavigationSidebarShown = '1';
+    } else {
+        show = false;
+        isNavigationSidebarShown = '0';
+    }
+
+    showNavigationSidebar(show);
+
+    // update local data
+    localStorage.setItem(kNavigationSidebarShownKey, isNavigationSidebarShown);
+}
+
+function onShowPropertySidebarClick() {
+    var isPropertySidebarShown = localStorage.getItem(kPropertySidebarShownKey);
+    if (!isPropertySidebarShown) {
+        isPropertySidebarShown = '0';
+    }
+
+    var show;
+    if (isPropertySidebarShown === '0') {
+        show = true;
+        isPropertySidebarShown = '1';
+    } else {
+        show = false;
+        isPropertySidebarShown = '0';
+    }
+
+    showPropertySidebar(show);
+
+    // update local data
+    localStorage.setItem(kPropertySidebarShownKey, isPropertySidebarShown);
+}
+
+function showNavigationSidebar(show) {
     var navSidebarEle = document.querySelector('.navigation-sidebar');
     var navToolbarEle = document.querySelector('#canvas-toolbar button.navigator-control');
     var toolbarEle = document.querySelector('#canvas-toolbar');
 
     // update view
-    if (isNavigationSidebarShown) {
-        // hide
-        navSidebarEle.classList.remove('active');
-        navToolbarEle.classList.remove('selected');
-        toolbarEle.style.left = 0;
-    } else {
+    if (show) {
         // show
         navSidebarEle.classList.add('active');
         navSidebarEle.style.width = kSiderbarWidth + 'px';
         navToolbarEle.classList.add('selected');
         toolbarEle.style.left = kSiderbarWidth + 'px';
+    } else {
+        // hide
+        navSidebarEle.classList.remove('active');
+        navToolbarEle.classList.remove('selected');
+        toolbarEle.style.left = 0;
     }
-
-    // update data
-    isNavigationSidebarShown = !isNavigationSidebarShown;
 }
 
-function onShowPropertySidebarClick() {
+function showPropertySidebar(show) {
     var propSidebarEle = document.querySelector('.property-sidebar');
     var propToolbarEle = document.querySelector('#canvas-toolbar button.utilities-control');
     var toolbarEle = document.querySelector('#canvas-toolbar');
 
     // update view
-    if (isPropertySidebarShown) {
-        // hide
-        propSidebarEle.classList.remove('active');
-        propToolbarEle.classList.remove('selected');
-        toolbarEle.style.right = 0;
-    } else {
+    if (show) {
         // show
         propSidebarEle.classList.add('active');
         propSidebarEle.style.width = kSiderbarWidth + 'px';
         propToolbarEle.classList.add('selected');
         toolbarEle.style.right = kSiderbarWidth + 'px';
+    } else {
+        // hide
+        propSidebarEle.classList.remove('active');
+        propToolbarEle.classList.remove('selected');
+        toolbarEle.style.right = 0;
     }
-
-    // update data
-    isPropertySidebarShown = !isPropertySidebarShown;
 }
