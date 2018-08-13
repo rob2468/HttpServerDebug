@@ -37,6 +37,9 @@ function initTHREE(startIdx) {
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.autoRotate = false;
     controls.enableZoom = false;
+    controls.addEventListener('end', function () {
+        onOrbitControlsEnd();
+    });
 
     // axes helper
     // var axesHelper = new THREE.AxesHelper(height / 2);
@@ -136,13 +139,6 @@ function onCanvasClick(mouseVec) {
     }
 }
 
-function animateTHREE() {
-    TWEEN.update();
-    controls.update();
-    renderer.render(scene, camera);
-    requestAnimationFrame(animateTHREE);
-}
-
 /* canvas toolbar control */
 // range input, value changed
 function onDepthUnitChange() {
@@ -234,14 +230,45 @@ function onZoomInClick() {
 
 function zoomCameraAnimated(targetZoom) {
     var currentZoom = camera.zoom;          // start value
-    var tween = new TWEEN.Tween({ zoom: currentZoom })
-        .to({ zoom: targetZoom }, 300)     // animate, value and duration
+    new TWEEN.Tween({ zoom: currentZoom })
+    .to({ zoom: targetZoom }, 300)     // animate, value and duration
+    .easing(TWEEN.Easing.Quadratic.Out)
+    .onUpdate(function () {
+        // modify camera zoom value
+        var zoom = this.zoom;
+        camera.zoom = zoom;
+        camera.updateProjectionMatrix();
+    })
+    .start();
+}
+
+/* OrbitControls end event */
+function onOrbitControlsEnd() {
+    // min value that can rotate
+    var defaultPos = CameraDefaultPosition;
+    var minX = defaultPos.z * 0.1;
+    var minY = defaultPos.z * 0.02;
+
+    var currentPos = camera.position;
+    if (Math.abs(currentPos.x) < minX && Math.abs(currentPos.y) < minY) {
+        // orient to 2D
+        new TWEEN.Tween({ x: currentPos.x, y: currentPos.y, z: currentPos.z })
+        .to(defaultPos, 300)
         .easing(TWEEN.Easing.Quadratic.Out)
-        .onUpdate(function() {
-            // modify camera zoom value
-            var zoom = this.zoom;
-            camera.zoom = zoom;
-            camera.updateProjectionMatrix();
+        .onUpdate(function () {
+            var x = this.x;
+            var y = this.y;
+            var z = this.z;
+            camera.position.set(x, y, z);
         })
         .start();
+    }
+}
+
+/* requestAnimationFrame */
+function animateTHREE() {
+    TWEEN.update();
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(animateTHREE);
 }
