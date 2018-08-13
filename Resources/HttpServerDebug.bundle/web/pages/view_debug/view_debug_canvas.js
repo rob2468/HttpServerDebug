@@ -128,6 +128,7 @@ function initTHREE(startIdx) {
     depthUnitEle.value = depthUnit;
 }
 
+/* click canvas */
 /**
  *  select mesh
  */
@@ -165,37 +166,7 @@ function updateMeshDepthUnit(newDepthUnit) {
     depthUnit = newDepthUnit;
 }
 
-/* orient to 2D or 3D */
-function onOrientTo2DClick() {
-    controls.reset();
-
-    var x = CameraDefaultPosition.x;
-    var y = CameraDefaultPosition.y;
-    var z = CameraDefaultPosition.z;
-    camera.position.set(x, y, z);
-
-    // update control tool
-    var orient2DEle = document.querySelector('.control-tool.orient-to-2d');
-    var orient3DEle = document.querySelector('.control-tool.orient-to-3d');
-    orient2DEle.classList.remove('available');
-    orient3DEle.classList.add('available');
-}
-
-function onOrientTo3DClick() {
-    controls.reset();
-
-    var z = CameraDefaultPosition.z;
-    var x = -z * 0.1;
-    var y = z * 0.02;
-    camera.position.set(x, y, z);
-
-    // update control tool
-    var orient2DEle = document.querySelector('.control-tool.orient-to-2d');
-    var orient3DEle = document.querySelector('.control-tool.orient-to-3d');
-    orient2DEle.classList.add('available');
-    orient3DEle.classList.remove('available');
-}
-
+/* show clipped content */
 function onShowClippedContentClick() {
     var ele = document.querySelector('#canvas-toolbar button.show-clipped-content');
 
@@ -210,6 +181,45 @@ function onShowClippedContentClick() {
 
     // update data
     isClippedContentShown = !isClippedContentShown;
+}
+
+/* orient to 2D or 3D */
+function onOrientTo2DClick() {
+    controls.reset();
+
+    var x = CameraDefaultPosition.x;
+    var y = CameraDefaultPosition.y;
+    var z = CameraDefaultPosition.z;
+    camera.position.set(x, y, z);
+
+    // update control tool
+    updateOrientButtonsTo2D(false);
+}
+
+function onOrientTo3DClick() {
+    controls.reset();
+
+    var z = CameraDefaultPosition.z;
+    var x = -z * 0.1;
+    var y = z * 0.02;
+    camera.position.set(x, y, z);
+
+    // update control tool
+    updateOrientButtonsTo2D(true);
+}
+
+function updateOrientButtonsTo2D(orientTo2D) {
+    var orient2DEle = document.querySelector('.control-tool.orient-to-2d');
+    var orient3DEle = document.querySelector('.control-tool.orient-to-3d');
+    if (orientTo2D) {
+        // orient to 2D
+        orient2DEle.classList.add('available');
+        orient3DEle.classList.remove('available');
+    } else {
+        // orient to 3D
+        orient2DEle.classList.remove('available');
+        orient3DEle.classList.add('available');
+    }
 }
 
 /* Zoom */
@@ -244,24 +254,32 @@ function zoomCameraAnimated(targetZoom) {
 
 /* OrbitControls end event */
 function onOrbitControlsEnd() {
-    // min value that can rotate
-    var defaultPos = CameraDefaultPosition;
-    var minX = defaultPos.z * 0.1;
-    var minY = defaultPos.z * 0.02;
-
     var currentPos = camera.position;
-    if (Math.abs(currentPos.x) < minX && Math.abs(currentPos.y) < minY) {
+    if (Math.abs(currentPos.x / currentPos.z) < 0.1 &&
+        Math.abs(currentPos.y / currentPos.z) < 0.02) {
         // orient to 2D
         new TWEEN.Tween({ x: currentPos.x, y: currentPos.y, z: currentPos.z })
-        .to(defaultPos, 300)
+        .to(CameraDefaultPosition, 300)
         .easing(TWEEN.Easing.Quadratic.Out)
         .onUpdate(function () {
+            // camera
             var x = this.x;
             var y = this.y;
             var z = this.z;
             camera.position.set(x, y, z);
+
+            // buttons
+            if (x === CameraDefaultPosition.x &&
+                y === CameraDefaultPosition.y &&
+                z === CameraDefaultPosition.z) {
+                updateOrientButtonsTo2D(false);
+            }
         })
         .start();
+    } else {
+        // 3D
+        // buttons
+        updateOrientButtonsTo2D(true);
     }
 }
 
