@@ -137,9 +137,10 @@ function onCanvasClick(mouseVec) {
 }
 
 function animateTHREE() {
-    requestAnimationFrame(animateTHREE);
+    TWEEN.update();
     controls.update();
     renderer.render(scene, camera);
+    requestAnimationFrame(animateTHREE);
 }
 
 /* canvas toolbar control */
@@ -217,17 +218,30 @@ function onShowClippedContentClick() {
 
 /* Zoom */
 function onZoomOutClick() {
-    camera.zoom *= 0.9;
-    camera.updateProjectionMatrix();
+    var targetZoom = camera.zoom * 0.9;     // end value
+    zoomCameraAnimated(targetZoom);
 }
 
 function onActualSizeClick() {
-    camera.zoom = 1;
-    camera.updateProjectionMatrix();
+    var targetZoom = 1;                     // end value
+    zoomCameraAnimated(targetZoom);
 }
 
 function onZoomInClick() {
-    camera.zoom *= 1.1;
-    camera.updateProjectionMatrix();
+    var targetZoom = camera.zoom * 1.1;     // end value
+    zoomCameraAnimated(targetZoom);
 }
 
+function zoomCameraAnimated(targetZoom) {
+    var currentZoom = camera.zoom;          // start value
+    var tween = new TWEEN.Tween({ zoom: currentZoom })
+        .to({ zoom: targetZoom }, 300)     // animate, value and duration
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .onUpdate(function() {
+            // modify camera zoom value
+            var zoom = this.zoom;
+            camera.zoom = zoom;
+            camera.updateProjectionMatrix();
+        })
+        .start();
+}
