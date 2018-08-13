@@ -156,7 +156,6 @@ function onDepthUnitChange() {
 
 function updateMeshDepthUnit(newDepthUnit) {
     if (newDepthUnit !== depthUnit) {
-        newDepthUnit = newDepthUnit < 5 ? 5 : newDepthUnit;
         for (var i = allViewsData.length - 1; i >= 0; i--) {
             var viewItem = allViewsData[i];
             if (viewItem.hasOwnProperty('three')) {

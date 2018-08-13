@@ -49,7 +49,17 @@
     greenSubView2.backgroundColor = [UIColor yellowColor];
     [greenView addSubview:greenSubView2];
 
+    //
+    viewFrame = CGRectMake(10, 230, 100, 100);
+    UIView *view = [[UIView alloc] initWithFrame:viewFrame];
+    view.backgroundColor = [UIColor darkGrayColor];
+    [scrollView addSubview:view];
 
+    for (NSInteger i = 0; i < 40; i++) {
+        UIView *tmpView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+        tmpView.backgroundColor = [UIColor darkGrayColor];
+        [view addSubview:tmpView];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

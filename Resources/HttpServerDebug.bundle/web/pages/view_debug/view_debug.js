@@ -22,7 +22,7 @@ var CameraDefaultPosition = {x: 0, y: 0, z: 1000000};
 var scene;
 var renderer;
 var controls;
-var depthUnit = 50;     // distance between neighboring views
+var depthUnit = 20;     // distance between neighboring views
 var raycaster = new THREE.Raycaster();
 
 window.onload = function () {
