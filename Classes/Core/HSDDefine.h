@@ -18,4 +18,9 @@ extern NSString *const kHSDComponentConsoleLog;
 
 extern NSString *const kHSDTemplateSeparator;
 
-extern NSString *const kHSDUserDefaultsKeyAutoStart;
+extern NSString *const kHSDUserDefaultsKeyAutoStart;    // should hsd start automatically
+extern NSString *const kHSDUserDefaultsKeyServerPort;   // server port
+
+// user setting max and min port number
+extern const UInt16 kHSDServerPortUserSettingMin;
+extern const UInt16 kHSDServerPostUserSettingMax;

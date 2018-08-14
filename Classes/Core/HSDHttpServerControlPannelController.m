@@ -12,11 +12,12 @@
 
 @interface HSDHttpServerControlPannelController ()
 
-@property (strong, nonatomic) UIScrollView *scrollView;
-@property (strong, nonatomic) UITextView *textView;
-@property (strong, nonatomic) UISwitch *startSwitchView;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UITextView *textView;
+@property (nonatomic, strong) UITextField *portTextField;
+@property (nonatomic, strong) UISwitch *startSwitchView;
 
-@property (strong, nonatomic) NSMutableString *logText;     // log string, shown in textView
+@property (nonatomic, strong) NSMutableString *logText;     // log string, shown in textView
 
 @end
 
@@ -84,17 +85,64 @@
     self.textView.text = @"";
     [self.scrollView addSubview:self.textView];
     contentSizeHeight += edgeLength + textViewHeight;
-    
-    // 启动
-    UIView *contentView = [[UIView alloc] init];
-    CGFloat contentViewHeight = 50.f;
+
     CGFloat space = 20;
+    CGFloat contentViewHeight = 50.f;
+
+    // 端口号
+    UIView *contentView = [[UIView alloc] init];
     contentView.frame = CGRectMake(0, contentSizeHeight + space, scrollViewFrame.size.width, contentViewHeight);
     contentView.layer.borderColor = [UIColor blackColor].CGColor;
     contentView.layer.borderWidth = 1.0f;
     [self.scrollView addSubview:contentView];
     contentSizeHeight += space + contentViewHeight;
-    
+
+    // portTextField
+    self.portTextField = [[UITextField alloc] init];
+    self.portTextField.translatesAutoresizingMaskIntoConstraints = NO;
+    self.portTextField.borderStyle = UITextBorderStyleRoundedRect;
+    self.portTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"端口号 (1024, 65535)" attributes: @{NSFontAttributeName: [UIFont systemFontOfSize:15]}];
+    self.portTextField.keyboardType = UIKeyboardTypeNumberPad;
+    [contentView addSubview:self.portTextField];
+
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    if ([userDefaults valueForKey:kHSDUserDefaultsKeyServerPort]) {
+        NSInteger userSettingPort = [userDefaults integerForKey:kHSDUserDefaultsKeyServerPort];
+        self.portTextField.text = [NSString stringWithFormat:@"%ld", (long)userSettingPort];
+    }
+
+    // portButton
+    UIButton *portButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    portButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [portButton setTitle:@"设置端口号" forState:UIControlStateNormal];
+    [portButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    portButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [portButton addTarget:self action:@selector(onPortButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    [contentView addSubview:portButton];
+
+    // portTextField constraints
+    [self.view addConstraints:
+  @[[NSLayoutConstraint constraintWithItem:self.portTextField attribute:(NSLayoutAttributeLeading) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeLeading) multiplier:1 constant:17],
+    [NSLayoutConstraint constraintWithItem:self.portTextField attribute:(NSLayoutAttributeTrailing) relatedBy:(NSLayoutRelationEqual) toItem:portButton attribute:(NSLayoutAttributeLeading) multiplier:1 constant:-17],
+    [NSLayoutConstraint constraintWithItem:self.portTextField attribute:(NSLayoutAttributeTop) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeTop) multiplier:1 constant:5],
+    [NSLayoutConstraint constraintWithItem:self.portTextField attribute:(NSLayoutAttributeBottom) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeBottom) multiplier:1 constant:-5]]];
+
+    // portButton constraints
+    [self.view addConstraints:
+  @[[NSLayoutConstraint constraintWithItem:portButton attribute:(NSLayoutAttributeTrailing) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeTrailing) multiplier:1 constant:-17],
+    [NSLayoutConstraint constraintWithItem:portButton attribute:(NSLayoutAttributeWidth) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeWidth) multiplier:0 constant:100],
+    [NSLayoutConstraint constraintWithItem:portButton attribute:(NSLayoutAttributeTop) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeTop) multiplier:1 constant:5],
+    [NSLayoutConstraint constraintWithItem:portButton attribute:(NSLayoutAttributeBottom) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeBottom) multiplier:1 constant:-5]]];
+
+    // 启动
+    contentView = [[UIView alloc] init];
+    contentView.frame = CGRectMake(0, contentSizeHeight + space, scrollViewFrame.size.width, contentViewHeight);
+    contentView.layer.borderColor = [UIColor blackColor].CGColor;
+    contentView.layer.borderWidth = 1.0f;
+    [self.scrollView addSubview:contentView];
+    contentSizeHeight += space + contentViewHeight;
+
+    // titleLabel
     UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     titleLabel.text = @"启动";
@@ -102,8 +150,11 @@
     titleLabel.font = [UIFont systemFontOfSize:15];
     [contentView addSubview:titleLabel];
     
-    [self.view addConstraints:@[[NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeLeading) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeLeading) multiplier:1 constant:17], [NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
-    
+    [self.view addConstraints:
+  @[[NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeLeading) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeLeading) multiplier:1 constant:17],
+    [NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
+
+    // startSwitchView
     self.startSwitchView = [[UISwitch alloc] init];
     self.startSwitchView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.startSwitchView addTarget:self action:@selector(startSwitchViewValueChanged:) forControlEvents:UIControlEventValueChanged];
@@ -124,6 +175,7 @@
     [self.scrollView addSubview:contentView];
     contentSizeHeight += space + contentViewHeight;
 
+    // titleLabel
     titleLabel = [[UILabel alloc] init];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     titleLabel.text = @"自动启动";
@@ -131,8 +183,11 @@
     titleLabel.font = [UIFont systemFontOfSize:15];
     [contentView addSubview:titleLabel];
     
-    [self.view addConstraints:@[[NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeLeading) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeLeading) multiplier:1 constant:17], [NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
-    
+    [self.view addConstraints:
+  @[[NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeLeading) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeLeading) multiplier:1 constant:17],
+    [NSLayoutConstraint constraintWithItem:titleLabel attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
+
+    // 自动启动 switchView
     UISwitch *switchView = [[UISwitch alloc] init];
     switchView.translatesAutoresizingMaskIntoConstraints = NO;
     [switchView addTarget:self action:@selector(autoStartSwitchViewValueChanged:) forControlEvents:UIControlEventValueChanged];
@@ -144,8 +199,10 @@
     }
     [contentView addSubview:switchView];
     
-    [self.view addConstraints:@[[NSLayoutConstraint constraintWithItem:switchView attribute:(NSLayoutAttributeTrailing) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeTrailing) multiplier:1 constant:-17], [NSLayoutConstraint constraintWithItem:switchView attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
-    
+    [self.view addConstraints:
+  @[[NSLayoutConstraint constraintWithItem:switchView attribute:(NSLayoutAttributeTrailing) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeTrailing) multiplier:1 constant:-17],
+    [NSLayoutConstraint constraintWithItem:switchView attribute:(NSLayoutAttributeCenterY) relatedBy:(NSLayoutRelationEqual) toItem:contentView attribute:(NSLayoutAttributeCenterY) multiplier:1 constant:0]]];
+
     // 返回
     contentView = [[UIView alloc] init];
     contentView.frame = CGRectMake(0, contentSizeHeight + space, scrollViewFrame.size.width, contentViewHeight);
@@ -168,6 +225,35 @@
         [self resolveHostName];
     }
 }
+
+#pragma mark - 端口号
+
+- (void)onPortButtonPressed {
+    [self.portTextField resignFirstResponder];
+    NSInteger port = [self.portTextField.text integerValue];
+
+    NSString *title = @"";
+    NSString *message = @"";
+    if (self.portTextField.text.length == 0) {
+        // 删除端口号
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kHSDUserDefaultsKeyServerPort];
+
+        message = @"端口号设置已删除。";
+    } else if (port >= kHSDServerPortUserSettingMin && port <= kHSDServerPostUserSettingMax) {
+        // 设置端口号
+        [[NSUserDefaults standardUserDefaults] setInteger:port forKey:kHSDUserDefaultsKeyServerPort];
+
+        message = [NSString stringWithFormat:@"端口号已设置为：%@, 请重新启动 HSD。", @(port)];
+    } else {
+        message = @"端口号设置不合法。";
+    }
+
+    // alertView
+    UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
+    [alerView show];
+}
+
+#pragma mark - 启动
 
 - (void)startSwitchViewValueChanged:(UISwitch *)sender {
     BOOL isON = sender.on;

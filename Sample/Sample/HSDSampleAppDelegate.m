@@ -20,8 +20,8 @@
     [self.window makeKeyAndVisible];
     
     [HSDManager updateHSDDelegate:self];
-    [HSDManager updateHttpServerPort:@"5555"];
-    
+    [HSDManager updateHttpServerPort:5555];
+
     static NSInteger tmp = 0;
     [NSTimer scheduledTimerWithTimeInterval:2 repeats:YES block:^(NSTimer * _Nonnull timer) {
         tmp++;
