@@ -121,21 +121,29 @@
         if (!CGSizeEqualToSize(tryClippedSize, CGSizeMake(0, 0)) &&
             superview.clipsToBounds) {
             // convert size
-            CGRect tryClippedFrame = CGRectMake(tryClippedOrigin.x, tryClippedOrigin.y, tryClippedSize.width, tryClippedSize.height);
+            CGRect superviewBounds = superview.bounds;
+            // compensate for the offset of superview
+            CGFloat x = tryClippedOrigin.x - superviewBounds.origin.x;
+            CGFloat y = tryClippedOrigin.y - superviewBounds.origin.y;
+
+            // clip
+            x = x < 0 ? 0 : x;
+            y = y < 0 ? 0 : y;
+            CGRect tryClippedFrame = CGRectMake(x, y, tryClippedSize.width, tryClippedSize.height);
+
+            // base frame
             CGRect frame = CGRectMake(0, 0, 0, 0);
-            frame.size = superview.bounds.size;
+            frame.size = superviewBounds.size;
+
+            // intersect
             tryClippedFrame = CGRectIntersection(tryClippedFrame, frame);
 
-            // update origin
-            if (tryClippedOrigin.x < 0) {
-                tryClippedOrigin.x = 0;
-            }
-            if (tryClippedOrigin.y < 0) {
-                tryClippedOrigin.y = 0;
-            }
-
-            // parse size from frame
+            // update size
             tryClippedSize = tryClippedFrame.size;
+
+            // update origin
+            tryClippedOrigin.x = tryClippedOrigin.x < 0 ? 0 : tryClippedOrigin.x;
+            tryClippedOrigin.y = tryClippedOrigin.y < 0 ? 0 : tryClippedOrigin.y;
         }
 
         tryView = superview;

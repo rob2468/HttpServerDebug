@@ -19,13 +19,16 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"View Debug";
 
-    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
+    // scrollView
+    CGRect viewFrame = self.view.bounds;
+    viewFrame.size.height -= 64;
+    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:viewFrame];
     scrollView.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:scrollView];
     [scrollView setContentSize:CGSizeMake(CGRectGetWidth(self.view.bounds), 1000)];
-    
+
     // redView
-    CGRect viewFrame = CGRectMake(10, 10, 100, 100);
+    viewFrame = CGRectMake(10, 10, 100, 100);
     UIView *redView = [[UIView alloc] initWithFrame:viewFrame];
     redView.backgroundColor = [UIColor redColor];
     [scrollView addSubview:redView];
@@ -60,6 +63,35 @@
         tmpView.backgroundColor = [UIColor darkGrayColor];
         [view addSubview:tmpView];
     }
+
+    //
+    viewFrame = CGRectMake(10, 340, 100, 100);
+    view = [[UIView alloc] initWithFrame:viewFrame];
+    view.backgroundColor = [UIColor whiteColor];
+    [scrollView addSubview:view];
+
+    //
+    viewFrame = CGRectMake(10, 450, 100, 100);
+    view = [[UIView alloc] initWithFrame:viewFrame];
+    view.backgroundColor = [UIColor grayColor];
+    [scrollView addSubview:view];
+
+    //
+    viewFrame = CGRectMake(10, 560, 100, 100);
+    view = [[UIView alloc] initWithFrame:viewFrame];
+    view.backgroundColor = [UIColor blueColor];
+    [scrollView addSubview:view];
+
+    //
+    viewFrame = CGRectMake(10, 670, 100, 100);
+    view = [[UIView alloc] initWithFrame:viewFrame];
+    view.backgroundColor = [UIColor cyanColor];
+    [scrollView addSubview:view];
+
+    // bottomView
+    UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 64, self.view.frame.size.width, 64)];
+    bottomView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:bottomView];
 }
 
 - (void)didReceiveMemoryWarning {
