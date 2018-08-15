@@ -17,12 +17,13 @@
 NSString *kHSDNotificationServerStarted = @"kHSDNotificationServerStarted";
 NSString *kHSDNotificationServerStopped = @"kHSDNotificationServerStopped";
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
+static UInt16 kHttpServerPortDefault = 0;
 
 @interface HSDManager ()
 
 @property (nonatomic, strong) HTTPServer *server;
 @property (nonatomic, copy) NSString *dbFilePath;       // default inspect db file path
-@property (nonatomic, assign) UInt16 serverPort;        // serverPort; UINT16_MAX is the invalid value
+@property (nonatomic, assign) UInt16 serverPort;        // serverPort
 @property (nonatomic, copy) NSString *serverName;
 @property (nonatomic, weak) id<HSDDelegate> delegate;
 @property (nonatomic, strong) HSDHostNameResolveComponent *hostNameResolveComponent;
@@ -60,7 +61,7 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.serverPort = UINT16_MAX;
+        self.serverPort = kHttpServerPortDefault;
     }
     return self;
 }
@@ -70,8 +71,8 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     manager.serverPort = port;
 }
 
-+ (int)fetchHttpServerPort {
-    int port = 0;
++ (UInt16)fetchHttpServerPort {
+    UInt16 port = kHttpServerPortDefault;
     if ([HSDManager isHttpServerRunning]) {
         HSDManager *manager = [HSDManager sharedInstance];
         port = manager.server.listeningPort;
@@ -125,21 +126,15 @@ static NSString *const kHttpServerWebIndexFileName = @"index.html";
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     if ([userDefaults valueForKey:kHSDUserDefaultsKeyServerPort]) {
         // user setting value exists
-        NSInteger userSettingPort = [userDefaults integerForKey:kHSDUserDefaultsKeyServerPort];
-        if (userSettingPort >= kHSDServerPortUserSettingMin && userSettingPort <= kHSDServerPostUserSettingMax) {
-            port = userSettingPort;
-        } else {
-            port = UINT16_MAX;
-        }
+        port = [userDefaults integerForKey:kHSDUserDefaultsKeyServerPort];
     } else {
         // method calling value
         port = manager.serverPort;
     }
-    if (port != UINT16_MAX) {
-        [manager.server setPort:port];
-    } else {
-        [manager.server setPort:0];     // random port
+    if (port < kHSDServerPortUserSettingMin || port > kHSDServerPostUserSettingMax) {
+        port = kHttpServerPortDefault;
     }
+    [manager.server setPort:port];
 
     NSString *name = manager.serverName;
     if (name.length > 0) {

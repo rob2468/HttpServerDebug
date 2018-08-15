@@ -20,5 +20,5 @@ NSString *const kHSDTemplateSeparator = @"%%";
 NSString *const kHSDUserDefaultsKeyAutoStart = @"hsd_userdefaultskey_is_started_automatically";
 NSString *const kHSDUserDefaultsKeyServerPort = @"hsd_userdefaultskey_server_port";
 
-const UInt16 kHSDServerPortUserSettingMin = 1025;
-const UInt16 kHSDServerPostUserSettingMax = 65534;
+const UInt16 kHSDServerPortUserSettingMin = 1024;
+const UInt16 kHSDServerPostUserSettingMax = 65535;

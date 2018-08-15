@@ -101,7 +101,8 @@
     self.portTextField = [[UITextField alloc] init];
     self.portTextField.translatesAutoresizingMaskIntoConstraints = NO;
     self.portTextField.borderStyle = UITextBorderStyleRoundedRect;
-    self.portTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"端口号 (1024, 65535)" attributes: @{NSFontAttributeName: [UIFont systemFontOfSize:15]}];
+    self.portTextField.font = [UIFont systemFontOfSize:15];
+    self.portTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"端口号 [1024, 65535]" attributes: @{NSFontAttributeName: [UIFont systemFontOfSize:15]}];
     self.portTextField.keyboardType = UIKeyboardTypeNumberPad;
     [contentView addSubview:self.portTextField];
 

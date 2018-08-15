@@ -43,14 +43,14 @@ typedef void(^HSDHostNameResolveBlock)(HSDHostNameResolveState state, NSArray<NS
 /**
  *  Call before starting http server, if you need to set the port. Otherwise, server serves on a random port.
  *  User setting from control pannel have higher priority than setting with this method.
- *  @param port  port number, interval (1024, 65535).
+ *  @param port  port number, interval [1024, 65535].
  */
 + (void)updateHttpServerPort:(UInt16)port;
 
 /**
  *
  */
-+ (int)fetchHttpServerPort;
++ (UInt16)fetchHttpServerPort;
 
 /**
  *  is hsd started
