@@ -133,7 +133,6 @@
 
 + (NSData *)executeSQL:(NSString *)dbPath sql:(NSString *)sqlStr {
     // execute sql
-    sqlStr = [sqlStr stringByRemovingPercentEncoding];
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     BOOL res = NO;
     NSString *errMsg = @"";

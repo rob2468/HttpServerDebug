@@ -45,7 +45,7 @@
 + (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
     // parse data
     NSString *filePath = [params objectForKey:@"file_path"];
-    
+
     id json;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (filePath.length == 0) {
@@ -55,6 +55,7 @@
         json = [filesDataList copy];
     } else {
         // request specific file path
+        filePath = [filePath stringByRemovingPercentEncoding];
         BOOL isDir;
         if ([fileManager fileExistsAtPath:filePath isDirectory:&isDir]) {
             if (isDir) {
@@ -88,10 +89,10 @@
     
     // database file path
     NSString *dbPath = [params objectForKey:@"db_path"];
-    dbPath = [dbPath stringByRemovingPercentEncoding];
-    
+
     if (dbPath.length > 0) {
         // fetch part of html
+        dbPath = [dbPath stringByRemovingPercentEncoding];
         NSString *selectHtml = [HSDDBInspectComponent fetchTableNamesHTMLString:dbPath];
         if (selectHtml.length > 0) {
             NSString *documentRoot = [HSDManager fetchDocumentRoot];
@@ -120,6 +121,7 @@
         // query
         NSString *type = [params objectForKey:@"type"];
         NSString *dbPath = [params objectForKey:@"db_path"];
+        dbPath = [dbPath stringByRemovingPercentEncoding];
         if ([type isEqualToString:@"schema"]) {
             data = [HSDDBInspectComponent queryDatabaseSchema:dbPath];
         } else {
@@ -128,7 +130,9 @@
         }
     } else if ([subModule isEqualToString:@"execute_sql"]) {
         NSString *dbPath = [params objectForKey:@"db_path"];
+        dbPath = [dbPath stringByRemovingPercentEncoding];
         NSString *sqlStr = [params objectForKey:@"sql"];
+        sqlStr = [sqlStr stringByRemovingPercentEncoding];
         data = [HSDDBInspectComponent executeSQL:dbPath sql:sqlStr];
     }
     

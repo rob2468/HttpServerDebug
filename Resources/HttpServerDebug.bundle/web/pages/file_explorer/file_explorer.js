@@ -86,7 +86,7 @@ function onItemClicked(element) {
             // request file attributes
             var attrXHR = new XMLHttpRequest();
             var requestURL = document.location.protocol + '//' + document.location.host
-            + '/api/file_explorer?file_path=' + filePath;
+            + '/api/file_explorer?file_path=' + encodeURIComponent(filePath);
             attrXHR.open('GET', requestURL);
             attrXHR.onload = function () {
                 if (attrXHR.status === 200) {
@@ -133,17 +133,17 @@ function onItemDoubleClicked(element) {
             || fileExtension === 'sqlite'
             || fileExtension === 'sqlite3') {
             // database inspect
-            url = window.location.origin + '/pages/database_inspect/database_inspect.html?db_path=' + filePath;
+            url = window.location.origin + '/pages/database_inspect/database_inspect.html?db_path=' + encodeURIComponent(filePath);
         } else {
             // file preview
-            url = window.location.origin + '/api/file_preview/' + fileName + '?file_path=' + filePath;
+            url = window.location.origin + '/api/file_preview/' + fileName + '?file_path=' + encodeURIComponent(filePath);
         }
         window.open(url);
     } else {
         // directory
         var dirXHR = new XMLHttpRequest();
         var requestURL = document.location.protocol + '//' + document.location.host
-        + '/api/file_explorer?file_path=' + filePath;
+        + '/api/file_explorer?file_path=' + encodeURIComponent(filePath);
         dirXHR.open('GET', requestURL);
         dirXHR.onload = function () {
             if (dirXHR.status === 200) {

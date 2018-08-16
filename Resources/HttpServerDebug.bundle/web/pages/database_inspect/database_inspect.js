@@ -85,7 +85,7 @@ function onDatabaseTableReload() {
     // request
     var resultSetXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/api/database_inspect?db_path=' + dbPath + '&table_name=' + tableName;
+    + '/api/database_inspect?db_path=' + encodeURIComponent(dbPath) + '&table_name=' + tableName;
     resultSetXHR.open('GET', requestURL);
     resultSetXHR.onload = function () {
         if (resultSetXHR.status === 200) {
@@ -145,7 +145,7 @@ function onDatabaseExecuteSQL() {
     // request
     var resultSetXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/api/database_inspect/execute_sql?db_path=' + dbPath + '&sql=' + encodeURIComponent(sql);
+    + '/api/database_inspect/execute_sql?db_path=' + encodeURIComponent(dbPath) + '&sql=' + encodeURIComponent(sql);
     resultSetXHR.open('GET', requestURL);
     resultSetXHR.onload = function () {
         if (resultSetXHR.status === 200) {
@@ -198,7 +198,7 @@ function requestDatabaseSchema() {
     // request
     var resultSetXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/api/database_inspect?db_path=' + dbPath + '&type=schema';
+    + '/api/database_inspect?db_path=' + encodeURIComponent(dbPath) + '&type=schema';
     resultSetXHR.open('GET', requestURL);
     resultSetXHR.onload = function () {
         if (resultSetXHR.status === 200) {
