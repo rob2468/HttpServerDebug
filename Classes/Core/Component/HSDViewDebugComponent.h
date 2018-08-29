@@ -11,8 +11,15 @@
 
 @interface HSDViewDebugComponent : NSObject
 
+/**
+ *  get all views data
+ */
 + (NSArray *)fetchAllViewsDataInHierarchy;
 
+/**
+ *  get snapshot
+ *  @param view  target view
+ */
 + (NSData *)fetchViewSnapshotImageData:(UIView *)view;
 
 @end

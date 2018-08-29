@@ -18,7 +18,7 @@
 + (NSArray<NSDictionary *> *)constructFilesDataListInDirectory:(NSString *)filePath;
 
 /**
- *
+ *  get file attribute
  */
 + (NSDictionary *)constructFileAttribute:(NSString *)filePath;
 

@@ -161,20 +161,16 @@
             NSString *memoryAddress = [params objectForKey:@"memory_address"];
             NSString *className = [params objectForKey:@"class_name"];
             UIView *view;
-            
-            unsigned long long addressPtr = ULONG_LONG_MAX;
-            [[NSScanner scannerWithString:memoryAddress] scanHexLongLong:&addressPtr];
-            if (addressPtr != ULONG_LONG_MAX && className.length > 0) {
-                // get oc object according to memory address
-                void *rawObj = (void *)(intptr_t)addressPtr;
-                id obj = (__bridge id)rawObj;
-                
+
+            if (memoryAddress.length > 0 && className.length > 0) {
+                id obj = [HSDManager instanceOfMemoryAddress:memoryAddress];
+
                 // type casting
                 if (obj && [obj isKindOfClass:NSClassFromString(className)]) {
                     view = (UIView *)obj;
                 }
             }
-            
+
             NSString *thirdModule;
             if ([modules count] > 1) {
                 thirdModule = [modules objectAtIndex:1];
@@ -185,7 +181,7 @@
                     NSData *data = [HSDViewDebugComponent fetchViewSnapshotImageData:view];
                     response = [[HTTPDataResponse alloc] initWithData:data];
                 } else {
-                    
+                    // empty
                 }
             }
         }

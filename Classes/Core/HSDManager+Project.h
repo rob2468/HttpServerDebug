@@ -37,4 +37,9 @@
  */
 + (NSString *)fetchContentTypeWithFilePathExtension:(NSString *)pathExtension;
 
+/**
+ *  get the object of one specific memory address
+ */
++ (id)instanceOfMemoryAddress:(NSString *)memoryAddress;
+
 @end

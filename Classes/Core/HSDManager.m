@@ -238,4 +238,19 @@ static UInt16 kHttpServerPortDefault = 0;
     return contentType;
 }
 
++ (id)instanceOfMemoryAddress:(NSString *)memoryAddress {
+    id obj;
+    if (memoryAddress.length > 0) {
+        unsigned long long addressPtr = ULONG_LONG_MAX;
+        [[NSScanner scannerWithString:memoryAddress] scanHexLongLong:&addressPtr];
+
+        if (addressPtr != ULONG_LONG_MAX) {
+            // get oc object according to memory address
+            void *rawObj = (void *)(intptr_t)addressPtr;
+            obj = (__bridge id)rawObj;
+        }
+    }
+    return obj;
+}
+
 @end
