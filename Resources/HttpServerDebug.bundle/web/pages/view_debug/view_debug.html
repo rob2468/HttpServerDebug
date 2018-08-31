@@ -32,7 +32,7 @@
         <input type="range" class="depth-unit" min="1" max="150" value="20" step="1" onchange="onDepthUnitChange()">
     </div>
     <div class="tools-collection">
-        <button type="button" onclick="onShowClippedContentClick()" class="control-tool show-clipped-content available" title="Show Clipped Content">
+        <button type="button" onclick="onShowClippedContentClick()" class="control-tool show-clipped-content available selected" title="Show Clipped Content">
             <div><img src="/resources/db_icon_view_show_clipped.png"></div>
         </button>
         <button type="button" onclick="onOrientTo2DClick()" class="control-tool orient-to-2d" title="Orient to 2D">
@@ -41,15 +41,15 @@
         <button type="button" onclick="onOrientTo3DClick()" class="control-tool orient-to-3d available" title="Orient to 3D">
             <div><img src="/resources/db_icon_view_orient_3d.png"></div>
         </button>
-        <button type="button" onclick="onZoomOutClick()" class="control-tool available text-content" title="Zoom out"><span>-</span></button>
-        <button type="button" onclick="onActualSizeClick()" class="control-tool available text-content" title="Actual size"><span>=</span></button>
-        <button type="button" onclick="onZoomInClick()" class="control-tool available text-content" title="Zoom in"><span>+</span></button>
+        <button type="button" onclick="onZoomOutClick()" class="control-tool text-content available" title="Zoom out"><span>-</span></button>
+        <button type="button" onclick="onActualSizeClick()" class="control-tool text-content available" title="Actual size"><span>=</span></button>
+        <button type="button" onclick="onZoomInClick()" class="control-tool text-content available" title="Zoom in"><span>+</span></button>
     </div>
     <div class="area-control-collection">
-        <button type="button" onclick="onShowNavigationSidebarClick()" class="control-tool available navigator-control selected" title="Hide or show the Navigator">
+        <button type="button" onclick="onShowNavigationSidebarClick()" class="control-tool navigator-control available selected" title="Hide or show the Navigator">
             <div><img src="/resources/XC_O_area_button_navigator.png"></div>
         </button>
-        <button type="button" onclick="onShowPropertySidebarClick()" class="control-tool available utilities-control" title="Hide or show the Utilities">
+        <button type="button" onclick="onShowPropertySidebarClick()" class="control-tool utilities-control available" title="Hide or show the Utilities">
             <div><img src="/resources/XC_O_utilities_button.png"></div>
         </button>
     </div>

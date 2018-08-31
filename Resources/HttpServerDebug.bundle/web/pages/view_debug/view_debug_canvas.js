@@ -10,25 +10,36 @@ function initTHREE(startIdx) {
         console.log('should render from root view');
         return;
     }
-    var appWidth = viewItem.clippedFrameRoot.width;
-    var appHeight = viewItem.clippedFrameRoot.height;
 
-    var width = document.getElementById('canvas-frame').clientWidth;
-    var height = document.getElementById('canvas-frame').clientHeight;
-    var scale = 0.8 * height / appHeight;
+    var appWidth;
+    var appHeight;
+    var canvasEle = document.querySelector('#canvas-frame');
+
+    // show clipped content or not
+    if (isClippedContentShown) {
+        appWidth = viewItem.clippedFrameRoot.width;
+        appHeight = viewItem.clippedFrameRoot.height;
+    } else {
+        appWidth = viewItem.frameRoot.width;
+        appHeight = viewItem.frameRoot.height;
+    }
+
+    var clientWidth = canvasEle.clientWidth;
+    var clientHeight = canvasEle.clientHeight;
+    var scale = 0.8 * clientHeight / appHeight;
     scale = scale > 1 ? 1 : scale;
 
     // renderer
     renderer = new THREE.WebGLRenderer({antialias: true});
-    renderer.setSize(width, height);
+    renderer.setSize(clientWidth, clientHeight);
     renderer.setClearColor(0xFFFFFF, 1.0);
-    document.getElementById('canvas-frame').appendChild(renderer.domElement);
+    canvasEle.appendChild(renderer.domElement);
 
     // scene
     scene = new THREE.Scene();
 
     // camera
-    camera = new THREE.OrthographicCamera(- width / 2, width / 2, height / 2, - height / 2, 0, 2000000);
+    camera = new THREE.OrthographicCamera(- clientWidth / 2, clientWidth / 2, clientHeight / 2, - clientHeight / 2, 0, 2000000);
     camera.position.set(CameraDefaultPosition.x, CameraDefaultPosition.y, CameraDefaultPosition.z);
     camera.up.set(0, 1, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -47,11 +58,21 @@ function initTHREE(startIdx) {
 
     var allViewsDataLength = allViewsData.length;
     var currentDepth = - allViewsDataLength / 2; // current mesh z axis unit value
+    var depth;
+    var width;
+    var height;
     for (var i = startIdx; i < allViewsDataLength; i++) {
         viewItem = allViewsData[i];
-        var depth = viewItem.hierarchyDepth;
-        var width = viewItem.clippedFrameRoot.width;
-        var height = viewItem.clippedFrameRoot.height;
+        depth = viewItem.hierarchyDepth;
+
+        // show clipped content or not
+        if (isClippedContentShown) {
+            width = viewItem.clippedFrameRoot.width;
+            height = viewItem.clippedFrameRoot.height;
+        } else {
+            width = viewItem.frameRoot.width;
+            height = viewItem.frameRoot.height;
+        }
 
         if (width === 0 && height === 0) {
             // only display visible views
@@ -65,18 +86,42 @@ function initTHREE(startIdx) {
         // texture
         (function (idx, currentDepth) {
             var viewItem = allViewsData[idx];
-            // load a resource
-            var imageSRC = 'data:image/png;base64,' + viewItem.snapshotNosub;
+            var memoryAddress = viewItem.memoryAddress;
+            var className = viewItem.className;
+            var clippedOrigin = viewItem.clippedOrigin;
+            var clippedFrameRoot = viewItem.clippedFrameRoot;
+            var frameRoot = viewItem.frameRoot;
+            var x;
+            var y;
+            var width;
+            var height;
+
+            // snapshot image
+            var imageSRC = document.location.protocol + '//' + document.location.host
+            + '/api/view_debug/select_view/snapshot?memory_address=' + memoryAddress
+            + '&class_name=' + className + '&nosubviews=1';
+
+            // show clipped content or not
+            if (isClippedContentShown) {
+                imageSRC += '&frame=' + clippedOrigin.x + ',' + clippedOrigin.y + ',' + clippedFrameRoot.width + ',' + clippedFrameRoot.height;
+
+                x = clippedFrameRoot.x;
+                y = clippedFrameRoot.y;
+                width = clippedFrameRoot.width;
+                height = clippedFrameRoot.height;
+            } else {
+                x = frameRoot.x;
+                y = frameRoot.y;
+                width = frameRoot.width;
+                height = frameRoot.height;
+            }
+
+            // load
             new THREE.TextureLoader().load(
                 // resource URL
                 imageSRC,
                 // onLoad callback
                 function (texture) {
-                    var x = viewItem.clippedFrameRoot.x;
-                    var y = viewItem.clippedFrameRoot.y;
-                    var width = viewItem.clippedFrameRoot.width;
-                    var height = viewItem.clippedFrameRoot.height;
-
                     // material
                     var material = new THREE.MeshBasicMaterial({
                         map: texture,
@@ -170,7 +215,16 @@ function updateMeshDepthUnit(newDepthUnit) {
 function onShowClippedContentClick() {
     var ele = document.querySelector('#canvas-toolbar button.show-clipped-content');
 
-    // update view
+    // update data
+    isClippedContentShown = !isClippedContentShown;
+    var allViewsDataCount = allViewsData.length;
+    var viewItem;
+    for (var i = 0; i < allViewsDataCount; i++) {
+        viewItem = allViewsData[i];
+        viewItem.three = null;
+    }
+
+    // update controls
     if (isClippedContentShown) {
         // not clip content
         ele.classList.add('selected');
@@ -179,8 +233,10 @@ function onShowClippedContentClick() {
         ele.classList.remove('selected');
     }
 
-    // update data
-    isClippedContentShown = !isClippedContentShown;
+    // update canvas
+    var canvasEle = document.querySelector('#canvas-frame');
+    canvasEle.removeChild(renderer.domElement);
+    initTHREE(0);
 }
 
 /* orient to 2D or 3D */

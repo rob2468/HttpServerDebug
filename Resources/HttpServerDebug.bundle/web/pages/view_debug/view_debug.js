@@ -6,10 +6,6 @@ var selectedID; // view-hierarchy-list active list item id
 var isClippedContentShown = true;
 
 // constant variables
-var ROOTPATH = 'view_debug';
-var ALLVIEWSPATH = 'all_views';
-var SELECTVIEWPATH = 'select_view';
-var SNAPSHOTPATH = 'snapshot';
 var MESHBORDERDEFAULTCOLOR = 0xA9A9A9;      // mesh border default color
 var MESHBORDERSELECTEDCOLOR = 0x457CD3;     // mesh border selected color
 var kSiderbarWidth = 300;
@@ -65,7 +61,7 @@ window.onload = function () {
 function requestViewHierarchyData() {
     var viewXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/api/' + ROOTPATH + '/' + ALLVIEWSPATH + '?';
+    + '/api/view_debug/all_views?';
     viewXHR.open('GET', requestURL);
     viewXHR.onload = function () {
         if (viewXHR.status === 200) {
@@ -310,8 +306,8 @@ function generateViewPropertyListHTML(viewData) {
 
     // Snapshot
     var imgURL = document.location.protocol + '//' + document.location.host
-    + '/api/' + ROOTPATH + '/' + SELECTVIEWPATH + '/' + SNAPSHOTPATH
-    + '?memory_address=' + memoryAddress + '&class_name=' + className;
+    + '/api/view_debug/select_view/snapshot?memory_address=' + memoryAddress
+    + '&class_name=' + className + '&nosubviews=0';
 
     liEle = document.createElement('li');
 

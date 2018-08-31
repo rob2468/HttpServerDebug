@@ -158,6 +158,7 @@
             NSData *data = [NSJSONSerialization dataWithJSONObject:allViewsData options:0 error:nil];
             response = [[HTTPDataResponse alloc] initWithData:data];
         } else if ([subModule isEqualToString:@"select_view"]) {
+            // one view
             NSString *memoryAddress = [params objectForKey:@"memory_address"];
             NSString *className = [params objectForKey:@"class_name"];
             UIView *view;
@@ -178,7 +179,25 @@
             if (view) {
                 if ([thirdModule isEqualToString:@"snapshot"]) {
                     // get view snapshot
-                    NSData *data = [HSDViewDebugComponent fetchViewSnapshotImageData:view];
+                    BOOL isSubviewsExcluding = [[params objectForKey:@"nosubviews"] boolValue];  // snapshot with or without subviews
+                    NSString *frameStr = [params objectForKey:@"frame"];
+
+                    // get clipped frame
+                    CGRect clippedFrame = CGRectNull;
+                    if (frameStr.length > 0) {
+                        NSArray<NSString *> *frameComps = [frameStr componentsSeparatedByString:@","];
+                        if ([frameComps count] == 4) {
+                            clippedFrame.origin.x = [[frameComps objectAtIndex:0] doubleValue];
+                            clippedFrame.origin.y = [[frameComps objectAtIndex:1] doubleValue];
+                            clippedFrame.size.width = [[frameComps objectAtIndex:2] doubleValue];
+                            clippedFrame.size.height = [[frameComps objectAtIndex:3] doubleValue];
+                        }
+                    }
+                    if (CGRectEqualToRect(clippedFrame, CGRectNull)) {
+                        clippedFrame = view.bounds;
+                    }
+
+                    NSData *data = [HSDViewDebugComponent snapshotImageData:view isSubviewsExcluding:isSubviewsExcluding clippedFrame:clippedFrame];
                     response = [[HTTPDataResponse alloc] initWithData:data];
                 } else {
                     // empty

@@ -19,7 +19,8 @@
 /**
  *  get snapshot
  *  @param view  target view
+ *  @param isSubviewsExcluding  snapshot target view with or without subviews
  */
-+ (NSData *)fetchViewSnapshotImageData:(UIView *)view;
++ (NSData *)snapshotImageData:(UIView *)view isSubviewsExcluding:(BOOL)isSubviewsExcluding clippedFrame:(CGRect)clippedFrame;
 
 @end

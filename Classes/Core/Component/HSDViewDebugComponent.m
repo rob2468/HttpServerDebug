@@ -77,9 +77,10 @@
  *  "className": ,
  *  "memoryAdress: ,
  *  "hierarchyDepth: ": ,      // view hierarchy depth num, 0 indexed
- *  "clippedFrameRoot":{"x":"","y":"","width":"","height":""},  // clipped content
  *  "frame":{"x":"","y":"","width":"","height":""},
  *  "bounds":{"x":"","y":"","width":"","height":""},
+ *  "clippedOrigin":{"x":"","y":""}                             // clipped content origin
+ *  "clippedFrameRoot":{"x":"","y":"","width":"","height":""},  // clipped content frame in window
  *  "frameRoot":{"x":"","y":"","width":"","height":""},         // frame in window
  *  "snapshotNosub": ,                                          // snapshot without subviews
  *  "position":{"x":"","y":""},
@@ -207,12 +208,11 @@
     }
     // position
     CGPoint position = view.layer.position;
-    NSDictionary *positionDict =
-    @{@"x": @(position.x),
-      @"y": @(position.y)
-      };
+    NSDictionary *positionDict = [self convertCGPoint:position];
+
     // zPosition
     CGFloat zPosition = view.layer.zPosition;
+
     // contentMode
     NSString *contentMode = @"";
     NSArray<NSString *> *contentModeArr =
@@ -291,9 +291,10 @@
     [viewData setObject:className forKey:@"className"];
     [viewData setObject:memoryAddress forKey:@"memoryAddress"];
     [viewData setObject:[NSNumber numberWithInteger:hierarchyDepth] forKey:@"hierarchyDepth"];
-    [viewData setObject:clippedFrameRootDict forKey:@"clippedFrameRoot"];
     [viewData setObject:frameDict forKey:@"frame"];
     [viewData setObject:boundsDict forKey:@"bounds"];
+    [viewData setObject:[self convertCGPoint:clippedOrigin] forKey:@"clippedOrigin"];
+    [viewData setObject:clippedFrameRootDict forKey:@"clippedFrameRoot"];
     [viewData setObject:frameRootDict forKey:@"frameRoot"];
     [viewData setObject:snapshotDataStr forKey:@"snapshotNosub"];
     [viewData setObject:positionDict forKey:@"position"];
@@ -314,22 +315,38 @@
     return viewData;
 }
 
-+ (NSData *)fetchViewSnapshotImageData:(UIView *)view {
++ (NSData *)snapshotImageData:(UIView *)view isSubviewsExcluding:(BOOL)isSubviewsExcluding clippedFrame:(CGRect)clippedFrame {
     NSData *(^MainThreadBlock)(void) = ^{
-        // get view snapshot
-        UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0);
-        CGContextRef context = UIGraphicsGetCurrentContext();
+        NSMutableSet *subviews;
+        if (isSubviewsExcluding) {
+            // hide subviews
+            subviews = [[NSMutableSet alloc] init];
+            for (UIView *subview in view.subviews) {
+                BOOL isHidden = [[self class] viewBaseClassIsHidden:subview];
+                if (!isHidden) {
+                    // collect
+                    [subviews addObject:subview];
 
-        // handle UIScrollView
-        if ([view isKindOfClass:[UIScrollView class]]) {
-            UIScrollView *scrollView = (UIScrollView *)view;
-            CGPoint contentOffset = scrollView.contentOffset;
-            CGContextTranslateCTM(context, -contentOffset.x, -contentOffset.y);
+                    // hide
+                    [[self class] view:subview baseClassSetHidden:YES];
+                }
+            }
         }
 
+        // get view snapshot
+        UIGraphicsBeginImageContextWithOptions(clippedFrame.size, NO, 0.0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGContextTranslateCTM(context, -clippedFrame.origin.x, -clippedFrame.origin.y);
         [view.layer renderInContext:context];
         UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
+
+        if (isSubviewsExcluding) {
+            // show subviews
+            for (UIView *subview in subviews) {
+                [[self class] view:subview baseClassSetHidden:NO];
+            }
+        }
 
         // image data
         NSData *data = UIImagePNGRepresentation(snapshot);
@@ -344,6 +361,14 @@
         });
     }
     return imageData;
+}
+
++ (NSDictionary *)convertCGPoint:(CGPoint)origin {
+    NSDictionary *dict =
+    @{@"x": @(origin.x),
+      @"y": @(origin.y)
+      };
+    return dict;
 }
 
 + (NSDictionary *)convertCGRect:(CGRect)rect {
