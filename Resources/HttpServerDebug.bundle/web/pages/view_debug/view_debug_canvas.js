@@ -139,9 +139,9 @@ function initTHREE(startIdx) {
                         currentDepth * depthUnit);
 
                     // wireframe
-                    var geo = new THREE.EdgesGeometry(geometry);
-                    var mat = new THREE.LineBasicMaterial({color: MESHBORDERDEFAULTCOLOR, linewidth: 1});
-                    var wireframe = new THREE.LineSegments(geo, mat);
+                    var wireframeGeometry = new THREE.EdgesGeometry(geometry);
+                    var wireframeMaterial = new THREE.LineBasicMaterial({color: MESHBORDERDEFAULTCOLOR, linewidth: 1});
+                    var wireframe = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
                     mesh.add(wireframe);
 
                     // callback
@@ -152,7 +152,13 @@ function initTHREE(startIdx) {
                     scene.add(mesh);
 
                     // add THREE objects to allVIewsData
-                    var three = {'mesh': mesh, 'wireframe': wireframe};
+                    var three = {'texture': texture,
+                                'material': material,
+                                'geometry': geometry,
+                                'mesh': mesh,
+                                'wireframe_geo': wireframeGeometry,
+                                'wireframe_mat': wireframeMaterial,
+                                'wireframe': wireframe};
                     viewItem.three = three;
                 },
                 // onProgress callback currently not supported
@@ -171,6 +177,56 @@ function initTHREE(startIdx) {
     // update input html
     var depthUnitEle = document.querySelector('input[type="range"].depth-unit');
     depthUnitEle.value = depthUnit;
+}
+
+function deallocTHREE() {
+    var allViewsDataCount = allViewsData.length;
+    var viewItem;
+    var three;
+    var texture;
+    var material;
+    var geometry;
+    var mesh;
+    var wireframeGeometry;
+    var wireframeMaterial;
+    var wireframe;
+
+    for (var i = 0; i < allViewsDataCount; i++) {
+        viewItem = allViewsData[i];
+        three = viewItem.three;
+
+        if (three) {
+            // parse cached three data
+            texture = three.texture;
+            material = three.material;
+            geometry = three.geometry;
+            mesh = three.mesh;
+            wireframeGeometry = three.wireframe_geo;
+            wireframeMaterial = three.wireframe_mat;
+            wireframe = three.wireframe;
+
+            // remove from scene
+            scene.remove(mesh);
+
+            // clean up
+            texture.dispose();
+            material.dispose();
+            geometry.dispose();
+            wireframeGeometry.dispose();
+            wireframeMaterial.dispose();
+            // wireframe.dispose();
+
+            viewItem.three = null;
+        }
+    }
+
+    controls.dispose();
+    renderer.dispose();
+
+    controls = null;
+    camera = null;
+    scene = null;
+    renderer = null;
 }
 
 /* click canvas */
@@ -217,12 +273,6 @@ function onShowClippedContentClick() {
 
     // update data
     isClippedContentShown = !isClippedContentShown;
-    var allViewsDataCount = allViewsData.length;
-    var viewItem;
-    for (var i = 0; i < allViewsDataCount; i++) {
-        viewItem = allViewsData[i];
-        viewItem.three = null;
-    }
 
     // update controls
     if (isClippedContentShown) {
@@ -233,9 +283,12 @@ function onShowClippedContentClick() {
         ele.classList.remove('selected');
     }
 
-    // update canvas
+    // remove canvas element
     var canvasEle = document.querySelector('#canvas-frame');
     canvasEle.removeChild(renderer.domElement);
+
+    // update three
+    deallocTHREE();
     initTHREE(0);
 }
 
