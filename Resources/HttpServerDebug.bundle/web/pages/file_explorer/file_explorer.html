@@ -4,138 +4,33 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>文件浏览</title>
-<style type="text/css">
-body {
-    margin: 0;
-    font-size: 14px;
-}
-#file-explorer,
-#property-sidebar {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-}
-#file-explorer {
-    left: 0;
-    right: 0;
-    overflow-x: scroll;
-    white-space: nowrap;
-}
-#property-sidebar {
-    display: none;
-    right: 0;
-    width: 200px;
-}
-#property-sidebar.active {
-    display: block;
-}
-.directory-container {
-    display: inline-block;
-    position: relative;
-    width: 200px;
-    height: 100%;
-    border-right: 1px solid transparent;
-    overflow-y: scroll;
-}
-div.split-handler {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    cursor: col-resize;
-}
-.directory-container ul {
-    display: block;
-    margin: 0 1px 0 0;
-    padding: 0;
-    list-style-type: none;
-}
-.directory-container li {
-    display: block;
-    position: relative;
-    height: 26px;
-    border: 1px solid transparent;
-    color: #000;
-    background-color: #fff;
-}
-.directory-container li.selected {
-    color: #fff;
-    background-color: #0069D9;
-}
-.directory-container li:hover {
-    border: 1px solid #0069D9;
-}
-.directory-container img.icon {
-    display: inline-block;
-    position: static;
-    vertical-align: middle;
-    width: 21px;
-    height: 20px;
-}
-.directory-container img.directory-icon {
-    content: url(../../resources/directory-icon.png);
-}
-.directory-container img.file-icon {
-    content: url(../../resources/file-icon.png);
-}
-.directory-container li span {
-    display: inline-block;
-    position: absolute;
-    vertical-align: middle;
-    line-height: 26px;
-    left: 21px;
-    right: 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
-.directory-container div.split-handler {
-    right: 0;
-    border-right: 1px solid #E0E0E0;
-}
-#property-sidebar div.content-container {
-    margin: 0 0 0 1px;
-}
-#property-sidebar img.icon {
-    content: url(../../resources/file-icon.png);
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-#property-sidebar p {
-    text-align: center;
-    word-wrap: break-word;
-    overflow: hidden;
-}
-#property-sidebar p.file-name {
-    font-size: 16px;
-}
-#property-sidebar div.split-handler {
-    left: 0;
-    border-left: 1px solid #E0E0E0;
-}
-</style>
+<link rel="stylesheet" href="file_explorer.css">
 <link rel="stylesheet" href="file_explorer_context_menu.css">
+<script src="file_explorer_resize.js"></script>
+<script src="file_explorer_context_menu.js"></script>
+<script src="file_explorer.js"></script>
 </head>
 <body>
-<div id="file-explorer">
-</div>
-<div id="property-sidebar">
-    <div class="split-handler" onmousedown="initResizeDrag(event)"></div>
-    <div class="content-container"></div>
-</div>
-<nav id="context-menu" class="context-menu">
-    <ul class="context-menu-items">
-        <li class="context-menu-item">
-            <a href="#" class="context-menu-link" data-action="open">打开</a>
-        </li>
-        <li class="context-menu-item">
-            <a href="#" class="context-menu-link" data-action="download">下载</a>
-        </li>
-    </ul>
-</nav>
-<script src="file_explorer.js"></script>
-<script src="file_explorer_context_menu.js"></script>
-<script src="file_explorer_resize.js"></script>
+    <div id="file-explorer">
+    </div>
+
+    <div id="property-sidebar">
+        <div class="split-handler" onmousedown="initResizeDrag(event)"></div>
+        <div class="content-container"></div>
+    </div>
+
+    <nav id="context-menu" class="context-menu">
+        <ul class="context-menu-items">
+            <li class="context-menu-item">
+                <a href="#" class="context-menu-link" data-action="open">打开</a>
+            </li>
+            <li class="context-menu-item">
+                <a href="#" class="context-menu-link" data-action="download">下载</a>
+            </li>
+            <li class="context-menu-item">
+                <a href="#" class="context-menu-link" data-action="delete">删除</a>
+            </li>
+        </ul>
+    </nav>
 </body>
 </html>

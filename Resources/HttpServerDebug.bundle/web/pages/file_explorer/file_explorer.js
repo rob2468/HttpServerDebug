@@ -13,7 +13,8 @@ function DirectoryContainerItem(dirData) {
  */
 var allData;
 
-(function init() {
+window.onload = function () {
+    // init
     var rootDirData;
     var fileExpEle;
     // request root directory
@@ -39,7 +40,10 @@ var allData;
         }
     };
     rootDirXHR.send(null);
-})();
+
+    // init context menu
+    initContextMenu();
+};
 
 function parseDataOfElement(element) {
         // parse data
