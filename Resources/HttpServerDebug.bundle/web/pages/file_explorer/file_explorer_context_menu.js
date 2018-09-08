@@ -201,22 +201,68 @@ function initContextMenu() {
      * @param {HTMLElement} link The link that was clicked
      */
     function menuItemListener(link) {
+        // parse data
         var action = link.getAttribute('data-action');
+        var viewItem = parseDataOfElement(fileItemInContext);
+        var dataItem = viewItem.item;
+        var section = viewItem.section;
+
+        var isDir = dataItem.is_directory;
+        var fileName = dataItem.file_name;
+        var filePath = dataItem.file_path;
+
         if (action === 'open') {
+            // open file or directory
             onItemDoubleClicked(fileItemInContext);
         } else if (action === 'download') {
-            // parse data
-            var dataItem = parseDataOfElement(fileItemInContext).data;
-            var isDir = dataItem.is_directory;
-            var fileName = dataItem.file_name;
-            var filePath = dataItem.file_path;
+            // download file or directory
+            // download url
             var url = window.location.origin + '/api/file_preview?file_path=' + filePath;
-            // download
+
+            // create event
             var event = new MouseEvent('click');
+
+            // create a element
             var aEle = document.createElement('a');
             aEle.download = fileName;
             aEle.href = url;
+
+            // dispatch event
             aEle.dispatchEvent(event);
+        } else if (action === 'delete') {
+            // delete file or directory
+            var deleteXHR = new XMLHttpRequest();
+            var requestURL = document.location.protocol + '//' + document.location.host
+            + '/api/file_explorer?file_path=' + encodeURIComponent(filePath) + '&action=delete';
+            deleteXHR.open('GET', requestURL);
+            deleteXHR.onload = function () {
+                if (deleteXHR.status === 200) {
+                    var responseText = deleteXHR.responseText;
+                    var responseJSON = JSON.parse(responseText);
+
+                    var errno = responseJSON.errno;
+                    if (errno !== 0) {
+                        // delete failed
+                        alert('删除失败');
+                    }
+
+                    // refresh
+                    if (section === 0) {
+                        openRootDirectory();
+                    } else {
+                        // previous directory
+                        var refreshSection = section - 1;
+                        var directoryContainer = allData[refreshSection];
+
+                        var refreshRow = directoryContainer.selectedIdx;
+                        var refreshItem = directoryContainer.getSelectedItem();
+
+                        var viewItem = new ItemViewModel(refreshItem, refreshSection, refreshRow);
+                        openFileOrDirectory(viewItem);
+                    }
+                }
+            };
+            deleteXHR.send(null);
         }
         toggleMenuOff();
     }

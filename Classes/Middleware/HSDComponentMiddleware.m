@@ -45,6 +45,8 @@
 + (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params {
     // parse data
     NSString *filePath = [params objectForKey:@"file_path"];
+    filePath = [filePath stringByRemovingPercentEncoding];
+    NSString *action = [params objectForKey:@"action"];
 
     id json;
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -54,16 +56,31 @@
         NSArray *filesDataList = [HSDFileExplorerComponent constructFilesDataListInDirectory:homeDirectory];
         json = [filesDataList copy];
     } else {
-        // request specific file path
-        filePath = [filePath stringByRemovingPercentEncoding];
-        BOOL isDir;
-        if ([fileManager fileExistsAtPath:filePath isDirectory:&isDir]) {
-            if (isDir) {
-                // directory, construct directory contents
-                NSArray *filesDataList = [HSDFileExplorerComponent constructFilesDataListInDirectory:filePath];
-                json = [filesDataList copy];
+        // specific file path
+        if (action.length == 0) {
+            // request directory contents or file attributes
+            BOOL isDir;
+            if ([fileManager fileExistsAtPath:filePath isDirectory:&isDir]) {
+                if (isDir) {
+                    // directory, construct directory contents
+                    NSArray *filesDataList = [HSDFileExplorerComponent constructFilesDataListInDirectory:filePath];
+                    json = [filesDataList copy];
+                } else {
+                    // file, construct attributes
+                    json = [HSDFileExplorerComponent constructFileAttribute:filePath];
+                }
+            }
+        } else if ([action isEqualToString:@"delete"]) {
+            // delete directory or file
+            BOOL isSuc;
+            NSError *err;
+            isSuc = [fileManager removeItemAtPath:filePath error:&err];
+            if (isSuc && !err) {
+                // delete successfully
+                json = @{ @"errno" : @0 };
             } else {
-                json = [HSDFileExplorerComponent constructFileAttribute:filePath];
+                // delete failed
+                json = @{ @"errno" : @(-1) };
             }
         }
     }

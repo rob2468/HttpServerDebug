@@ -2,65 +2,48 @@
 /**
  *  create one directory container instance
  */
-function DirectoryContainerItem(dirData) {
-    this.items = dirData;   // sub-directories and files
+function DirectoryContainerModel(dirData) {
+    this.items = dirData;   // Array, sub-directories and files
     this.selectedIdx = -1;  // user selected item index, 0-index (-1: default value, no item selected)
+
+    /**
+     *  get selected item, according to items array and selected index
+     */
+    this.getSelectedItem = function () {
+        var selectedItem;
+
+        var items = this.items;
+        var length = items.length;
+        var selectedIdx = this.selectedIdx;
+        if (selectedIdx >= 0 && selectedIdx < length) {
+            selectedItem = items[selectedIdx];
+        }
+        return selectedItem;
+    }
 };
 
 /**
+ *  one file or directory view model
+ */
+function ItemViewModel(item, section, row) {
+    this.item = item;       // json, one file or directory information
+    this.section = section; // int
+    this.row = row;         // int
+}
+
+/**
  *  Array, all directory containers
- *      DirectoryContainerItem instance
+ *      DirectoryContainerModel instance
  */
 var allData;
 
 window.onload = function () {
-    // init
-    var rootDirData;
-    var fileExpEle;
     // request root directory
-    var rootDirXHR = new XMLHttpRequest();
-    var requestURL = document.location.protocol + '//' + document.location.host
-    + '/api/file_explorer';
-    rootDirXHR.open('GET', requestURL);
-    rootDirXHR.onload = function () {
-        if (rootDirXHR.status === 200) {
-            var responseText = rootDirXHR.responseText;
-            rootDirData = JSON.parse(responseText);
-            if (rootDirData.length > 0) {
-                // save data
-                allData = [new DirectoryContainerItem(rootDirData)];
-
-                // initialize show
-                fileExpEle = document.querySelector('#file-explorer');
-                while (fileExpEle.firstChild) {
-                    fileExpEle.removeChild(fileExpEle.firstChild);
-                }
-                fileExpEle.appendChild(constructDirectoryHTML(rootDirData, 0));
-            }
-        }
-    };
-    rootDirXHR.send(null);
+    openRootDirectory();
 
     // init context menu
     initContextMenu();
 };
-
-function parseDataOfElement(element) {
-        // parse data
-        var eleID = element.id;
-        var separatedArr = eleID.split('-');
-        var row = separatedArr.pop();
-        row = parseInt(row, 10);
-        var section = separatedArr.pop();
-        section = parseInt(section, 10);
-        var itemList = allData[section].items;
-        var item = itemList[row];
-        return {
-            'data': item,
-            'section': section,
-            'row': row
-        };
-}
 
 var clickTimerOut;
 function onItemClicked(element) {
@@ -69,10 +52,10 @@ function onItemClicked(element) {
     }
     clickTimerOut = setTimeout(function () {
         // parse data
-        var parsedData = parseDataOfElement(element)
-        var item = parsedData.data;
-        var section = parsedData.section;
-        var row = parsedData.row;
+        var viewItem = parseDataOfElement(element)
+        var item = viewItem.item;
+        var section = viewItem.section;
+        var row = viewItem.row;
         var isDir = item.is_directory;
         var fileName = item.file_name;
         var filePath = item.file_path;
@@ -111,10 +94,51 @@ function onItemDoubleClicked(element) {
         clearTimeout(clickTimerOut);
     }
     // parse data
-    var parsedData = parseDataOfElement(element);
-    var item = parsedData.data;
-    var section = parsedData.section;
-    var row = parsedData.row;
+    var viewItem = parseDataOfElement(element);
+    openFileOrDirectory(viewItem);
+}
+
+/**
+ *  open root directory
+ */
+function openRootDirectory() {
+    // request root directory
+    var rootDirXHR = new XMLHttpRequest();
+    var requestURL = document.location.protocol + '//' + document.location.host
+    + '/api/file_explorer';
+    rootDirXHR.open('GET', requestURL);
+    rootDirXHR.onload = function () {
+        if (rootDirXHR.status === 200) {
+            var responseText = rootDirXHR.responseText;
+            var rootDirData = JSON.parse(responseText);
+
+            if (rootDirData.length > 0) {
+                // save data
+                allData = [new DirectoryContainerModel(rootDirData)];
+
+                // remove all directory sections
+                var fileExpEle = document.querySelector('#file-explorer');
+                while (fileExpEle.firstChild) {
+                    fileExpEle.removeChild(fileExpEle.firstChild);
+                }
+
+                // show root directory
+                var rootDirectoryEle = constructDirectoryHTML(rootDirData, 0);
+                fileExpEle.appendChild(rootDirectoryEle);
+            }
+        }
+    };
+    rootDirXHR.send(null);
+}
+
+/**
+ *  open file or directory
+ *  @param viewItem  ItemViewModel instance
+ */
+function openFileOrDirectory(viewItem) {
+    var item = viewItem.item;
+    var section = viewItem.section;
+    var row = viewItem.row;
     var isDir = item.is_directory;
     var fileName = item.file_name;
     var filePath = item.file_path;
@@ -157,7 +181,7 @@ function onItemDoubleClicked(element) {
                     tmpDirData = [];
                 }
                 // save data
-                allData.push(new DirectoryContainerItem(tmpDirData));
+                allData.push(new DirectoryContainerModel(tmpDirData));
 
                 // append view
                 var fileExpEle = document.querySelector('#file-explorer');
@@ -166,6 +190,20 @@ function onItemDoubleClicked(element) {
         };
         dirXHR.send(null);
     }
+}
+
+function parseDataOfElement(element) {
+    // parse data
+    var eleID = element.id;
+    var separatedArr = eleID.split('-');
+    var row = separatedArr.pop();
+    row = parseInt(row, 10);
+    var section = separatedArr.pop();
+    section = parseInt(section, 10);
+    var itemList = allData[section].items;
+    var item = itemList[row];
+    var viewItem = new ItemViewModel(item, section, row);
+    return viewItem;
 }
 
 /**
@@ -315,6 +353,7 @@ function hidePropertySidebar() {
 function removeNoNeededDataAndViews(section, row) {
     // remove no longer needed data
     allData.splice(section + 1, allData.length - (section + 1));
+
     // remove no longer needed views
     var fileExpEle = document.getElementById('file-explorer');
     var dirContainers = fileExpEle.children;
