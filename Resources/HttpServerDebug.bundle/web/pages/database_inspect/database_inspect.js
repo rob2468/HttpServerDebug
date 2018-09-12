@@ -93,7 +93,7 @@ function onDatabaseTableReload() {
             var responseJSON = JSON.parse(responseText);
 
             // generate table html element with table information
-            var tableHTMLEle = createTableHTMLElement(responseJSON);
+            var tableHTMLEle = createTableHTMLElement(responseJSON.data);
 
             var tableEle = document.getElementById('browse-data-table');
             // clear children
@@ -151,13 +151,15 @@ function onDatabaseExecuteSQL() {
         if (resultSetXHR.status === 200) {
             var responseText = resultSetXHR.responseText;
             var responseJSON = JSON.parse(responseText);
+            var jsonData = responseJSON.data;
+
             // parse data
             var resMsg;
             var tableHTMLEle;
             var tableEle = document.getElementById('execute-sql-table');
-            var status = responseJSON.status;
-            var errMsg = responseJSON.errMsg;
-            var tableData = responseJSON.resultSet;
+            var status = jsonData.status;
+            var errMsg = jsonData.errMsg;
+            var tableData = jsonData.resultSet;
 
             // status message
            if (status) {
@@ -204,7 +206,8 @@ function requestDatabaseSchema() {
         if (resultSetXHR.status === 200) {
             var responseText = resultSetXHR.responseText;
             var responseJSON = JSON.parse(responseText);
-            generateDatabaseSchemaHTML(responseJSON);
+
+            generateDatabaseSchemaHTML(responseJSON.data);
         }
     };
     resultSetXHR.send(null);
@@ -214,8 +217,8 @@ function generateDatabaseSchemaHTML(schemaData) {
     var indexArr = schemaData['index'];
     var viewArr = schemaData['view'];
     var triggerArr = schemaData['trigger'];
-
     var databaseSchemaEle = document.getElementById('database-schema');
+
     // Tables
     var pEle = document.createElement('p');
     pEle.innerHTML = 'Tables(' + tableArr.length + ')';

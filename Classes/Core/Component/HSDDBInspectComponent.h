@@ -19,16 +19,16 @@
 /**
  *
  */
-+ (NSData *)queryTableData:(NSString *)dbPath tableName:(NSString *)tableName;
++ (NSArray *)queryTableData:(NSString *)dbPath tableName:(NSString *)tableName;
 
 /**
  *
  */
-+ (NSData *)queryDatabaseSchema:(NSString *)dbPath;
++ (NSDictionary *)queryDatabaseSchema:(NSString *)dbPath;
 
 /**
  *
  */
-+ (NSData *)executeSQL:(NSString *)dbPath sql:(NSString *)sqlStr;
++ (NSDictionary *)executeSQL:(NSString *)dbPath sql:(NSString *)sqlStr;
 
 @end

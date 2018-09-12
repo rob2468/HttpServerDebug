@@ -11,16 +11,14 @@ response data 为 json 格式。
 ```
 {
     "errno": "0",
-    "data": {
-        xxx
-    }
+    "data": xxx
 }
 ```
 
 |字段|类型|说明|
 |----|----|----|
-|error|int|错误码，成功0，错误-1|
-|data|json|业务数据|
+|errno|int|错误码，成功0，错误-1|
+|data|any|业务数据|
 
 ## 三、API 列表
 

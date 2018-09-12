@@ -40,7 +40,7 @@
     return [selectHtml copy];
 }
 
-+ (NSData *)queryTableData:(NSString *)dbPath tableName:(NSString *)tableName {
++ (NSArray *)queryTableData:(NSString *)dbPath tableName:(NSString *)tableName {
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     NSMutableArray *allData = [[NSMutableArray alloc] init];
     if (dbPath.length > 0 && tableName.length > 0 && [database open]) {
@@ -72,12 +72,11 @@
         [rs close];
         [database close];
     }
-    
-    NSData *data = [NSJSONSerialization dataWithJSONObject:allData options:0 error:nil];
-    return data;
+
+    return allData;
 }
 
-+ (NSData *)queryDatabaseSchema:(NSString *)dbPath {
++ (NSDictionary *)queryDatabaseSchema:(NSString *)dbPath {
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     NSMutableDictionary *allData = [[NSMutableDictionary alloc] init];
     if (dbPath.length > 0 && [database open]) {
@@ -127,11 +126,10 @@
         [database close];
     }
     
-    NSData *data = [NSJSONSerialization dataWithJSONObject:allData options:0 error:nil];
-    return data;
+    return allData;
 }
 
-+ (NSData *)executeSQL:(NSString *)dbPath sql:(NSString *)sqlStr {
++ (NSDictionary *)executeSQL:(NSString *)dbPath sql:(NSString *)sqlStr {
     // execute sql
     FMDatabase *database = [FMDatabase databaseWithPath:dbPath];
     BOOL res = NO;
@@ -171,8 +169,7 @@
       @"errMsg": errMsg,
       @"resultSet": allData
       };
-    NSData *data = [NSJSONSerialization dataWithJSONObject:resDict options:0 error:nil];
-    return data;
+    return resDict;
 }
 
 #pragma mark - FMDB

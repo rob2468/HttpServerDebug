@@ -132,8 +132,8 @@
     if ([modules count] > 0) {
         subModule = [modules objectAtIndex:0];
     }
-    
-    NSData *data;
+
+    id data;                // business data
     if (subModule.length == 0) {
         // query
         NSString *type = [params objectForKey:@"type"];
@@ -152,10 +152,22 @@
         sqlStr = [sqlStr stringByRemovingPercentEncoding];
         data = [HSDDBInspectComponent executeSQL:dbPath sql:sqlStr];
     }
-    
-    HTTPDataResponse *response;
+
+    // response data
+    NSMutableDictionary *responseJSON = [[NSMutableDictionary alloc] init];
+    NSInteger errorNum;     // error code
     if (data) {
-        response = [[HTTPDataResponse alloc] initWithData:data];
+        errorNum = 0;
+        [responseJSON setObject:data forKey:@"data"];
+    } else {
+        errorNum = -1;
+    }
+    [responseJSON setObject:@(errorNum) forKey:@"errno"];
+    NSData *responseData = [NSJSONSerialization dataWithJSONObject:responseJSON options:0 error:nil];
+
+    HTTPDataResponse *response;
+    if (responseData) {
+        response = [[HTTPDataResponse alloc] initWithData:responseData];
     }
     return response;
 }
