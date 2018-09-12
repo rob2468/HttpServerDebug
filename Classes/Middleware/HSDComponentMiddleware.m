@@ -48,6 +48,7 @@
     filePath = [filePath stringByRemovingPercentEncoding];
     NSString *action = [params objectForKey:@"action"];
 
+    NSInteger errorNum = 0;
     id json;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (filePath.length == 0) {
@@ -77,21 +78,25 @@
             isSuc = [fileManager removeItemAtPath:filePath error:&err];
             if (isSuc && !err) {
                 // delete successfully
-                json = @{ @"errno" : @0 };
+                errorNum = 0;
             } else {
                 // delete failed
-                json = @{ @"errno" : @(-1) };
+                errorNum = -1;
             }
         }
     }
-    // serialization
-    NSData *data;
+
+    // response json
+    NSMutableDictionary *responseJSON = [[NSMutableDictionary alloc] init];
     if (json) {
-        data = [NSJSONSerialization dataWithJSONObject:json options:0 error:nil];
+        [responseJSON setObject:json forKey:@"data"];
     }
+    [responseJSON setObject:@(errorNum) forKey:@"errno"];
+    NSData *responseData = [NSJSONSerialization dataWithJSONObject:responseJSON options:0 error:nil];
+
     HTTPDataResponse *response;
-    if (data) {
-        response = [[HTTPDataResponse alloc] initWithData:data];
+    if (responseData) {
+        response = [[HTTPDataResponse alloc] initWithData:responseData];
     }
     return response;
 }

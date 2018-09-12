@@ -78,7 +78,8 @@ function onItemClicked(element) {
             attrXHR.onload = function () {
                 if (attrXHR.status === 200) {
                     var responseText = attrXHR.responseText;
-                    var attrs = JSON.parse(responseText);
+                    var responseJSON = JSON.parse(responseText);
+                    var attrs = responseJSON.data;
 
                     showPropertySidebar(item, attrs);
                 }
@@ -110,7 +111,8 @@ function openRootDirectory() {
     rootDirXHR.onload = function () {
         if (rootDirXHR.status === 200) {
             var responseText = rootDirXHR.responseText;
-            var rootDirData = JSON.parse(responseText);
+            var responseJSON = JSON.parse(responseText);
+            var rootDirData = responseJSON.data;
 
             if (rootDirData.length > 0) {
                 // save data
@@ -176,7 +178,9 @@ function openFileOrDirectory(viewItem) {
         dirXHR.onload = function () {
             if (dirXHR.status === 200) {
                 var responseText = dirXHR.responseText;
-                var tmpDirData = JSON.parse(responseText);
+                var responseJSON = JSON.parse(responseText);
+                var tmpDirData = responseJSON.data;
+
                 if (tmpDirData.length === 0) {
                     tmpDirData = [];
                 }
