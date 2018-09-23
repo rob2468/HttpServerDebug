@@ -52,24 +52,22 @@ function initContextMenu() {
         };
     }
 
-    /**
-     * Variables.
-     */
-    var contextMenuClassName = 'context-menu';
+    // Constants
     var contextMenuItemClassName = 'context-menu-item';
-    var contextMenuLinkClassName = 'context-menu-link';
     var contextMenuActive = 'context-menu-active';
-
     var fileItemClassName = 'file-item';
+    var directoryContainerClassName = 'directory-container';
+
+    // Variables
     var fileItemInContext;
+    var directoryContainerInContext;
 
     var clickCoords;
     var clickCoordsX;
     var clickCoordsY;
 
     var menu = document.querySelector('#context-menu');
-    var menuItems = menu.querySelectorAll('.context-menu-item');
-    var menuState = 0;
+    var menuState = 0;  // 0: menu hidden; 1: menu shown
     var menuWidth;
     var menuHeight;
     var menuPosition;
@@ -94,13 +92,29 @@ function initContextMenu() {
      */
     function contextListener() {
         document.addEventListener('contextmenu', function(e) {
-            fileItemInContext = clickInsideElement(e, fileItemClassName);
-            if (fileItemInContext) {
+            fileItemInContext = null;
+            directoryContainerInContext = null;
+
+            // check file item clicked, firstly
+            var clickedItem = clickInsideElement(e, fileItemClassName);
+            if (clickedItem) {
+                fileItemInContext = clickedItem;
+            } else {
+                // check directory container item clicked, secondly
+                clickedItem = clickInsideElement(e, directoryContainerClassName);
+                if (clickedItem && parseDataOfContainerElement(clickedItem)) {
+                    directoryContainerInContext = clickedItem;
+                }
+            }
+
+            if (fileItemInContext || directoryContainerInContext) {
+                // show menu
                 e.preventDefault();
                 toggleMenuOn();
                 positionMenu(e);
             } else {
                 fileItemInContext = null;
+                directoryContainerInContext = null;
                 toggleMenuOff();
             }
         });
@@ -111,11 +125,12 @@ function initContextMenu() {
      */
     function clickListener() {
         document.addEventListener('click', function(e) {
-            var clickeElIsLink = clickInsideElement(e, contextMenuLinkClassName);
+            var clickedMenuItem = clickInsideElement(e, contextMenuItemClassName);
 
-            if (clickeElIsLink) {
+            if (clickedMenuItem) {
+                // click menu item
                 e.preventDefault();
-                menuItemListener(clickeElIsLink);
+                menuItemListener(clickedMenuItem);
             } else {
                 var button = e.which || e.button;
                 if (button === 1) {
@@ -150,20 +165,37 @@ function initContextMenu() {
      * Turns the custom context menu on.
      */
     function toggleMenuOn() {
-        if (menuState !== 1) {
-            menuState = 1;
-            menu.classList.add(contextMenuActive);
+        var activeClassName = 'context-menu-item-active';
+        var openEle = document.querySelector('.context-menu-item[data-action="open"]');
+        var downloadEle = document.querySelector('.context-menu-item[data-action="download"]');
+        var deleteEle = document.querySelector('.context-menu-item[data-action="delete"]');
+        var uploadEle = document.querySelector('.context-menu-item[data-action="upload"]');
+
+        // config menu items
+        if (fileItemInContext) {
+            openEle.classList.add(activeClassName);
+            downloadEle.classList.add(activeClassName);
+            deleteEle.classList.add(activeClassName);
+            uploadEle.classList.remove(activeClassName);
+        } else {
+            openEle.classList.remove(activeClassName);
+            downloadEle.classList.remove(activeClassName);
+            deleteEle.classList.remove(activeClassName);
+            uploadEle.classList.add(activeClassName);
         }
+
+        // show
+        menuState = 1;
+        menu.classList.add(contextMenuActive);
     }
 
     /**
      * Turns the custom context menu off.
      */
     function toggleMenuOff() {
-        if (menuState !== 0) {
-            menuState = 0;
-            menu.classList.remove(contextMenuActive);
-        }
+        // hide
+        menuState = 0;
+        menu.classList.remove(contextMenuActive);
     }
 
     /**
@@ -196,14 +228,19 @@ function initContextMenu() {
     }
 
     /**
-     *  Action function when a menu item link is clicked
+     *  Action function when a menu item is clicked
      *
-     * @param {HTMLElement} link The link that was clicked
+     * @param {HTMLElement} menuItem The menu item that was clicked
      */
-    function menuItemListener(link) {
+    function menuItemListener(menuItem) {
         // parse data
-        var action = link.getAttribute('data-action');
-        var viewItem = parseDataOfElement(fileItemInContext);
+        var action = menuItem.getAttribute('data-action');
+        var viewItem;
+        if (fileItemInContext) {
+            viewItem = parseDataOfItemElement(fileItemInContext);
+        } else {
+            viewItem = parseDataOfContainerElement(directoryContainerInContext);
+        }
         var dataItem = viewItem.item;
         var section = viewItem.section;
 
@@ -263,6 +300,8 @@ function initContextMenu() {
                 }
             };
             deleteXHR.send(null);
+        } else if (action === 'upload') {
+
         }
         toggleMenuOff();
     }

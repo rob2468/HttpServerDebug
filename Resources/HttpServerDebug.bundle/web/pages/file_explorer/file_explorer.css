@@ -50,6 +50,7 @@ div.split-handler {
     border: 1px solid transparent;
     color: #000;
     background-color: #fff;
+    margin-bottom: 3px;
 }
 .directory-container li.selected {
     color: #fff;

@@ -16,28 +16,22 @@
 }
 
 .context-menu-items {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .context-menu-item {
-  display: block;
-  margin-bottom: 4px;
+    display: none;
+    padding: 4px 12px;
+    color: #000000;
 }
 
-.context-menu-item:last-child {
-  margin-bottom: 0;
+.context-menu-item-active {
+    display: block;
 }
 
-.context-menu-link {
-  display: block;
-  padding: 4px 12px;
-  color: #000000;
-  text-decoration: none;
-}
-
-.context-menu-link:hover {
+.context-menu-item:hover {
   color: #fff;
   background-color: #0069d9;
 }

@@ -52,7 +52,7 @@ function onItemClicked(element) {
     }
     clickTimerOut = setTimeout(function () {
         // parse data
-        var viewItem = parseDataOfElement(element)
+        var viewItem = parseDataOfItemElement(element)
         var item = viewItem.item;
         var section = viewItem.section;
         var row = viewItem.row;
@@ -95,7 +95,7 @@ function onItemDoubleClicked(element) {
         clearTimeout(clickTimerOut);
     }
     // parse data
-    var viewItem = parseDataOfElement(element);
+    var viewItem = parseDataOfItemElement(element);
     openFileOrDirectory(viewItem);
 }
 
@@ -196,17 +196,47 @@ function openFileOrDirectory(viewItem) {
     }
 }
 
-function parseDataOfElement(element) {
+/**
+ *  parse for file item
+ *  @param element  HTMLElement
+ */
+function parseDataOfItemElement(element) {
     // parse data
     var eleID = element.id;
     var separatedArr = eleID.split('-');
     var row = separatedArr.pop();
     row = parseInt(row, 10);
+
     var section = separatedArr.pop();
     section = parseInt(section, 10);
+
     var itemList = allData[section].items;
     var item = itemList[row];
     var viewItem = new ItemViewModel(item, section, row);
+    return viewItem;
+}
+
+/**
+ *  parse for directory container
+ *  @param element  HTMLElement
+ */
+function parseDataOfContainerElement(element) {
+    // parse data
+    var eleID = element.id;
+    var separatedArr = eleID.split('-');
+    var section = separatedArr.pop();
+    section = parseInt(section, 10);
+
+    var viewItem = null;
+    if (section > 0) {
+        // not the root directory
+        section--;
+
+        var containerItem = allData[section];
+        var item = containerItem.getSelectedItem();
+        var row = containerItem.selectedIdx;
+        viewItem = new ItemViewModel(item, section, row);
+    }
     return viewItem;
 }
 
@@ -220,6 +250,7 @@ function constructDirectoryHTML(dirData, dirIdx) {
     var item;       // an item in the directory
     var dirContainerEle = document.createElement('div');
     dirContainerEle.setAttribute('class', 'directory-container');
+    dirContainerEle.setAttribute('id', 'directory-container-' + dirIdx);
 
     // file list view
     var fileListEle = document.createElement('ul');
