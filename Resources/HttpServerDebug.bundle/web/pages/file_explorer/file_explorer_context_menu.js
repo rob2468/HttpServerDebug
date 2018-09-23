@@ -268,38 +268,51 @@ function initContextMenu() {
             aEle.dispatchEvent(event);
         } else if (action === 'delete') {
             // delete file or directory
-            var deleteXHR = new XMLHttpRequest();
-            var requestURL = document.location.protocol + '//' + document.location.host
-            + '/api/file_explorer?file_path=' + encodeURIComponent(filePath) + '&action=delete';
-            deleteXHR.open('GET', requestURL);
-            deleteXHR.onload = function () {
-                if (deleteXHR.status === 200) {
-                    var responseText = deleteXHR.responseText;
-                    var responseJSON = JSON.parse(responseText);
+            // confirm
+            var confirmMsg = '确定删除';
+            if (isDir) {
+                confirmMsg += '文件夹';
+            } else {
+                confirmMsg += '文件';
+            }
+            confirmMsg += '“' + fileName + '”？';
+            var confirmResult = confirm(confirmMsg);
 
-                    var errno = responseJSON.errno;
-                    if (errno !== 0) {
-                        // delete failed
-                        alert('删除失败');
+            if (confirmResult) {
+                // do delete action
+                var deleteXHR = new XMLHttpRequest();
+                var requestURL = document.location.protocol + '//' + document.location.host
+                + '/api/file_explorer?file_path=' + encodeURIComponent(filePath) + '&action=delete';
+                deleteXHR.open('GET', requestURL);
+                deleteXHR.onload = function () {
+                    if (deleteXHR.status === 200) {
+                        var responseText = deleteXHR.responseText;
+                        var responseJSON = JSON.parse(responseText);
+
+                        var errno = responseJSON.errno;
+                        if (errno !== 0) {
+                            // delete failed
+                            alert('删除失败');
+                        }
+
+                        // refresh
+                        if (section === 0) {
+                            openRootDirectory();
+                        } else {
+                            // previous directory
+                            var refreshSection = section - 1;
+                            var directoryContainer = allData[refreshSection];
+
+                            var refreshRow = directoryContainer.selectedIdx;
+                            var refreshItem = directoryContainer.getSelectedItem();
+
+                            var viewItem = new ItemViewModel(refreshItem, refreshSection, refreshRow);
+                            openFileOrDirectory(viewItem);
+                        }
                     }
-
-                    // refresh
-                    if (section === 0) {
-                        openRootDirectory();
-                    } else {
-                        // previous directory
-                        var refreshSection = section - 1;
-                        var directoryContainer = allData[refreshSection];
-
-                        var refreshRow = directoryContainer.selectedIdx;
-                        var refreshItem = directoryContainer.getSelectedItem();
-
-                        var viewItem = new ItemViewModel(refreshItem, refreshSection, refreshRow);
-                        openFileOrDirectory(viewItem);
-                    }
-                }
-            };
-            deleteXHR.send(null);
+                };
+                deleteXHR.send(null);
+            }
         } else if (action === 'upload') {
 
         }
