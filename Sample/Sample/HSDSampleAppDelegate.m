@@ -22,11 +22,13 @@
     [HSDManager updateHSDDelegate:self];
     [HSDManager updateHttpServerPort:5555];
 
+    // demo for console log component
     static NSInteger tmp = 0;
-    [NSTimer scheduledTimerWithTimeInterval:2 repeats:YES block:^(NSTimer * _Nonnull timer) {
+    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:2 repeats:YES block:^(NSTimer * _Nonnull timer) {
         tmp++;
         NSLog(@"test for console log display %ld", (long)tmp);
     }];
+    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 
     return YES;
 }
