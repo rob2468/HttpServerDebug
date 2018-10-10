@@ -1,3 +1,10 @@
+window.onload = function () {
+    // refresh database data
+    onDatabaseTableReload();
+
+    requestDatabaseSchema();
+};
+
 function onNavBarItemClick(id) {
     var id0 = 'browse-data';
     var id1 = 'execute-sql';
@@ -17,11 +24,13 @@ function onNavBarItemClick(id) {
         }
     }
 }
+
 function activeNavAndTabElement(navEle) {
     navEle.classList.add('active');
     var tabEle = document.getElementById(navEle.id + '-tab');
     tabEle.classList.add('active');
 }
+
 function inactiveNavAndTabElement(navEle) {
     navEle.classList.remove('active');
     var tabEle = document.getElementById(navEle.id + '-tab');
@@ -111,8 +120,6 @@ function onDatabaseTableReload() {
     };
     resultSetXHR.send(null);
 }
-// refresh database data
-onDatabaseTableReload();
 
 /* execute SQL */
 function onDatabaseExecuteSQL() {
@@ -212,6 +219,7 @@ function requestDatabaseSchema() {
     };
     resultSetXHR.send(null);
 }
+
 function generateDatabaseSchemaHTML(schemaData) {
     var tableArr = schemaData['table'];
     var indexArr = schemaData['index'];
@@ -269,4 +277,3 @@ function generateDatabaseSchemaHTML(schemaData) {
         databaseSchemaEle.appendChild(pEle);
     }
 }
-requestDatabaseSchema();
