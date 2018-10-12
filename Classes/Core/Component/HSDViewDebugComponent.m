@@ -104,59 +104,29 @@
 
     // hierarchyDepth, clippedFrameRoot
     NSInteger hierarchyDepth = 0;
-    CGPoint tryClippedOrigin = CGPointMake(0, 0);           // origin will be updated
-    if ([view isKindOfClass:[UIScrollView class]]) {
-        // scroll view case
-        UIScrollView *scrollView = (UIScrollView *)view;
-        CGPoint contentOffset = scrollView.contentOffset;
-        tryClippedOrigin = contentOffset;
-    }
-    CGSize tryClippedSize = view.frame.size;                // size will be updated
+    CGRect tryClippedRect = view.bounds;
     UIView *tryView = view;
     while (tryView.superview) {
         UIView *superview = tryView.superview;
+        tryClippedRect = [tryView convertRect:tryClippedRect toView:superview];
 
-        // convert origin
-        tryClippedOrigin = [tryView convertPoint:tryClippedOrigin toView:superview];
-
-        if (!CGSizeEqualToSize(tryClippedSize, CGSizeMake(0, 0)) &&
+        if (!CGSizeEqualToSize(tryClippedRect.size, CGSizeMake(0, 0)) &&
             superview.clipsToBounds) {
-            // convert size
-            CGRect superviewBounds = superview.bounds;
-            // compensate for the offset of superview
-            CGFloat x = tryClippedOrigin.x - superviewBounds.origin.x;
-            CGFloat y = tryClippedOrigin.y - superviewBounds.origin.y;
+            // super view rect
+            CGRect baseRect = superview.bounds;
 
-            // clip
-            x = x < 0 ? 0 : x;
-            y = y < 0 ? 0 : y;
-            CGRect tryClippedFrame = CGRectMake(x, y, tryClippedSize.width, tryClippedSize.height);
-
-            // base frame
-            CGRect frame = CGRectMake(0, 0, 0, 0);
-            frame.size = superviewBounds.size;
-
-            // intersect
-            tryClippedFrame = CGRectIntersection(tryClippedFrame, frame);
-
-            // update size
-            tryClippedSize = tryClippedFrame.size;
-
-            // update origin
-            tryClippedOrigin.x = tryClippedOrigin.x < 0 ? 0 : tryClippedOrigin.x;
-            tryClippedOrigin.y = tryClippedOrigin.y < 0 ? 0 : tryClippedOrigin.y;
+            // clipped
+            tryClippedRect = CGRectIntersection(tryClippedRect, baseRect);
+            tryClippedRect = CGRectIsNull(tryClippedRect) ? CGRectZero : tryClippedRect;
         }
 
         tryView = superview;
         hierarchyDepth++;
     }
-    CGRect clippedFrameRoot = CGRectMake(0, 0, 0, 0);   // frame for clipped view in window
-    if (!CGSizeEqualToSize(tryClippedSize, CGSizeMake(0, 0))) {
-        clippedFrameRoot = CGRectMake(tryClippedOrigin.x, tryClippedOrigin.y, tryClippedSize.width, tryClippedSize.height);
-    }
+    CGRect clippedFrameRoot = tryClippedRect;   // frame for clipped view in window
     NSDictionary *clippedFrameRootDict = [self convertCGRect:clippedFrameRoot];
 
-    CGPoint clippedOrigin = [view convertPoint:tryClippedOrigin fromView:window];   // origin for snapshot clipped view
+    CGPoint clippedOrigin = [view convertPoint:tryClippedRect.origin fromView:window];   // origin for snapshot clipped view
 
     // frame
     CGRect frame = view.frame;

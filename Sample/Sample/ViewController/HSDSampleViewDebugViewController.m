@@ -8,90 +8,72 @@
 
 #import "HSDSampleViewDebugViewController.h"
 
+#pragma mark - interface
+
+@interface HSDSampleVDCase1Controller : UIViewController
+
+@end
+
+@interface HSDSampleVDCase2Controller : UIViewController
+
+@end
+
+#pragma mark - extension & implementation
+
 @interface HSDSampleViewDebugViewController ()
+<UITableViewDataSource, UITableViewDelegate>
+
+@property (nonatomic, strong) NSArray<NSString *> *dataList;
+@property (nonatomic, strong) UITableView *tableView;
 
 @end
 
 @implementation HSDSampleViewDebugViewController
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.dataList = @[@"Case 1", @"Case 2"];
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"View Debug";
 
-    // scrollView
-    CGRect viewFrame = self.view.bounds;
-    viewFrame.size.height -= 64;
-    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:viewFrame];
-    scrollView.backgroundColor = [UIColor lightGrayColor];
-    [self.view addSubview:scrollView];
-    [scrollView setContentSize:CGSizeMake(CGRectGetWidth(self.view.bounds), 1000)];
+    self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
+    [self.view addSubview:self.tableView];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
+}
 
-    // redView
-    viewFrame = CGRectMake(10, 10, 100, 100);
-    UIView *redView = [[UIView alloc] initWithFrame:viewFrame];
-    redView.backgroundColor = [UIColor redColor];
-    [scrollView addSubview:redView];
-    
-    // greenView
-    viewFrame.origin.y = 120;
-    UIView *greenView = [[UIView alloc] initWithFrame:viewFrame];
-    greenView.backgroundColor = [UIColor greenColor];
-    greenView.clipsToBounds = YES;
-    [scrollView addSubview:greenView];
-    
-    // greenSubView1
-    viewFrame = CGRectMake(110, 110, 100, 100);
-    UIView *greenSubView1 = [[UIView alloc] initWithFrame:viewFrame];
-    greenSubView1.backgroundColor = [UIColor purpleColor];
-    [greenView addSubview:greenSubView1];
-    
-    // greenSubView2
-    viewFrame = CGRectMake(10, 10, 100, 100);
-    UIView *greenSubView2 = [[UIView alloc] initWithFrame:viewFrame];
-    greenSubView2.backgroundColor = [UIColor yellowColor];
-    [greenView addSubview:greenSubView2];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return [self.dataList count];
+}
 
-    //
-    viewFrame = CGRectMake(10, 230, 100, 100);
-    UIView *view = [[UIView alloc] initWithFrame:viewFrame];
-    view.backgroundColor = [UIColor darkGrayColor];
-    [scrollView addSubview:view];
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    NSInteger row = [indexPath row];
+    NSString *title = [self.dataList objectAtIndex:row];
+    cell.textLabel.text = title;
+    return cell;
+}
 
-    for (NSInteger i = 0; i < 40; i++) {
-        UIView *tmpView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-        tmpView.backgroundColor = [UIColor darkGrayColor];
-        [view addSubview:tmpView];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    NSInteger row = [indexPath row];
+    NSString *title = [self.dataList objectAtIndex:row];
+    if ([title isEqualToString:@"Case 1"]) {
+        HSDSampleVDCase1Controller *vc = [[HSDSampleVDCase1Controller alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
+    } else if ([title isEqualToString:@"Case 2"]) {
+        HSDSampleVDCase2Controller *vc = [[HSDSampleVDCase2Controller alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
     }
-
-    //
-    viewFrame = CGRectMake(10, 340, 100, 100);
-    view = [[UIView alloc] initWithFrame:viewFrame];
-    view.backgroundColor = [UIColor whiteColor];
-    [scrollView addSubview:view];
-
-    //
-    viewFrame = CGRectMake(10, 450, 100, 100);
-    view = [[UIView alloc] initWithFrame:viewFrame];
-    view.backgroundColor = [UIColor grayColor];
-    [scrollView addSubview:view];
-
-    //
-    viewFrame = CGRectMake(10, 560, 100, 100);
-    view = [[UIView alloc] initWithFrame:viewFrame];
-    view.backgroundColor = [UIColor blueColor];
-    [scrollView addSubview:view];
-
-    //
-    viewFrame = CGRectMake(10, 670, 100, 100);
-    view = [[UIView alloc] initWithFrame:viewFrame];
-    view.backgroundColor = [UIColor cyanColor];
-    [scrollView addSubview:view];
-
-    // bottomView
-    UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 64, self.view.frame.size.width, 64)];
-    bottomView.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:bottomView];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -99,5 +81,61 @@
     // Dispose of any resources that can be recreated.
 }
 
+@end
+
+
+@interface HSDSampleVDCase1Controller ()
+
+@end
+
+@implementation HSDSampleVDCase1Controller
+
+- (void)viewDidLoad {
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.title = @"View Debug Case 1";
+
+    // redView
+    CGRect viewFrame = CGRectMake(30, 135, 60, 50);
+    UIView *redView = [[UIView alloc] initWithFrame:viewFrame];
+    redView.backgroundColor = [UIColor redColor];
+    [self.view addSubview:redView];
+
+    // greenView
+    viewFrame = CGRectMake(30, 140, 70, 20);
+    UIView *greenView = [[UIView alloc] initWithFrame:viewFrame];
+    greenView.backgroundColor = [UIColor greenColor];
+    [self.view addSubview:greenView];
+}
+
+@end
+
+@interface HSDSampleVDCase2Controller ()
+
+@end
+
+@implementation HSDSampleVDCase2Controller
+
+- (void)viewDidLoad {
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.title = @"View Debug Case 2";
+
+    // scrollView
+    CGRect viewFrame = CGRectMake(10, 80, 200, 200);
+    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:viewFrame];
+    if (@available(iOS 11.0, *)) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    } else {
+        // Fallback on earlier versions
+    }
+    scrollView.backgroundColor = [UIColor lightGrayColor];
+    [self.view addSubview:scrollView];
+    [scrollView setContentSize:CGSizeMake(CGRectGetWidth(self.view.bounds), 1000)];
+
+    // redView
+    viewFrame = CGRectMake(-40, -30, 60, 50);
+    UIView *redView = [[UIView alloc] initWithFrame:viewFrame];
+    redView.backgroundColor = [UIColor redColor];
+    [scrollView addSubview:redView];
+}
 
 @end
