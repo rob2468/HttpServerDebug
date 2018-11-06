@@ -9,6 +9,10 @@
 
 HSD offers debug utilities (exploring file system, inspecting database, etc.) with the help of http server. HSD will start http server in your device, and you can connect to the server through user agents in the local area network.
 
+Requirements:
+
+* iOS 8.0 or later (armv7, armv7s or arm64)
+
 ## Demo screenshot
 
 <img src="https://user-images.githubusercontent.com/1450652/44396867-ca139000-a570-11e8-9a5c-80da964159ba.gif" alt="index" width="400px">
@@ -23,25 +27,17 @@ HSD offers debug utilities (exploring file system, inspecting database, etc.) wi
 
 In the root directory, there is the "archive.sh" script. `cd` to the root directory, then `bash archive.sh`. This script will generate files in the "output" folder in the same directory. The "output" folder contains three kinds of files, headers, library and bundle. These are all files that needed.
 
-HttpServerDebug utilizes some third party libraries, CocoaHttpServer, CocoaAsyncSocket, CocoaLumberjack and FMDB. "archive.sh" script will compile all source files and integrate all contents in one static library, libHttpServerDebug.a. But sometimes you may want to exclude some third party libraries if your project has already import. You can update "archive.sh". For example, if you want to remove FMDB, set `FMDB_INCLUDE=0`.
+HttpServerDebug utilizes some third party libraries, GCDWebServer and FMDB. "archive.sh" script will compile all source files and integrate all contents in one static library, libHttpServerDebug.a. But sometimes you may want to exclude some third party libraries if your project has already import. You can update "archive.sh". For example, if you want to remove FMDB, set `FMDB_INCLUDE=0`.
 
 ```shell
 # Dependencies onfiguration
 FMDB_INCLUDE=0            # exclude FMDB
-CocoaLumberjack_INCLUDE=1
-CocoaAsyncSocket_INCLUDE=1
-CocoaHttpServer_INCLUDE=1
+GCDWebServer_INCLUDE=1
 ```
 
 ### Source code way
 
 You can copy source code files to your project directly. `Classes/` and `Resources/` in the root directory contains HSD codes and resources. `ThirdParties/` contains dependent libraries, and you should copy as needed.
-
-The dependent `CocoaHTTPServer` library may need some additional settings. As following shows.
-
-Build Settings -> Header Search Paths: ${SDK_DIR}/usr/include/libxml2
-
-Build Phases -> Link Binary With Libraries: libxml2.tbd
 
 ### CocoaPods way
 
@@ -124,4 +120,4 @@ fi
 
 ## Acknowledgments
 
-[CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer), [FLEX](https://github.com/Flipboard/FLEX), [Custom-Context-Menu](https://github.com/callmenick/Custom-Context-Menu), [ZipArchive](https://github.com/ZipArchive/ZipArchive)
+[CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer), [FLEX](https://github.com/Flipboard/FLEX), [Custom-Context-Menu](https://github.com/callmenick/Custom-Context-Menu), [ZipArchive](https://github.com/ZipArchive/ZipArchive), [GCDWebServer](https://github.com/swisspol/GCDWebServer)
