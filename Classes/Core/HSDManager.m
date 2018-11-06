@@ -116,12 +116,8 @@ static NSUInteger kHttpServerPortDefault = 0;
     // add handler
     [server addHandlerWithMatchBlock:^GCDWebServerRequest * _Nullable(NSString * _Nonnull requestMethod, NSURL * _Nonnull requestURL, NSDictionary * _Nonnull requestHeaders, NSString * _Nonnull urlPath, NSDictionary * _Nonnull urlQuery) {
         GCDWebServerRequest *request;
-
-        NSString *contentType = [requestHeaders objectForKey:@"Content-Type"];
         if ([requestMethod isEqualToString:@"POST"]) {
-//            if ([contentType isEqualToString:@"application/x-www-form-urlencoded"]) {
-                request = [[GCDWebServerDataRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
-//            }
+            request = [[GCDWebServerDataRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
         }
 
         if (!request) {
@@ -210,7 +206,7 @@ static NSUInteger kHttpServerPortDefault = 0;
     NSString *documentRoot = [resourcePath stringByAppendingPathComponent:@"web"];
 #ifdef DEBUG
     // develop web in simulator, use files in the project bundle directly
-//    webPath = @"/Users/chenjun/Desktop/workspace/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+//    documentRoot = @"/Users/chenjun/Desktop/workspace/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
 #endif
     return documentRoot;
 }

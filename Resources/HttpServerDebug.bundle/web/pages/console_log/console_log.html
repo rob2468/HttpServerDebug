@@ -4,60 +4,17 @@
 <meta charset="utf-8">
 <title>控制台日志</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style type="text/css">
-#state-header {
-    position: absolute;
-    top: 0;
-    height: 60px;
-    left: 0;
-    right: 0;
-}
-#logs-content {
-    position: absolute;
-    top: 60px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    overflow-y: scroll;
-}
-</style>
+<link rel="stylesheet" href="console_log.css">
+<script src="console_log.js"></script>
 </head>
 <body>
 <div id="state-header">
-    <p id="connection_state"></p>
+    <button type="button" onclick="toggleConnection()">连接</button>
+    <button type="button" onclick="">刷新连接状态</button>
+    <p id="connection_state"><span>状态：</span>未连接</p>
     <hr>
 </div>
+
 <div id="logs-content"></div>
-<script type="text/javascript">
-if ('WebSocket' in window) {
-    var ws = new WebSocket('%%WEBSOCKET_URL%%');
-    ws.onopen = function () {
-        var stateEle = document.getElementById('connection_state');
-        stateEle.innerHTML = 'CONNECTED';
-    };
-    ws.onmessage = function (evt) {
-        var needScrollToBottom = false;
-        var logsEle = document.getElementById('logs-content');
-        if (logsEle.scrollTop + logsEle.clientHeight === logsEle.scrollHeight) {
-            needScrollToBottom = true;
-        }
-        // show log string
-        var htmlStr = '<p>' + evt.data + '</p>';
-        logsEle.insertAdjacentHTML('beforeend', htmlStr);
-        // auto scroll to bottom
-        if (needScrollToBottom) {
-            logsEle.scrollTop = logsEle.scrollHeight - logsEle.clientHeight;
-        }
-    };
-    ws.onclose = function () {
-        var stateEle = document.getElementById('connection_state');
-        stateEle.innerHTML = 'DISCONNECTED';
-    };
-    ws.onerror = function () {
-    };
-} else {
-    alert('Browser doesn\'t support WebSocket!');
-}
-</script>
 </body>
 </html>

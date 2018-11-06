@@ -276,12 +276,29 @@
 
 #pragma mark - Console Log
 
++ (HSDResponseInfo *)toggleConsoleLogConnection:(NSDictionary *)params {
+    HSDResponseInfo *responseInfo;
+
+    NSString *connect = [params objectForKey:@"connect"];
+    if (connect.length > 0) {
+        HSDConsoleLogComponent *consoleLogComponent = [HSDComponentMiddleware sharedInstance].consoleLogComponent;
+        if ([connect isEqualToString:@"1"]) {
+            // enable hsd console log
+            [consoleLogComponent redirectStandardErrorOutput];
+        } else {
+            // disable hsd console log
+            [consoleLogComponent recoverStandardErrorOutput];
+        }
+    }
+
+    return responseInfo;
+}
+
 /**
  *  redirect STDERR_FILENO
  */
 + (void)consoleLogRedirectStandardErrorOutput:(void(^)(NSString *))readCompletionBlock {
     HSDConsoleLogComponent *consoleLogComponent = [HSDComponentMiddleware sharedInstance].consoleLogComponent;
-    consoleLogComponent.readCompletionBlock = readCompletionBlock;
     [consoleLogComponent redirectStandardErrorOutput];
 }
 

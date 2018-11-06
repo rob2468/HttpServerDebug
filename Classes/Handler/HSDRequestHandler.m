@@ -89,7 +89,8 @@
             response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
         } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
             // console_log.html
-
+            NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
+            response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
         }
     } else if ([firstPath isEqualToString:@"api"]) {
         // api requests
@@ -127,6 +128,10 @@
                 HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchSendInfoAPIResponseInfo:infoStr];
                 response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
             }
+        } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
+            // console_log api
+            HSDResponseInfo *responseInfo = [HSDComponentMiddleware toggleConsoleLogConnection:query];
+            response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
         }
     } else if ([firstPath isEqualToString:@"favicon.ico"]) {
         // favicon

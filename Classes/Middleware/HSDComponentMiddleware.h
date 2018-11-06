@@ -44,6 +44,8 @@
 
 #pragma mark - Console Log
 
++ (HSDResponseInfo *)toggleConsoleLogConnection:(NSDictionary *)params;
+
 /**
  *  redirect STDERR_FILENO
  */

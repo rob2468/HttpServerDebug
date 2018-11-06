@@ -1,0 +1,15 @@
+#state-header {
+    position: absolute;
+    top: 0;
+    height: 60px;
+    left: 0;
+    right: 0;
+}
+#logs-content {
+    position: absolute;
+    top: 60px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-y: scroll;
+}

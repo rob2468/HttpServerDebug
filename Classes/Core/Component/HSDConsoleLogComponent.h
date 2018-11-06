@@ -11,9 +11,18 @@
 @interface HSDConsoleLogComponent : NSObject
 
 /**
- *  finish reading from stderr
+ *
  */
-@property (nonatomic, copy) void(^readCompletionBlock)(NSString *);
+- (NSArray<NSString *> *)consumeLogs;
+
+#pragma mark - state
+
+/**
+ *  is log output redirected
+ */
+- (BOOL)isRedirected;
+
+#pragma mark - behaviour control
 
 /**
  *  redirect STDERR_FILENO

@@ -5,12 +5,14 @@
 //  Created by chenjun on 2018/4/10.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
+//  produce and consume logs with producer and consumer model
 
 #import "HSDConsoleLogComponent.h"
 
 @interface HSDConsoleLogComponent ()
 
-@property (nonatomic, strong) NSThread *readStdErrThread;   // thread for read stderr
+@property (nonatomic, strong) NSThread *readStdErrThread;               // thread for read stderr
+@property (nonatomic, strong) NSMutableArray<NSString *> *consoleLogs;  // "products"
 
 @end
 
@@ -19,6 +21,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        self.consoleLogs = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -30,14 +33,50 @@
     // reset STDERR_FILENO
     if (stdErrFd != -1) {
         dup2(stdErrFd, STDERR_FILENO);
+        stdErrFd = -1;
     }
 }
+
+- (NSArray<NSString *> *)consumeLogs {
+    NSArray *logs;
+    @synchronized (self) {
+        // consume
+        logs = [self.consoleLogs copy];
+        [self.consoleLogs removeAllObjects];
+    }
+    return logs;
+}
+
+- (void)redirectReadCompletionNotificationReceived:(NSNotification *)notification {
+    // parse data
+    NSData *data = [[notification userInfo] objectForKey:NSFileHandleNotificationDataItem];
+    NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+    @synchronized (self) {
+        // produce
+        if (str.length > 0) {
+            [self.consoleLogs addObject:str];
+        }
+    }
+
+    // read
+    [[notification object] performSelector:@selector(readInBackgroundAndNotify) onThread:self.readStdErrThread withObject:nil waitUntilDone:YES];
+}
+
+
+#pragma mark - state
+
+- (BOOL)isRedirected {
+    return YES;
+}
+
+#pragma mark -
 
 static int stdErrFd = -1;     // saved origin stderr
 - (void)redirectStandardErrorOutput {
     // save origin STDERR_FILENO with a new file descriptor
     stdErrFd = dup(STDERR_FILENO);
-    
+
     // redirect standard error output
     NSPipe *stdErrPipe = [NSPipe pipe];
     NSFileHandle *writingHandle= [stdErrPipe fileHandleForWriting];
@@ -64,7 +103,9 @@ static int stdErrFd = -1;     // saved origin stderr
 }
 
 -(void)recoverStandardErrorOutput {
-    self.readCompletionBlock = nil;
+    @synchronized (self) {
+        [self.consoleLogs removeAllObjects];
+    }
 
     // remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleReadCompletionNotification object:nil];
@@ -75,21 +116,8 @@ static int stdErrFd = -1;     // saved origin stderr
     // reset STDERR_FILENO
     if (stdErrFd != -1) {
         dup2(stdErrFd, STDERR_FILENO);
+        stdErrFd = -1;
     }
-}
-
-- (void)redirectReadCompletionNotificationReceived:(NSNotification *)notification {
-    // parse data
-    NSData *data = [[notification userInfo] objectForKey:NSFileHandleNotificationDataItem];
-    NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    
-    // call back
-    if (self.readCompletionBlock) {
-        self.readCompletionBlock(str);
-    }
-    
-    // read
-    [[notification object] performSelector:@selector(readInBackgroundAndNotify) onThread:self.readStdErrThread withObject:nil waitUntilDone:YES];
 }
 
 @end

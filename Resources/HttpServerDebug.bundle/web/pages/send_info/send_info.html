@@ -2,17 +2,10 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>发送信息</title>
-<style type="text/css">
-body {
-    font-size: 12px;
-}
-textarea {
-    width: 500px;
-    height: 200px;
-}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="send_info.css">
+<script src="send_info.js"></script>
 </head>
 <body>
     <form id="info_form">
@@ -23,24 +16,5 @@ textarea {
         <p>Response Data:</p>
         <p id="response_data"></p>
     </div>
-
-<script type="text/javascript">
-function submitForm() {
-    var infoStr = document.getElementById('info_textarea').value.trim();
-
-    var infoXHR = new XMLHttpRequest();
-    var requestURL = document.location.protocol + '//' + document.location.host
-    + '/api/send_info';
-    infoXHR.open('POST', requestURL);
-    infoXHR.onload = function () {
-        if (infoXHR.status === 200) {
-            var responseText = infoXHR.responseText;
-            var responseEle = document.getElementById('response_data');
-            responseEle.innerText = responseText;
-        }
-    };
-    infoXHR.send(infoStr);
-}
-</script>
 </body>
 </html>
