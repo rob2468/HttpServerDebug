@@ -6,8 +6,12 @@
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
 
-#import "WebSocket.h"
+//#import "WebSocket.h"
 
-@interface HSDWebSocket : WebSocket
+//@interface HSDWebSocket : WebSocket
+
+#import <Foundation/Foundation.h>
+
+@interface HSDWebSocket : NSObject
 
 @end

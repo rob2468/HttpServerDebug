@@ -17,11 +17,7 @@
     // forward to the delegate
     id<HSDDelegate> delegate = [HSDManager fetchHSDDelegate];
     if ([delegate respondsToSelector:@selector(onHSDReceiveInfo:)]) {
-        NSDictionary *result = [delegate onHSDReceiveInfo:info];
-        if (result) {
-            // construct response data
-            responseDict = @{@"data": result};
-        }
+        responseDict = [delegate onHSDReceiveInfo:info];
     }
     return responseDict;
 }

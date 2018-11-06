@@ -61,7 +61,7 @@ window.onload = function () {
 function requestViewHierarchyData() {
     var viewXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/api/view_debug/all_views?';
+    + '/api/view_debug?action=all_views';
     viewXHR.open('GET', requestURL);
     viewXHR.onload = function () {
         if (viewXHR.status === 200) {
@@ -306,7 +306,7 @@ function generateViewPropertyListHTML(viewData) {
 
     // Snapshot
     var imgURL = document.location.protocol + '//' + document.location.host
-    + '/api/view_debug/select_view/snapshot?memory_address=' + memoryAddress
+    + '/api/view_debug?action=select_view&subaction=snapshot&memory_address=' + memoryAddress
     + '&class_name=' + className + '&nosubviews=0';
 
     liEle = document.createElement('li');

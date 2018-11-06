@@ -13,22 +13,22 @@
 @implementation HSDWebSocket
 
 - (void)didOpen {
-    [super didOpen];
-    
-    // redirect stderr
-    [HSDComponentMiddleware consoleLogRedirectStandardErrorOutput:^(NSString *logStr) {
-        [self sendMessage:logStr];
-    }];
+//    [super didOpen];
+//
+//    // redirect stderr
+//    [HSDComponentMiddleware consoleLogRedirectStandardErrorOutput:^(NSString *logStr) {
+//        [self sendMessage:logStr];
+//    }];
 }
 
 - (void)didReceiveMessage:(NSString *)msg {
 }
 
 - (void)didClose {
-    [super didClose];
-    
-    // reset stderr
-    [HSDComponentMiddleware consoleLogRecoverStandardErrorOutput];
+//    [super didClose];
+//    
+//    // reset stderr
+//    [HSDComponentMiddleware consoleLogRecoverStandardErrorOutput];
 }
 
 @end

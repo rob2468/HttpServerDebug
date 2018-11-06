@@ -6,7 +6,8 @@
 //  Copyright © 2017 Baidu Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 @protocol HSDDelegate;
 
 // notification name
@@ -45,12 +46,12 @@ typedef void(^HSDHostNameResolveBlock)(HSDHostNameResolveState state, NSArray<NS
  *  User setting from control pannel have higher priority than setting with this method.
  *  @param port  port number, interval [1024, 65535].
  */
-+ (void)updateHttpServerPort:(UInt16)port;
++ (void)updateHttpServerPort:(NSUInteger)port;
 
 /**
- *
+ *  1024~65535
  */
-+ (UInt16)fetchHttpServerPort;
++ (NSUInteger)fetchHttpServerPort;
 
 /**
  *  is hsd started

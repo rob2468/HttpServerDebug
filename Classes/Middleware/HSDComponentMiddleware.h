@@ -5,11 +5,11 @@
 //  Created by chenjun on 2018/5/27.
 //  Copyright © 2018年 chenjun. All rights reserved.
 //
+//  middleware between the http server and the core ability
 
 #import <Foundation/Foundation.h>
-@class HTTPConnection;
-@class HTTPMessage;
-@protocol HTTPResponse;
+
+@class HSDResponseInfo;
 
 @interface HSDComponentMiddleware : NSObject
 
@@ -18,34 +18,29 @@
 /**
  *  request data
  */
-+ (NSObject<HTTPResponse> *)fetchFileExplorerAPIResponsePaths:(NSArray *)paths parameters:(NSDictionary *)params;
++ (HSDResponseInfo *)fetchFileExplorerAPIResponseInfo:(NSDictionary *)params;
 
 #pragma mark - Database Inspect
 
 /**
- *  fetch html page
- */
-+ (NSObject<HTTPResponse> *)fetchDatabaseHTMLResponse:(NSDictionary *)params withConnection:(HTTPConnection *)connection;
-
-/**
  *  request table data, database schema; execute sql
  */
-+ (NSObject<HTTPResponse> *)fetchDatabaseAPIResponseModules:(NSArray *)modules parameters:(NSDictionary *)params;
++ (HSDResponseInfo *)fetchDatabaseAPIResponseInfo:(NSDictionary *)params;
 
 #pragma mark - View Debug
 
 /**
  *
  */
-+ (NSObject<HTTPResponse> *)fetchViewDebugAPIResponseModules:(NSArray *)modules parameters:(NSDictionary *)params;
++ (HSDResponseInfo *)fetchViewDebugAPIResponseInfo:(NSDictionary *)params;
 
 #pragma mark - Send Info
 
-+ (NSObject<HTTPResponse> *)fetchSendInfoAPIResponseForMethod:(NSString *)method paths:(NSArray *)paths parameters:(NSDictionary *)params withRequest:(HTTPMessage *)request;
++ (HSDResponseInfo *)fetchSendInfoAPIResponseInfo:(NSString *)infoStr;
 
 #pragma mark - File Preview
 
-+ (NSObject<HTTPResponse> *)fetchFilePreviewResponse:(NSDictionary *)params forMethod:(NSString *)method URI:(NSString *)path;
++ (HSDResponseInfo *)fetchFilePreviewResponseInfo:(NSDictionary *)params;
 
 #pragma mark - Console Log
 

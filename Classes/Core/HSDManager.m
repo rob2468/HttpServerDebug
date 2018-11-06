@@ -7,23 +7,26 @@
 //
 
 #import "HSDManager.h"
-#import "HTTPServer.h"
-#import "HSDHttpConnection.h"
 #import "HSDDelegate.h"
-#import <UIKit/UIKit.h>
 #import "HSDDefine.h"
 #import "HSDHostNameResolveComponent.h"
+#import "GCDWebServer.h"
+#import "GCDWebServerRequest.h"
+#import "GCDWebServerDataRequest.h"
+#import "GCDWebServerResponse.h"
+#import "GCDWebServerHTTPStatusCodes.h"
+#import "HSDRequestHandler.h"
 
 NSString *kHSDNotificationServerStarted = @"kHSDNotificationServerStarted";
 NSString *kHSDNotificationServerStopped = @"kHSDNotificationServerStopped";
 static NSString *const kHttpServerWebIndexFileName = @"index.html";
-static UInt16 kHttpServerPortDefault = 0;
+static NSUInteger kHttpServerPortDefault = 0;
 
 @interface HSDManager ()
 
-@property (nonatomic, strong) HTTPServer *server;
+@property (nonatomic, strong) GCDWebServer *server;
 @property (nonatomic, copy) NSString *dbFilePath;       // default inspect db file path
-@property (nonatomic, assign) UInt16 serverPort;        // serverPort
+@property (nonatomic, assign) NSUInteger serverPort;        // serverPort
 @property (nonatomic, copy) NSString *serverName;
 @property (nonatomic, weak) id<HSDDelegate> delegate;
 @property (nonatomic, strong) HSDHostNameResolveComponent *hostNameResolveComponent;
@@ -62,20 +65,21 @@ static UInt16 kHttpServerPortDefault = 0;
     self = [super init];
     if (self) {
         self.serverPort = kHttpServerPortDefault;
+        self.serverName = @"";
     }
     return self;
 }
 
-+ (void)updateHttpServerPort:(UInt16)port {
++ (void)updateHttpServerPort:(NSUInteger)port {
     HSDManager *manager = [HSDManager sharedInstance];
     manager.serverPort = port;
 }
 
-+ (UInt16)fetchHttpServerPort {
-    UInt16 port = kHttpServerPortDefault;
++ (NSUInteger)fetchHttpServerPort {
+    NSUInteger port = kHttpServerPortDefault;
     if ([HSDManager isHttpServerRunning]) {
         HSDManager *manager = [HSDManager sharedInstance];
-        port = manager.server.listeningPort;
+        port = manager.server.port;
     }
     return port;
 }
@@ -87,15 +91,14 @@ static UInt16 kHttpServerPortDefault = 0;
 
 + (NSString *)fetchHttpServerName {
     HSDManager *manager = [HSDManager sharedInstance];
-    HTTPServer *server = manager.server;
-    NSNetService *netService = [server valueForKey:@"netService"];
-    NSString *serviceName = netService.name;
+    GCDWebServer *server = manager.server;
+    NSString *serviceName = server.bonjourName;
     return serviceName;
 }
 
 + (BOOL)isHttpServerRunning {
     HSDManager *manager = [HSDManager sharedInstance];
-    HTTPServer *server = manager.server;
+    GCDWebServer *server = manager.server;
     BOOL isRunning = server.isRunning;
     return isRunning;
 }
@@ -105,24 +108,37 @@ static UInt16 kHttpServerPortDefault = 0;
         NSLog(@"http server has already started.");
         return;
     }
-    
-    // front-end resources
-    NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
-    NSString *webPath = [resourcePath stringByAppendingPathComponent:@"web"];
-#ifdef DEBUG
-    // develop web in simulator, use files in the project bundle directly
-//    webPath = @"/Users/chenjun/Desktop/workspace/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
-#endif
+
+    HSDManager *manager = [HSDManager sharedInstance];
+    GCDWebServer *server = [[GCDWebServer alloc] init];
 
     // set http server parameters
-    HSDManager *manager = [HSDManager sharedInstance];
-    HTTPServer *server = [[HTTPServer alloc] init];
-    manager.server = server;
-    [manager.server setType:@"_http._tcp."];
-    [manager.server setDocumentRoot:webPath];
+    // add handler
+    [server addHandlerWithMatchBlock:^GCDWebServerRequest * _Nullable(NSString * _Nonnull requestMethod, NSURL * _Nonnull requestURL, NSDictionary * _Nonnull requestHeaders, NSString * _Nonnull urlPath, NSDictionary * _Nonnull urlQuery) {
+        GCDWebServerRequest *request;
+
+        NSString *contentType = [requestHeaders objectForKey:@"Content-Type"];
+        if ([requestMethod isEqualToString:@"POST"]) {
+//            if ([contentType isEqualToString:@"application/x-www-form-urlencoded"]) {
+                request = [[GCDWebServerDataRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
+//            }
+        }
+
+        if (!request) {
+            // generic request
+            request = [[GCDWebServerRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
+        }
+        return request;
+    } asyncProcessBlock:^(__kindof GCDWebServerRequest * _Nonnull request, GCDWebServerCompletionBlock  _Nonnull completionBlock) {
+        GCDWebServerResponse *response;
+        response = [HSDRequestHandler handleRequest:request];
+        if (completionBlock) {
+            completionBlock(response);
+        }
+    }];
 
     // port
-    UInt16 port;
+    NSUInteger port;
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     if ([userDefaults valueForKey:kHSDUserDefaultsKeyServerPort]) {
         // user setting value exists
@@ -134,26 +150,17 @@ static UInt16 kHttpServerPortDefault = 0;
     if (port < kHSDServerPortUserSettingMin || port > kHSDServerPostUserSettingMax) {
         port = kHttpServerPortDefault;
     }
-    [manager.server setPort:port];
 
-    NSString *name = manager.serverName;
-    if (name.length > 0) {
-        [manager.server setName:name];
-    }
-    [manager.server setConnectionClass:[HSDHttpConnection class]];
-    
-    // start
-    NSError *error;
-    BOOL isSucc = [manager.server start:&error];
-    
+    // bonjour name
+    NSString *bonjourName = manager.serverName;
+
+    // start server
+    BOOL isSucc = [server startWithPort:port bonjourName:bonjourName];
+    manager.server = server;
+
     if (isSucc) {
         // post notification
         [[NSNotificationCenter defaultCenter] postNotificationName:kHSDNotificationServerStarted object:nil];
-        
-        NSLog(@"http server start, please access with the device ip address and port %d", [HSDManager fetchHttpServerPort]);
-        NSLog(@"http server root document: %@", webPath);
-    } else {
-        NSLog(@"Error starting http server: %@", error);
     }
 }
 
@@ -198,8 +205,13 @@ static UInt16 kHttpServerPortDefault = 0;
 }
 
 + (NSString *)fetchDocumentRoot {
-    HSDManager *manager = [HSDManager sharedInstance];
-    NSString *documentRoot = [manager.server documentRoot];
+    // front-end resources
+    NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
+    NSString *documentRoot = [resourcePath stringByAppendingPathComponent:@"web"];
+#ifdef DEBUG
+    // develop web in simulator, use files in the project bundle directly
+//    webPath = @"/Users/chenjun/Desktop/workspace/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+#endif
     return documentRoot;
 }
 
@@ -217,8 +229,7 @@ static UInt16 kHttpServerPortDefault = 0;
 + (NSString *)fetchContentTypeWithFilePathExtension:(NSString *)pathExtension {
     pathExtension = [pathExtension lowercaseString];
     
-//    NSString *contentType = @"text/plain;charset=utf-8";
-    NSString *contentType;
+    NSString *contentType = @"text/plain;charset=utf-8";
     if ([pathExtension isEqualToString:@"html"]) {
         contentType = @"text/html";
     } else if ([pathExtension isEqualToString:@"js"]) {

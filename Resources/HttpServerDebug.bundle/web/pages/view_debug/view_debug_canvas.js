@@ -98,7 +98,7 @@ function initTHREE(startIdx) {
 
             // snapshot image
             var imageSRC = document.location.protocol + '//' + document.location.host
-            + '/api/view_debug/select_view/snapshot?memory_address=' + memoryAddress
+            + '/api/view_debug?action=select_view&subaction=snapshot&memory_address=' + memoryAddress
             + '&class_name=' + className + '&nosubviews=1';
 
             // show clipped content or not

@@ -9,7 +9,7 @@
 </head>
 <body>
     <!-- db file path -->
-    <div><p>数据库文件路径：<span id="db-path">%%DB_FILE_PATH%%</span></p></div>
+    <div><p>数据库文件路径：<span id="db-path">%DB_FILE_PATH%</span></p></div>
     <!-- navigation -->
     <div class="nav-bar">
         <ul>
@@ -21,7 +21,7 @@
     <!-- browse data -->
     <div class="tab-pane active" id="browse-data-tab">
         <div class="ctrl-head">
-        <select id="table-name-select" onchange="onDatabaseTableReload()">%%SELECT_HTML%%</select>
+        <select id="table-name-select" onchange="onDatabaseTableReload()">%SELECT_HTML%</select>
         <button type="button" id="browse-data-reload-button" class="reload reload-normal" onclick="onDatabaseTableReload()">
             <img src="../../resources/loading-bubbles.svg" alt="loading"><span>刷新</span>
         </button>

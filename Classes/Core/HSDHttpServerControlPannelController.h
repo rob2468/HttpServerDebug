@@ -14,6 +14,6 @@
  *  Actions when user press back button.
  *  If not assigned, [self.navigationController popViewControllerAnimated:YES] will be executed.
  */
-@property (strong, nonatomic) void(^backBlock)(void);
+@property (nonatomic, strong) dispatch_block_t backBlock;
 
 @end

@@ -152,7 +152,7 @@ function onDatabaseExecuteSQL() {
     // request
     var resultSetXHR = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
-    + '/api/database_inspect/execute_sql?db_path=' + encodeURIComponent(dbPath) + '&sql=' + encodeURIComponent(sql);
+    + '/api/database_inspect?action=execute_sql&db_path=' + encodeURIComponent(dbPath) + '&sql=' + encodeURIComponent(sql);
     resultSetXHR.open('GET', requestURL);
     resultSetXHR.onload = function () {
         if (resultSetXHR.status === 200) {

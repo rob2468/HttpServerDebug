@@ -42,7 +42,7 @@ response
 
 ### 2. send_info
 
-描述：向app发送信息，HSD通过delegate将信息抛给宿主app，处理结果在responseData中返回。支持GET方法和POST方法。
+描述：向 App 发送信息，HSD 通过 delegate 将信息抛给宿主 App，处理结果在 responseData 中返回。支持 GET 方法和 POST 方法。
 
 request，GET 方法
 
@@ -52,7 +52,7 @@ request，GET 方法
 
 |参数|说明|
 |----|----|
-|info|发送给app的信息，字符串类型。注意：需进行编码，不能包含URI保留字符（如?&）。|
+|info|发送给 App 的信息，字符串类型。注意：需进行编码，不能包含URI保留字符（如?&）。|
 
 request，POST 方法
 
@@ -60,7 +60,7 @@ request，POST 方法
 /api/send_info
 ```
 
-向 app 发送字符串信息，信息在 HTTP body 中传输，支持的 Content-Type 为 text/plain 和 application/x-www-form-urlencoded。
+向 App 发送字符串信息，信息在 HTTP body 中传输，支持的 Content-Type 为 text/plain 和 application/x-www-form-urlencoded。
 
 ### 3. file_explorer
 

@@ -19,11 +19,9 @@
 		8F8973C820BED5A80081CA70 /* HSDSampleCategoryEditController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F8973BC20BED5A70081CA70 /* HSDSampleCategoryEditController.m */; };
 		8F8973CA20BED5A80081CA70 /* HSDSampleDBInspectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F8973C020BED5A70081CA70 /* HSDSampleDBInspectViewController.m */; };
 		8F8973CC20BED5A80081CA70 /* HSDSampleHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F8973C420BED5A70081CA70 /* HSDSampleHomeViewController.m */; };
+		8F8A4877218DA0A100B2770B /* libGCDWebServer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8A4876218DA0A100B2770B /* libGCDWebServer.a */; };
 		8FC504A920BED728007D55B9 /* HSDSampleViewDebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FC504A720BED727007D55B9 /* HSDSampleViewDebugViewController.m */; };
 		8FEFE7091F3D6FE100D841E0 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FEFE7081F3D6FE100D841E0 /* libxml2.tbd */; };
-		8FF6524E1FBBDAA200E4F924 /* libCocoaAsyncSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652541FBBDAA200E4F924 /* libCocoaAsyncSocket.a */; };
-		8FF6524F1FBBDAA200E4F924 /* libCocoaHttpServer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652551FBBDAA200E4F924 /* libCocoaHttpServer.a */; };
-		8FF652501FBBDAA200E4F924 /* libCocoaLumberjack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652561FBBDAA200E4F924 /* libCocoaLumberjack.a */; };
 		8FF652511FBBDAA200E4F924 /* libFMDB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652571FBBDAA200E4F924 /* libFMDB.a */; };
 		8FF652521FBBDAA200E4F924 /* libHttpServerDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652581FBBDAA200E4F924 /* libHttpServerDebug.a */; };
 /* End PBXBuildFile section */
@@ -51,6 +49,7 @@
 		8F8973C020BED5A70081CA70 /* HSDSampleDBInspectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDSampleDBInspectViewController.m; sourceTree = "<group>"; };
 		8F8973C320BED5A70081CA70 /* HSDSampleHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDSampleHomeViewController.h; sourceTree = "<group>"; };
 		8F8973C420BED5A70081CA70 /* HSDSampleHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDSampleHomeViewController.m; sourceTree = "<group>"; };
+		8F8A4876218DA0A100B2770B /* libGCDWebServer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGCDWebServer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FC504A720BED727007D55B9 /* HSDSampleViewDebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDSampleViewDebugViewController.m; sourceTree = "<group>"; };
 		8FC504A820BED727007D55B9 /* HSDSampleViewDebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDSampleViewDebugViewController.h; sourceTree = "<group>"; };
 		8FD708E11EFA61D900E0547C /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -73,9 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8FF6524E1FBBDAA200E4F924 /* libCocoaAsyncSocket.a in Frameworks */,
-				8FF6524F1FBBDAA200E4F924 /* libCocoaHttpServer.a in Frameworks */,
-				8FF652501FBBDAA200E4F924 /* libCocoaLumberjack.a in Frameworks */,
+				8F8A4877218DA0A100B2770B /* libGCDWebServer.a in Frameworks */,
 				8FF652511FBBDAA200E4F924 /* libFMDB.a in Frameworks */,
 				8FF652521FBBDAA200E4F924 /* libHttpServerDebug.a in Frameworks */,
 				8FEFE7091F3D6FE100D841E0 /* libxml2.tbd in Frameworks */,
@@ -88,6 +85,7 @@
 		720994CFFB4194E474DE88FF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8F8A4876218DA0A100B2770B /* libGCDWebServer.a */,
 				8FF652541FBBDAA200E4F924 /* libCocoaAsyncSocket.a */,
 				8FF652551FBBDAA200E4F924 /* libCocoaHttpServer.a */,
 				8FF652561FBBDAA200E4F924 /* libCocoaLumberjack.a */,
@@ -392,7 +390,7 @@
 					"$(inherited)",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.github.rob2468.Closet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamchenjun.Closet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Supporting Files/Closet-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -421,7 +419,7 @@
 					"$(inherited)",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.github.rob2468.Closet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamchenjun.Closet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Supporting Files/Closet-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
