@@ -9,8 +9,11 @@
 
 #import "HSDConsoleLogComponent.h"
 
+static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
+
 @interface HSDConsoleLogComponent ()
 
+@property (nonatomic, assign) int stdErrFd;                       // saved origin stderr
 @property (nonatomic, strong) NSThread *readStdErrThread;               // thread for read stderr
 @property (nonatomic, strong) NSMutableArray<NSString *> *consoleLogs;  // "products"
 
@@ -21,6 +24,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
+        self.stdErrFd = kStdErrIllegalFd;
         self.consoleLogs = [[NSMutableArray alloc] init];
     }
     return self;
@@ -29,11 +33,11 @@
 - (void)dealloc {
     // remove notification observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     // reset STDERR_FILENO
-    if (stdErrFd != -1) {
-        dup2(stdErrFd, STDERR_FILENO);
-        stdErrFd = -1;
+    if (self.stdErrFd != kStdErrIllegalFd) {
+        dup2(self.stdErrFd, STDERR_FILENO);
+        self.stdErrFd = kStdErrIllegalFd;
     }
 }
 
@@ -63,19 +67,23 @@
     [[notification object] performSelector:@selector(readInBackgroundAndNotify) onThread:self.readStdErrThread withObject:nil waitUntilDone:YES];
 }
 
-
 #pragma mark - state
 
 - (BOOL)isRedirected {
-    return YES;
+    BOOL isRedirected;
+    if (self.stdErrFd == kStdErrIllegalFd) {
+        isRedirected = NO;
+    } else {
+        isRedirected = YES;
+    }
+    return isRedirected;
 }
 
 #pragma mark -
 
-static int stdErrFd = -1;     // saved origin stderr
 - (void)redirectStandardErrorOutput {
     // save origin STDERR_FILENO with a new file descriptor
-    stdErrFd = dup(STDERR_FILENO);
+    self.stdErrFd = dup(STDERR_FILENO);
 
     // redirect standard error output
     NSPipe *stdErrPipe = [NSPipe pipe];
@@ -83,14 +91,14 @@ static int stdErrFd = -1;     // saved origin stderr
     int writingHandleFd = [writingHandle fileDescriptor];
     NSFileHandle *readingHandle = [stdErrPipe fileHandleForReading];
     dup2(writingHandleFd, STDERR_FILENO);
-    
+
     // create a new thread with an active run loop
     self.readStdErrThread = [[NSThread alloc] initWithTarget:self selector:@selector(readStdErrThreadEntryPoint:) object:nil];
     [self.readStdErrThread start];
-    
+
     // add notification observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(redirectReadCompletionNotificationReceived:) name:NSFileHandleReadCompletionNotification object:readingHandle];
-    
+
     // read
     [readingHandle performSelector:@selector(readInBackgroundAndNotify) onThread:self.readStdErrThread withObject:nil waitUntilDone:YES];
 }
@@ -109,14 +117,14 @@ static int stdErrFd = -1;     // saved origin stderr
 
     // remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleReadCompletionNotification object:nil];
-    
+
     // release thread
     self.readStdErrThread = nil;
-    
+
     // reset STDERR_FILENO
-    if (stdErrFd != -1) {
-        dup2(stdErrFd, STDERR_FILENO);
-        stdErrFd = -1;
+    if (self.stdErrFd != kStdErrIllegalFd) {
+        dup2(self.stdErrFd, STDERR_FILENO);
+        self.stdErrFd = kStdErrIllegalFd;
     }
 }
 

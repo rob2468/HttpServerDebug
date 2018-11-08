@@ -1,9 +1,12 @@
 let isConnected = false;
 
 window.onload = function () {
-
+    requestConnectionState();
 };
 
+/**
+ *  request connection state from server, and update UI
+ */
 function requestConnectionState() {
     const xhr = new XMLHttpRequest();
     var requestURL = document.location.protocol + '//' + document.location.host
@@ -13,6 +16,8 @@ function requestConnectionState() {
         if (xhr.status === 200) {
             const responseText = xhr.responseText;
             const responseJSON = JSON.parse(responseText);
+
+            console.log(responseJSON);
         }
     };
     xhr.send(null);

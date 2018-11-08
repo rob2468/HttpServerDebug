@@ -225,7 +225,7 @@ static NSUInteger kHttpServerPortDefault = 0;
 + (NSString *)fetchContentTypeWithFilePathExtension:(NSString *)pathExtension {
     pathExtension = [pathExtension lowercaseString];
     
-    NSString *contentType = @"text/plain;charset=utf-8";
+    NSString *contentType = @"text/plain;charset=utf-8";    // default Content-Type
     if ([pathExtension isEqualToString:@"html"]) {
         contentType = @"text/html";
     } else if ([pathExtension isEqualToString:@"js"]) {

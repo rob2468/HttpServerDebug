@@ -276,6 +276,34 @@
 
 #pragma mark - Console Log
 
++ (HSDResponseInfo *)fetchConsoleLogResponseInfo:(NSDictionary *)params {
+    NSInteger errorNum = 0;
+    id result;
+
+    NSString *action = [params objectForKey:@"action"];
+    if ([action isEqualToString:@"getstate"]) {
+        // get connection state
+        HSDConsoleLogComponent *consoleLogComponent = [HSDComponentMiddleware sharedInstance].consoleLogComponent;
+        BOOL isRedirected = [consoleLogComponent isRedirected];
+        result = @(isRedirected);
+    }
+
+    // construct response data
+    NSDictionary *responseDict =
+    @{
+      @"data" : result,
+      @"errno" : @(errorNum)
+      };
+
+    // serialization
+    NSData *responseData = [NSJSONSerialization dataWithJSONObject:responseDict options:0 error:nil];
+
+    HSDResponseInfo *responseInfo = [[HSDResponseInfo alloc] init];
+    responseInfo.data = responseData;
+    responseInfo.contentType = @"text/plain;charset=utf-8";
+    return responseInfo;
+}
+
 + (HSDResponseInfo *)toggleConsoleLogConnection:(NSDictionary *)params {
     HSDResponseInfo *responseInfo;
 

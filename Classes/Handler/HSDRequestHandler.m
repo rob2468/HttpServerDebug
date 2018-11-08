@@ -51,7 +51,7 @@
         secondPath = [pathComps objectAtIndex:1];
     }
 
-    // routing
+    // route
     if ([firstPath isEqualToString:@"pages"]) {
         // html pages
         if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
@@ -130,7 +130,7 @@
             }
         } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
             // console_log api
-            HSDResponseInfo *responseInfo = [HSDComponentMiddleware toggleConsoleLogConnection:query];
+            HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchConsoleLogResponseInfo:query];
             response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
         }
     } else if ([firstPath isEqualToString:@"favicon.ico"]) {
