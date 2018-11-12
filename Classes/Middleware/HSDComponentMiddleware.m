@@ -277,16 +277,54 @@
 #pragma mark - Console Log
 
 + (HSDResponseInfo *)fetchConsoleLogResponseInfo:(NSDictionary *)params {
+    CFTimeInterval minLogRequestInterval = 0.8;
+    CFTimeInterval redirectResetInterval = 5;
+
     NSInteger errorNum = 0;
     id result;
+    HSDConsoleLogComponent *consoleLogComponent = [HSDComponentMiddleware sharedInstance].consoleLogComponent;
 
     NSString *action = [params objectForKey:@"action"];
     if ([action isEqualToString:@"getstate"]) {
         // get connection state
-        HSDConsoleLogComponent *consoleLogComponent = [HSDComponentMiddleware sharedInstance].consoleLogComponent;
         BOOL isRedirected = [consoleLogComponent isRedirected];
         result = @(isRedirected);
+    } else if ([action isEqualToString:@"getlog"]) {
+        // get log message
+        NSArray *logs;
+
+        // waiting at lease 0.5 seconds from last request
+        static CFTimeInterval timestamp = 0;
+        CFTimeInterval cur = CACurrentMediaTime();
+        if (cur - timestamp < minLogRequestInterval) {
+            NSAssert(![NSThread isMainThread], @"current thread is the main thread");
+            [NSThread sleepForTimeInterval:minLogRequestInterval];
+        }
+        timestamp = cur;
+
+        logs = [consoleLogComponent consumeLogs];
+        if (!logs) {
+            logs = [[NSArray alloc] init];
+        }
+        result = logs;
+    } else {
+        NSString *connect = [params objectForKey:@"connect"];
+        if ([connect isEqualToString:@"1"]) {
+            // connect
+            [consoleLogComponent redirectStandardErrorOutput];
+            result = @(YES);
+        } else /*if ([connect isEqualToString:@"0"])*/ {
+            // disconnect
+            [consoleLogComponent recoverStandardErrorOutput];
+            result = @(NO);
+        }
     }
+
+    // recover stderr, if there is no request for a while
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [NSObject cancelPreviousPerformRequestsWithTarget:consoleLogComponent selector:@selector(recoverStandardErrorOutput) object:nil];
+        [consoleLogComponent performSelector:@selector(recoverStandardErrorOutput) withObject:nil afterDelay:redirectResetInterval inModes:@[NSRunLoopCommonModes]];
+    });
 
     // construct response data
     NSDictionary *responseDict =

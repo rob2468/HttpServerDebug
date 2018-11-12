@@ -9,12 +9,11 @@
 </head>
 <body>
 <div id="state-header">
-    <button type="button" onclick="toggleConnection()">连接</button>
-    <button type="button" onclick="">刷新连接状态</button>
-    <p id="connection_state"><span>状态：</span>未连接</p>
+    <button type="button" id="toggle-connect" onclick="toggleConnection()">连接</button>
+    <button type="button" id="refresh-state" onclick="requestConnectionState()">刷新连接状态</button>
+    <p>状态：<span id="connection-state">未连接</span></p>
     <hr>
 </div>
-
-<div id="logs-content"></div>
+<div id="log-messages"></div>
 </body>
 </html>

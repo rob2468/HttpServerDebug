@@ -5,9 +5,9 @@
     left: 0;
     right: 0;
 }
-#logs-content {
+#log-messages {
     position: absolute;
-    top: 60px;
+    top: 100px;
     bottom: 0;
     left: 0;
     right: 0;
