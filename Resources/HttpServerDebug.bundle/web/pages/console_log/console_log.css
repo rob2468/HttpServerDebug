@@ -1,3 +1,10 @@
+body {
+    background-color: white;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 14px;
+    text-align: left;
+    width: auto;
+}
 #state-header {
     position: absolute;
     top: 0;

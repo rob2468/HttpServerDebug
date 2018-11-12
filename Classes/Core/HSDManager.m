@@ -150,6 +150,9 @@ static NSUInteger kHttpServerPortDefault = 0;
     // bonjour name
     NSString *bonjourName = manager.serverName;
 
+    // server log level
+    [GCDWebServer setLogLevel:4];
+
     // start server
     BOOL isSucc = [server startWithPort:port bonjourName:bonjourName];
     manager.server = server;
