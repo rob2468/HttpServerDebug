@@ -44,7 +44,7 @@ You can copy source code files to your project directly. `Classes/` and `Resourc
 Add following statements in your Podfile.
 
 ```
-pod 'HttpServerDebug', '~> 0.1'
+pod 'HttpServerDebug', '~> 0.2'
 ```
 
 ## Access HSD
