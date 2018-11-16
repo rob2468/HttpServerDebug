@@ -20,6 +20,15 @@
  */
 + (HSDResponseInfo *)fetchFileExplorerAPIResponseInfo:(NSDictionary *)params;
 
+/**
+ *  move the uploaded file, from the temporary path to the target path
+ *  @param temporaryPath  the uploaded file's temporay path
+ *  @param targetDirectory
+ *  @param targetFileName
+ *  @return response info
+ */
++ (HSDResponseInfo *)uploadTemporaryFile:(NSString *)temporaryPath targetDirectory:(NSString *)targetDirectory fileName:(NSString *)targetFileName;
+
 #pragma mark - Database Inspect
 
 /**
@@ -30,7 +39,7 @@
 #pragma mark - View Debug
 
 /**
- *
+ *  view debug
  */
 + (HSDResponseInfo *)fetchViewDebugAPIResponseInfo:(NSDictionary *)params;
 

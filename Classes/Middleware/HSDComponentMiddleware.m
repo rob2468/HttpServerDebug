@@ -97,6 +97,41 @@
     return responseInfo;
 }
 
++ (HSDResponseInfo *)uploadTemporaryFile:(NSString *)temporaryPath targetDirectory:(NSString *)targetDirectory fileName:(NSString *)targetFileName {
+    BOOL isSuccess = YES;
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:temporaryPath]
+        || ![fileManager fileExistsAtPath:targetDirectory]
+        || targetFileName.length == 0) {
+        // illegal cases
+        isSuccess = NO;
+    }
+
+    if (isSuccess) {
+        // move
+        NSString *targetPath = [targetDirectory stringByAppendingPathComponent:targetFileName];
+        isSuccess = [fileManager moveItemAtPath:temporaryPath toPath:targetPath error:nil];
+    }
+
+    NSInteger errNum;
+    if (isSuccess) {
+        errNum = 0;
+    } else {
+        errNum = -1;
+    }
+
+    NSDictionary *responseDict =
+    @{
+      @"errno" : @(errNum),
+      @"data" : @""
+      };
+    HSDResponseInfo *responseInfo = [[HSDResponseInfo alloc] init];
+    responseInfo.data = [NSJSONSerialization dataWithJSONObject:responseDict options:0 error:nil];
+    responseInfo.contentType = @"text/plain;charset=utf-8";
+    return responseInfo;
+}
+
 #pragma mark - Database Inspect
 
 /**

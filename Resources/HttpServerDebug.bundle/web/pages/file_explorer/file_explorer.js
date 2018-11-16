@@ -2,16 +2,16 @@
 /**
  *  create one directory container instance
  */
-function DirectoryContainerModel(dirData) {
-    this.items = dirData;   // Array, sub-directories and files
-    this.selectedIdx = -1;  // user selected item index, 0-index (-1: default value, no item selected)
-
+class DirectoryContainerModel {
+    constructor(dirData) {
+        this.items = dirData; // Array, sub-directories and files
+        this.selectedIdx = -1; // user selected item index, 0-index (-1: default value, no item selected)
+    }
     /**
      *  get selected item, according to items array and selected index
      */
-    this.getSelectedItem = function () {
+    getSelectedItem() {
         var selectedItem;
-
         var items = this.items;
         var length = items.length;
         var selectedIdx = this.selectedIdx;
@@ -20,15 +20,17 @@ function DirectoryContainerModel(dirData) {
         }
         return selectedItem;
     }
-};
+}
 
 /**
  *  one file or directory view model
  */
-function ItemViewModel(item, section, row) {
-    this.item = item;       // json, one file or directory information
-    this.section = section; // int
-    this.row = row;         // int
+class ItemViewModel {
+    constructor(item, section, row) {
+        this.item = item; // json, one file or directory information
+        this.section = section; // int
+        this.row = row; // int
+    }
 }
 
 /**

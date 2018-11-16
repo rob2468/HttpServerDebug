@@ -246,7 +246,7 @@ function initContextMenu() {
 
         var isDir = dataItem.is_directory;
         var fileName = dataItem.file_name;
-        var filePath = dataItem.file_path;
+        const filePath = dataItem.file_path;
 
         if (action === 'open') {
             // open file or directory
@@ -254,7 +254,7 @@ function initContextMenu() {
         } else if (action === 'download') {
             // download file or directory
             // download url
-            var url = window.location.origin + '/api/file_preview?file_path=' + filePath;
+            var url = document.location.origin + '/api/file_preview?file_path=' + filePath;
 
             // create event
             var event = new MouseEvent('click');
@@ -281,8 +281,7 @@ function initContextMenu() {
             if (confirmResult) {
                 // do delete action
                 var deleteXHR = new XMLHttpRequest();
-                var requestURL = document.location.protocol + '//' + document.location.host
-                + '/api/file_explorer?file_path=' + encodeURIComponent(filePath) + '&action=delete';
+                var requestURL = document.location.origin + '/api/file_explorer?file_path=' + encodeURIComponent(filePath) + '&action=delete';
                 deleteXHR.open('GET', requestURL);
                 deleteXHR.onload = function () {
                     if (deleteXHR.status === 200) {
@@ -314,7 +313,25 @@ function initContextMenu() {
                 deleteXHR.send(null);
             }
         } else if (action === 'upload') {
+            // create element
+            const fileEle = document.createElement('input');
+            fileEle.type = 'file';
+            fileEle.onchange = function () {
+                // append data
+                const formData = new FormData();
+                formData.append('selectedfile', fileEle.files[0]);  // file
+                formData.append('path', filePath);// argument
 
+                // upload file
+                const xhr = new XMLHttpRequest();
+                const requestURL = document.location.origin + '/api/file_explorer?action=upload';
+                xhr.open('POST', requestURL);
+                xhr.send(formData);
+            }
+
+            // dispatch click event
+            const event = new MouseEvent('click');
+            fileEle.dispatchEvent(event);
         }
         toggleMenuOff();
     }

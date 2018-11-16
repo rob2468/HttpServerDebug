@@ -14,6 +14,7 @@
 #import "HSDDBInspectComponent.h"
 #import "GCDWebServerRequest.h"
 #import "GCDWebServerDataRequest.h"
+#import "GCDWebServerMultiPartFormRequest.h"
 #import "GCDWebServerResponse.h"
 #import "GCDWebServerFileResponse.h"
 #import "GCDWebServerDataResponse.h"
@@ -96,8 +97,23 @@
         // api requests
         if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
             // file_explorer api
-            HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchFileExplorerAPIResponseInfo:query];
-            response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+            if ([request isKindOfClass:[GCDWebServerMultiPartFormRequest class]]) {
+                // upload file
+                GCDWebServerMultiPartFormRequest *uploadRequest = (GCDWebServerMultiPartFormRequest *)request;
+                GCDWebServerMultiPartFile *file = [uploadRequest firstFileForControlName:@"selectedfile"];
+                NSString *temporaryPath = [file.temporaryPath copy];    // uploaded temporary file path
+
+                // target directory and file name
+                NSString *targetDirectory = [[[uploadRequest firstArgumentForControlName:@"path"] string] copy];
+                NSString *targetFileName = [file.fileName copy];
+
+                HSDResponseInfo *responseInfo = [HSDComponentMiddleware uploadTemporaryFile:temporaryPath targetDirectory:targetDirectory fileName:targetFileName];
+                response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+            } else {
+                // general request
+                HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchFileExplorerAPIResponseInfo:query];
+                response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+            }
         } else if ([secondPath isEqualToString:kHSDComponentFilePreview]) {
             // file_preview api
             HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchFilePreviewResponseInfo:query];

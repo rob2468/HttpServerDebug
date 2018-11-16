@@ -13,6 +13,7 @@
 #import "GCDWebServer.h"
 #import "GCDWebServerRequest.h"
 #import "GCDWebServerDataRequest.h"
+#import "GCDWebServerMultiPartFormRequest.h"
 #import "GCDWebServerResponse.h"
 #import "GCDWebServerHTTPStatusCodes.h"
 #import "HSDRequestHandler.h"
@@ -117,7 +118,14 @@ static NSUInteger kHttpServerPortDefault = 0;
     [server addHandlerWithMatchBlock:^GCDWebServerRequest * _Nullable(NSString * _Nonnull requestMethod, NSURL * _Nonnull requestURL, NSDictionary * _Nonnull requestHeaders, NSString * _Nonnull urlPath, NSDictionary * _Nonnull urlQuery) {
         GCDWebServerRequest *request;
         if ([requestMethod isEqualToString:@"POST"]) {
-            request = [[GCDWebServerDataRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
+            NSString *action = [urlQuery objectForKey:@"action"];
+            if ([action isEqualToString:@"upload"]) {
+                request = [[GCDWebServerMultiPartFormRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
+            }
+
+            if (!request) {
+                request = [[GCDWebServerDataRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
+            }
         }
 
         if (!request) {
@@ -209,8 +217,9 @@ static NSUInteger kHttpServerPortDefault = 0;
     NSString *documentRoot = [resourcePath stringByAppendingPathComponent:@"web"];
 #ifdef DEBUG
     // develop web in simulator, use files in the project bundle directly
-//    documentRoot = @"/Users/chenjun/Desktop/workspace/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+//    documentRoot = @"/Volumes/chenjun_sdcard/workspace/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
 #endif
+    NSAssert([[NSFileManager defaultManager] fileExistsAtPath:documentRoot], @"root document not exist");
     return documentRoot;
 }
 
