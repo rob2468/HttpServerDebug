@@ -7,6 +7,7 @@
 //
 
 #import "HSDFileExplorerComponent.h"
+#import "HSDManager+Project.h"
 
 @implementation HSDFileExplorerComponent
 
@@ -52,6 +53,7 @@
     
     // file type
     fileType = fileType.length > 0 ? fileType : @"";
+
     // file size
     NSString *sizeStr;
     long size = fileSize.longValue;
@@ -70,6 +72,7 @@
     } else {
         sizeStr = [NSString stringWithFormat:@"%ldB", size];
     }
+
     // file modification date
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy/M/d H:mm"];
@@ -77,17 +80,23 @@
     if (fileModificationDate) {
         modificationTime = [dateFormatter stringFromDate:fileModificationDate];
     }
+
     // file creation date
     NSString *creationTime = @"";
     if (fileCreationDate) {
         creationTime = [dateFormatter stringFromDate:fileCreationDate];
     }
+
+    // content type
+    NSString *contentType = [HSDManager fetchContentTypeWithFilePathExtension:[filePath pathExtension]];
+
     NSDictionary *json =
     @{
-      @"file_type": fileType,
-      @"file_size": sizeStr,
-      @"modification_time": modificationTime,
-      @"creation_time": creationTime
+      @"file_type" : fileType,
+      @"file_size" : sizeStr,
+      @"modification_time" : modificationTime,
+      @"creation_time" : creationTime,
+      @"content_type" : contentType
       };
     return json;
 }

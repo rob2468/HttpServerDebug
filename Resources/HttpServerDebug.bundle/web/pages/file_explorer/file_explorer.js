@@ -165,10 +165,10 @@ function openFileOrDirectory(viewItem) {
             || fileExtension === 'sqlite'
             || fileExtension === 'sqlite3') {
             // database inspect
-            url = window.location.origin + '/pages/database_inspect/database_inspect.html?db_path=' + encodeURIComponent(filePath);
+            url = document.location.origin + '/pages/database_inspect/database_inspect.html?db_path=' + encodeURIComponent(filePath);
         } else {
-            // file preview
-            url = window.location.origin + '/api/file_preview/' + fileName + '?file_path=' + encodeURIComponent(filePath);
+            // file preview (append fileName to url, for when browser decides to download this file, it will fill with the right file name)
+            url = document.location.origin + '/api/file_preview/' + fileName + '?file_path=' + encodeURIComponent(filePath);
         }
         window.open(url);
     } else {
@@ -324,17 +324,18 @@ function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
  */
 function showPropertySidebar(item, attrs) {
     // parse data
-    var isDir = item.is_directory;
-    var fileName = item.file_name;
-    var filePath = item.file_path;
-    var fileSize = attrs.file_size;
-    var creationTime = attrs.creation_time;
-    var modificationTime = attrs.modification_time;
-    var widthStr = '200px';
+    const isDir = item.is_directory;
+    const fileName = item.file_name;
+    const filePath = item.file_path;
+    const fileSize = attrs.file_size;
+    const creationTime = attrs.creation_time;
+    const modificationTime = attrs.modification_time;
+    const contentType = attrs.content_type;
+    const widthStr = '200px';
 
-    var fileExpEle = document.querySelector('#file-explorer');
-    var propertySidebarEle = document.querySelector('#property-sidebar');
-    var contentContainerEle = propertySidebarEle.querySelector('.content-container');
+    const fileExpEle = document.querySelector('#file-explorer');
+    const propertySidebarEle = document.querySelector('#property-sidebar');
+    const contentContainerEle = propertySidebarEle.querySelector('.content-container');
 
     // expand property side bar area
     fileExpEle.style.right = widthStr;
@@ -346,8 +347,18 @@ function showPropertySidebar(item, attrs) {
     }
 
     // add elements
-    var ele = document.createElement('img');
+    // image icon
+    let ele = document.createElement('img');
     ele.setAttribute('class', 'icon');
+    let iconSRC;
+    if (contentType.startsWith('image/')) {
+        // image file
+        iconSRC = document.location.origin + '/api/file_preview?file_path=' + encodeURIComponent(filePath);
+    } else {
+        // regular file
+        iconSRC = document.location.origin + '/resources/file-icon.png';
+    }
+    ele.setAttribute('src', iconSRC);
     contentContainerEle.appendChild(ele);
 
     ele = document.createElement('p');
