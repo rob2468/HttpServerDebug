@@ -45,6 +45,9 @@ window.onload = function () {
 
     // init context menu
     initContextMenu();
+
+    // init notification component
+    initNotification();
 };
 
 var clickTimerOut;

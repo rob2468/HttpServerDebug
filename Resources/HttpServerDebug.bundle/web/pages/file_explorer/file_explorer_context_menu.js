@@ -326,6 +326,19 @@ function initContextMenu() {
                 const xhr = new XMLHttpRequest();
                 const requestURL = document.location.origin + '/api/file_explorer?action=upload';
                 xhr.open('POST', requestURL);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        const responseText = xhr.responseText;
+                        const responseJSON = JSON.parse(responseText);
+                        const errno = responseJSON.errno;
+                        if (errno === 0) {
+                            showNotification('上传成功');
+                        } else {
+                            showNotification('上传失败');
+                        }
+                        console.log(xhr.responseText);
+                    }
+                };
                 xhr.send(formData);
             }
 

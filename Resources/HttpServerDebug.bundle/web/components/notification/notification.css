@@ -1,0 +1,16 @@
+#notification-group {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    z-index: 1;
+}
+.notification {
+    float: right;
+    width: 250px;
+    height: 70px;
+    background-color: rgba(111, 111, 111, 0.8);
+    margin: 10px;
+    border-radius: 8px;
+    color: white;
+}
