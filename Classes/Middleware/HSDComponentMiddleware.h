@@ -23,13 +23,15 @@
 /**
  *  move the uploaded file, from the temporary path to the target path
  *  @param temporaryPath  the uploaded file's temporay path
- *  @param targetDirectory
- *  @param targetFileName
+ *  @param targetDirectory  the target directory
+ *  @param targetFileName  the target file name
  *  @return response info
  */
 + (HSDResponseInfo *)uploadTemporaryFile:(NSString *)temporaryPath targetDirectory:(NSString *)targetDirectory fileName:(NSString *)targetFileName;
 
 #pragma mark - Database Inspect
+
++ (NSDictionary *)fetchDatabaseAPITemplateHTMLReplacement:(NSDictionary *)params;
 
 /**
  *  request table data, database schema; execute sql

@@ -134,6 +134,22 @@
 
 #pragma mark - Database Inspect
 
++ (NSDictionary *)fetchDatabaseAPITemplateHTMLReplacement:(NSDictionary *)params {
+    NSDictionary *replacementDict;
+    NSString *dbPath = [params objectForKey:@"db_path"];
+    if (dbPath.length > 0) {
+        dbPath = [dbPath stringByRemovingPercentEncoding];
+        NSString *selectHTML = [HSDDBInspectComponent fetchTableNamesHTMLString:dbPath];
+        if (selectHTML.length > 0) {
+            replacementDict =
+            @{@"DB_FILE_PATH" : dbPath,
+              @"SELECT_HTML" : selectHTML
+              };
+        }
+    }
+    return replacementDict;
+}
+
 /**
  *  request table data, database schema; execute sql
  */
