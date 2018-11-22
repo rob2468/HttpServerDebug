@@ -2,29 +2,29 @@
 /**
  *  create one directory container instance
  *  @class DirectoryContainerModel
- *  @property {ItemViewModel[]} items sub-directories and files
- *  @property {number} selectedIdx user selected item index, 0-index (-1: default value, no item selected)
+ *  @property {ItemViewModel[]} viewItems sub-directories and files
+ *  @property {number} selectedRow user selected item index, 0-index (-1: default value, no item selected)
  *  @method getSelectedItem()
  */
 class DirectoryContainerModel {
     /**
-     * @param {ItemViewModel[]} dirData
+     * @param {ItemViewModel[]} viewItems
      * @memberof DirectoryContainerModel
      */
-    constructor(dirData) {
-        this.items = dirData;
-        this.selectedIdx = -1;
+    constructor(viewItems) {
+        this.viewItems = viewItems;
+        this.selectedRow = -1;
     }
     /**
      *  get selected item, according to items array and selected index
      */
     getSelectedItem() {
         let selectedItem;
-        const items = this.items;
-        const length = items.length;
-        const selectedIdx = this.selectedIdx;
-        if (selectedIdx >= 0 && selectedIdx < length) {
-            selectedItem = items[selectedIdx];
+        const viewItems = this.viewItems;
+        const length = viewItems.length;
+        const selectedRow = this.selectedRow;
+        if (selectedRow >= 0 && selectedRow < length) {
+            selectedItem = viewItems[selectedRow];
         }
         return selectedItem;
     }
@@ -71,7 +71,7 @@ window.onload = function () {
     initNotification();
 };
 
-var clickTimerOut;
+let clickTimerOut;
 function onItemClicked(element) {
     if (clickTimerOut) {
         clearTimeout(clickTimerOut);
@@ -92,7 +92,7 @@ function onItemClicked(element) {
         hidePropertySidebar();
 
         // remove no longer needed data and view
-        removeNoNeededDataAndViews(section, row);
+        removeNoNeededDataAndViews(section);
 
         if (!isDir) {
             // request file attributes
@@ -102,9 +102,9 @@ function onItemClicked(element) {
             attrXHR.open('GET', requestURL);
             attrXHR.onload = function () {
                 if (attrXHR.status === 200) {
-                    var responseText = attrXHR.responseText;
-                    var responseJSON = JSON.parse(responseText);
-                    var attrs = responseJSON.data;
+                    const responseText = attrXHR.responseText;
+                    const responseJSON = JSON.parse(responseText);
+                    const attrs = responseJSON.data;
 
                     showPropertySidebar(viewItem, attrs);
                 }
@@ -114,13 +114,16 @@ function onItemClicked(element) {
     }, 250);
 }
 
+/**
+ *  @param {HTMLElement} element
+ */
 function onItemDoubleClicked(element) {
     if (clickTimerOut) {
         // stop single click logic
         clearTimeout(clickTimerOut);
     }
     // parse data
-    var viewItem = parseDataOfItemElement(element);
+    const viewItem = parseDataOfItemElement(element);
     openFileOrDirectory(viewItem);
 }
 
@@ -129,8 +132,8 @@ function onItemDoubleClicked(element) {
  */
 function openRootDirectory() {
     // request root directory
-    var rootDirXHR = new XMLHttpRequest();
-    var requestURL = document.location.protocol + '//' + document.location.host
+    const rootDirXHR = new XMLHttpRequest();
+    const requestURL = document.location.protocol + '//' + document.location.host
     + '/api/file_explorer';
     rootDirXHR.open('GET', requestURL);
     rootDirXHR.onload = function () {
@@ -148,7 +151,8 @@ function openRootDirectory() {
                 }
 
                 // save data
-                globalAllData = [new DirectoryContainerModel(rootDirItems)];
+                const dirContainer = new DirectoryContainerModel(rootDirItems);
+                globalAllData = [dirContainer];
 
                 // remove all directory sections
                 var fileExpEle = document.querySelector('#file-explorer');
@@ -157,7 +161,7 @@ function openRootDirectory() {
                 }
 
                 // show root directory
-                var rootDirectoryEle = constructDirectoryHTML(rootDirItems, 0);
+                var rootDirectoryEle = constructDirectoryHTML(dirContainer, 0);
                 fileExpEle.appendChild(rootDirectoryEle);
             }
         }
@@ -183,7 +187,7 @@ function openFileOrDirectory(viewItem) {
     hidePropertySidebar();
 
     // remove no longer needed data and view
-    removeNoNeededDataAndViews(section, row);
+    removeNoNeededDataAndViews(section);
 
     if (!isDir) {
         // normal file
@@ -220,13 +224,10 @@ function openFileOrDirectory(viewItem) {
                         dirData.push(viewItem);
                     }
                 }
+                const dirContainer = new DirectoryContainerModel(dirData);
 
-                // save data
-                globalAllData.push(new DirectoryContainerModel(dirData));
-
-                // append view
-                const fileExpEle = document.querySelector('#file-explorer');
-                fileExpEle.appendChild(constructDirectoryHTML(dirData, section + 1));
+                // add data and update views
+                addDataAndViews(dirContainer, section + 1);
             }
         };
         dirXHR.send(null);
@@ -248,7 +249,7 @@ function parseDataOfItemElement(element) {
     let section = separatedArr.pop();
     section = parseInt(section, 10);
 
-    const itemList = globalAllData[section].items;
+    const itemList = globalAllData[section].viewItems;
     const viewItem = itemList[row];
     return viewItem;
 }
@@ -256,6 +257,7 @@ function parseDataOfItemElement(element) {
 /**
  *  parse for directory container
  *  @param {HTMLElement} element
+ *  @returns {ItemViewModel}
  */
 function parseDataOfContainerElement(element) {
     // parse data
@@ -276,11 +278,12 @@ function parseDataOfContainerElement(element) {
 }
 
 /**
- *  @param {ItemViewModel[]} viewItems items in the directory
+ *  @param {DirectoryContainerModel} dirContainer directory container
  *  @param {number} dirIdx directory index, 0-index
  *  @return {HTMLElement} DOM element
  */
-function constructDirectoryHTML(viewItems, dirIdx) {
+function constructDirectoryHTML(dirContainer, dirIdx) {
+    const viewItems = dirContainer.viewItems;
     const itemNum = viewItems.length;
     const dirContainerEle = document.createElement('div');
     dirContainerEle.setAttribute('class', 'directory-container');
@@ -425,10 +428,24 @@ function hidePropertySidebar() {
 }
 
 /**
- *  remove no longer needed data and view
- *  @param {number} section
+ *  @param {DirectoryContainerModel} dirContainer
+ *  @param {number} section the position that data and views are added
  */
-function removeNoNeededDataAndViews(section, row) {
+function addDataAndViews(dirContainer, section) {
+    // save data
+    globalAllData.push(dirContainer);
+
+    // append view
+    const dirContainerEle = constructDirectoryHTML(dirContainer, section);
+    const fileExpEle = document.querySelector('#file-explorer');
+    fileExpEle.appendChild(dirContainerEle);
+}
+
+/**
+ *  remove no longer needed data and view
+ *  @param {number} section data and views starting from section + 1 will be removed
+ */
+function removeNoNeededDataAndViews(section) {
     // remove no longer needed data
     globalAllData.splice(section + 1, globalAllData.length - (section + 1));
 
@@ -447,15 +464,15 @@ function removeNoNeededDataAndViews(section, row) {
  */
 function updateSelectedState(section, row) {
     const directoryContainerItem = globalAllData[section];
-    const oldSelectedIdx = directoryContainerItem.selectedIdx;
+    const oldSelectedRow = directoryContainerItem.selectedRow;
     let selectedEle;
 
     // update data
-    directoryContainerItem.selectedIdx = row;
+    directoryContainerItem.selectedRow = row;
 
     // update views
-    if (oldSelectedIdx !== -1) {
-        selectedEle = document.getElementById('directory-container-' + section + '-' + oldSelectedIdx);
+    if (oldSelectedRow !== -1) {
+        selectedEle = document.getElementById('directory-container-' + section + '-' + oldSelectedRow);
         selectedEle.classList.remove('selected');
     }
     selectedEle = document.getElementById('directory-container-' + section + '-' + row);

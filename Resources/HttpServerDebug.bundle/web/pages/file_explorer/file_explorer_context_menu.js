@@ -325,28 +325,37 @@ function initContextMenu() {
                         const responseText = xhr.responseText;
                         const responseJSON = JSON.parse(responseText);
                         const errno = responseJSON.errno;
-                        const dirDataArr = responseJSON.data;
+                        const tmpDirData = responseJSON.data;
 
-                        // refresh directory contents (if the uploaded directory is still opened)
-                        const idx = globalAllData.indexOf(viewItem);
-                        if (idx !== -1 && viewItem.selectedIdx) {
-
-                        }
-                        // const oldViewItem = viewItem;
-                        // let curViewItem;
-
-                        // const lastDir = globalAllData[globalAllData.length - 1];
-                        // const selectedItem = lastDir.getSelectedItem();
-                        // selectedItem.item
-
-                        // show notification
                         if (errno === 0) {
+                            // refresh directory contents (if the uploaded directory is still opened)
+                            if (globalAllData.length === section + 2 && globalAllData[section].getSelectedItem() === viewItem) {
+                                // hide property side bar
+                                hidePropertySidebar();
+
+                                // remove no longer needed data and view
+                                removeNoNeededDataAndViews(section);
+
+                                // serailization
+                                const dirData = new Array();
+                                if (tmpDirData.length > 0) {
+                                    for (let i = 0; i < tmpDirData.length; i++) {
+                                        const viewItem = new ItemViewModel(tmpDirData[i], section + 1, i);
+                                        dirData.push(viewItem);
+                                    }
+                                }
+                                const dirContainer = new DirectoryContainerModel(dirData);
+
+                                // add data and update views
+                                addDataAndViews(dirContainer, section + 1);
+                            }
+
+                            // show notification
                             showNotification('上传成功');
                         } else {
                             showNotification('上传失败');
                         }
-                        console.log(xhr.responseText);
-                    }
+                    } // status === 200
                 };
                 xhr.send(formData);
             }
