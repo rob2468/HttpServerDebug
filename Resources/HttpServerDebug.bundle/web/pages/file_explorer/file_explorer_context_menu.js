@@ -234,19 +234,17 @@ function initContextMenu() {
      */
     function menuItemListener(menuItem) {
         // parse data
-        var action = menuItem.getAttribute('data-action');
-        var viewItem;
+        const action = menuItem.getAttribute('data-action');
+        let viewItem;
         if (fileItemInContext) {
             viewItem = parseDataOfItemElement(fileItemInContext);
         } else {
             viewItem = parseDataOfContainerElement(directoryContainerInContext);
         }
-        var dataItem = viewItem.item;
-        var section = viewItem.section;
-
-        var isDir = dataItem.is_directory;
-        var fileName = dataItem.file_name;
-        const filePath = dataItem.file_path;
+        const section = viewItem.section;
+        const isDir = viewItem.isDirectory;
+        const fileName = viewItem.fileName;
+        const filePath = viewItem.filePath;
 
         if (action === 'open') {
             // open file or directory
@@ -299,14 +297,10 @@ function initContextMenu() {
                             openRootDirectory();
                         } else {
                             // previous directory
-                            var refreshSection = section - 1;
-                            var directoryContainer = allData[refreshSection];
-
-                            var refreshRow = directoryContainer.selectedIdx;
-                            var refreshItem = directoryContainer.getSelectedItem();
-
-                            var viewItem = new ItemViewModel(refreshItem, refreshSection, refreshRow);
-                            openFileOrDirectory(viewItem);
+                            const refreshSection = section - 1;
+                            const directoryContainer = globalAllData[refreshSection];
+                            const refreshItem = directoryContainer.getSelectedItem();
+                            openFileOrDirectory(refreshItem);
                         }
                     }
                 };
@@ -331,6 +325,21 @@ function initContextMenu() {
                         const responseText = xhr.responseText;
                         const responseJSON = JSON.parse(responseText);
                         const errno = responseJSON.errno;
+                        const dirDataArr = responseJSON.data;
+
+                        // refresh directory contents (if the uploaded directory is still opened)
+                        const idx = globalAllData.indexOf(viewItem);
+                        if (idx !== -1 && viewItem.selectedIdx) {
+
+                        }
+                        // const oldViewItem = viewItem;
+                        // let curViewItem;
+
+                        // const lastDir = globalAllData[globalAllData.length - 1];
+                        // const selectedItem = lastDir.getSelectedItem();
+                        // selectedItem.item
+
+                        // show notification
                         if (errno === 0) {
                             showNotification('上传成功');
                         } else {

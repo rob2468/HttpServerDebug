@@ -1,20 +1,28 @@
 /* Data Model constructor */
 /**
  *  create one directory container instance
+ *  @class DirectoryContainerModel
+ *  @property {ItemViewModel[]} items sub-directories and files
+ *  @property {number} selectedIdx user selected item index, 0-index (-1: default value, no item selected)
+ *  @method getSelectedItem()
  */
 class DirectoryContainerModel {
+    /**
+     * @param {ItemViewModel[]} dirData
+     * @memberof DirectoryContainerModel
+     */
     constructor(dirData) {
-        this.items = dirData; // Array, sub-directories and files
-        this.selectedIdx = -1; // user selected item index, 0-index (-1: default value, no item selected)
+        this.items = dirData;
+        this.selectedIdx = -1;
     }
     /**
      *  get selected item, according to items array and selected index
      */
     getSelectedItem() {
-        var selectedItem;
-        var items = this.items;
-        var length = items.length;
-        var selectedIdx = this.selectedIdx;
+        let selectedItem;
+        const items = this.items;
+        const length = items.length;
+        const selectedIdx = this.selectedIdx;
         if (selectedIdx >= 0 && selectedIdx < length) {
             selectedItem = items[selectedIdx];
         }
@@ -24,20 +32,33 @@ class DirectoryContainerModel {
 
 /**
  *  one file or directory view model
+ *  @property {string} fileName
+ *  @property {string} filePath
+ *  @property {boolean} isDirectory
+ *  @property {number} section
+ *  @property {number} row
  */
 class ItemViewModel {
+    /**
+     * @param {object} item
+     * @param {number} section
+     * @param {number} row
+     * @memberof ItemViewModel
+     */
     constructor(item, section, row) {
-        this.item = item; // json, one file or directory information
-        this.section = section; // int
-        this.row = row; // int
+        this.fileName = item.file_name;
+        this.filePath = item.file_path;
+        this.isDirectory = item.is_directory;
+        this.section = section;
+        this.row = row;
     }
 }
 
 /**
- *  Array, all directory containers
- *      DirectoryContainerModel instance
+ *  all directory containers
+ * @type {DirectoryContainerModel[]}
  */
-var allData;
+var globalAllData;
 
 window.onload = function () {
     // request root directory
@@ -57,13 +78,12 @@ function onItemClicked(element) {
     }
     clickTimerOut = setTimeout(function () {
         // parse data
-        var viewItem = parseDataOfItemElement(element)
-        var item = viewItem.item;
-        var section = viewItem.section;
-        var row = viewItem.row;
-        var isDir = item.is_directory;
-        var fileName = item.file_name;
-        var filePath = item.file_path;
+        const viewItem = parseDataOfItemElement(element)
+        const section = viewItem.section;
+        const row = viewItem.row;
+        const isDir = viewItem.isDirectory;
+        const fileName = viewItem.fileName;
+        const filePath = viewItem.filePath;
 
         // update selected states
         updateSelectedState(section, row);
@@ -86,7 +106,7 @@ function onItemClicked(element) {
                     var responseJSON = JSON.parse(responseText);
                     var attrs = responseJSON.data;
 
-                    showPropertySidebar(item, attrs);
+                    showPropertySidebar(viewItem, attrs);
                 }
             };
             attrXHR.send(null);
@@ -115,13 +135,20 @@ function openRootDirectory() {
     rootDirXHR.open('GET', requestURL);
     rootDirXHR.onload = function () {
         if (rootDirXHR.status === 200) {
-            var responseText = rootDirXHR.responseText;
-            var responseJSON = JSON.parse(responseText);
-            var rootDirData = responseJSON.data;
+            const responseText = rootDirXHR.responseText;
+            const responseJSON = JSON.parse(responseText);
+            const rootDirData = responseJSON.data;
 
             if (rootDirData.length > 0) {
+                // serialization
+                const rootDirItems = new Array();
+                for (let i = 0; i < rootDirData.length; i++) {
+                    const item = new ItemViewModel(rootDirData[i], 0, i);
+                    rootDirItems.push(item);
+                }
+
                 // save data
-                allData = [new DirectoryContainerModel(rootDirData)];
+                globalAllData = [new DirectoryContainerModel(rootDirItems)];
 
                 // remove all directory sections
                 var fileExpEle = document.querySelector('#file-explorer');
@@ -130,7 +157,7 @@ function openRootDirectory() {
                 }
 
                 // show root directory
-                var rootDirectoryEle = constructDirectoryHTML(rootDirData, 0);
+                var rootDirectoryEle = constructDirectoryHTML(rootDirItems, 0);
                 fileExpEle.appendChild(rootDirectoryEle);
             }
         }
@@ -140,15 +167,14 @@ function openRootDirectory() {
 
 /**
  *  open file or directory
- *  @param viewItem  ItemViewModel instance
+ *  @param {ItemViewModel} viewItem  ItemViewModel instance
  */
 function openFileOrDirectory(viewItem) {
-    var item = viewItem.item;
-    var section = viewItem.section;
-    var row = viewItem.row;
-    var isDir = item.is_directory;
-    var fileName = item.file_name;
-    var filePath = item.file_path;
+    const isDir = viewItem.isDirectory;
+    const fileName = viewItem.fileName;
+    const filePath = viewItem.filePath;
+    const section = viewItem.section;
+    const row = viewItem.row;
 
     // update selected states
     updateSelectedState(section, row);
@@ -161,8 +187,8 @@ function openFileOrDirectory(viewItem) {
 
     if (!isDir) {
         // normal file
-        var fileExtension = fileName.split('.').pop();
-        var url;
+        const fileExtension = fileName.split('.').pop();
+        let url;
         if (fileExtension === 'db'
             || fileExtension === 'rdb'
             || fileExtension === 'sqlite'
@@ -176,25 +202,31 @@ function openFileOrDirectory(viewItem) {
         window.open(url);
     } else {
         // directory
-        var dirXHR = new XMLHttpRequest();
-        var requestURL = document.location.protocol + '//' + document.location.host
+        const dirXHR = new XMLHttpRequest();
+        const requestURL = document.location.protocol + '//' + document.location.host
         + '/api/file_explorer?file_path=' + encodeURIComponent(filePath);
         dirXHR.open('GET', requestURL);
         dirXHR.onload = function () {
             if (dirXHR.status === 200) {
-                var responseText = dirXHR.responseText;
-                var responseJSON = JSON.parse(responseText);
-                var tmpDirData = responseJSON.data;
+                const responseText = dirXHR.responseText;
+                const responseJSON = JSON.parse(responseText);
+                const tmpDirData = responseJSON.data;
 
-                if (tmpDirData.length === 0) {
-                    tmpDirData = [];
+                // serailization
+                const dirData = new Array();
+                if (tmpDirData.length > 0) {
+                    for (let i = 0; i < tmpDirData.length; i++) {
+                        const viewItem = new ItemViewModel(tmpDirData[i], section + 1, i);
+                        dirData.push(viewItem);
+                    }
                 }
+
                 // save data
-                allData.push(new DirectoryContainerModel(tmpDirData));
+                globalAllData.push(new DirectoryContainerModel(dirData));
 
                 // append view
-                var fileExpEle = document.querySelector('#file-explorer');
-                fileExpEle.appendChild(constructDirectoryHTML(tmpDirData, section + 1));
+                const fileExpEle = document.querySelector('#file-explorer');
+                fileExpEle.appendChild(constructDirectoryHTML(dirData, section + 1));
             }
         };
         dirXHR.send(null);
@@ -203,72 +235,67 @@ function openFileOrDirectory(viewItem) {
 
 /**
  *  parse for file item
- *  @param element  HTMLElement
+ *  @param {HTMLElement} element
+ *  @returns {ItemViewModel}
  */
 function parseDataOfItemElement(element) {
     // parse data
-    var eleID = element.id;
-    var separatedArr = eleID.split('-');
-    var row = separatedArr.pop();
+    const eleID = element.id;
+    const separatedArr = eleID.split('-');
+    let row = separatedArr.pop();
     row = parseInt(row, 10);
 
-    var section = separatedArr.pop();
+    let section = separatedArr.pop();
     section = parseInt(section, 10);
 
-    var itemList = allData[section].items;
-    var item = itemList[row];
-    var viewItem = new ItemViewModel(item, section, row);
+    const itemList = globalAllData[section].items;
+    const viewItem = itemList[row];
     return viewItem;
 }
 
 /**
  *  parse for directory container
- *  @param element  HTMLElement
+ *  @param {HTMLElement} element
  */
 function parseDataOfContainerElement(element) {
     // parse data
-    var eleID = element.id;
-    var separatedArr = eleID.split('-');
-    var section = separatedArr.pop();
+    const eleID = element.id;
+    const separatedArr = eleID.split('-');
+    let section = separatedArr.pop();
     section = parseInt(section, 10);
 
-    var viewItem = null;
+    let viewItem = null;
     if (section > 0) {
         // not the root directory
         section--;
 
-        var containerItem = allData[section];
-        var item = containerItem.getSelectedItem();
-        var row = containerItem.selectedIdx;
-        viewItem = new ItemViewModel(item, section, row);
+        const containerItem = globalAllData[section];
+        viewItem = containerItem.getSelectedItem();
     }
     return viewItem;
 }
 
 /**
- *  @param dirData  Array, items in the directory
- *  @param dirIdx  directory index, 0-index
- *  @return DOM element
+ *  @param {ItemViewModel[]} viewItems items in the directory
+ *  @param {number} dirIdx directory index, 0-index
+ *  @return {HTMLElement} DOM element
  */
-function constructDirectoryHTML(dirData, dirIdx) {
-    var itemNum = dirData.length;
-    var item;       // an item in the directory
-    var dirContainerEle = document.createElement('div');
+function constructDirectoryHTML(viewItems, dirIdx) {
+    const itemNum = viewItems.length;
+    const dirContainerEle = document.createElement('div');
     dirContainerEle.setAttribute('class', 'directory-container');
     dirContainerEle.setAttribute('id', 'directory-container-' + dirIdx);
 
     // file list view
-    var fileListEle = document.createElement('ul');
-    for (var i = 0; i < itemNum; i++) {
-        item = dirData[i];
-        if (item) {
-            fileListEle.appendChild(constructDirectoryItemHTML(item, dirIdx, i));
-        }
+    const fileListEle = document.createElement('ul');
+    for (let i = 0; i < itemNum; i++) {
+        const viewItem = viewItems[i];
+        fileListEle.appendChild(constructDirectoryItemHTML(viewItem, dirIdx, i));
     }
     dirContainerEle.appendChild(fileListEle);
 
     // split handler view
-    var splitHandlerEle = document.createElement('div');
+    const splitHandlerEle = document.createElement('div');
     splitHandlerEle.setAttribute('class', 'split-handler');
     splitHandlerEle.addEventListener('mousedown', function (event) {
         initResizeDrag(event);
@@ -279,18 +306,18 @@ function constructDirectoryHTML(dirData, dirIdx) {
 }
 
 /**
- *  @param item  Dictionary, an item in the directory
- *  @param dirIdx  directory index, 0-index
- *  @param fileIdx  file index, 0-index
- *  @return DOM element
+ *  @param {ItemViewModel} viewItem  an item in the directory
+ *  @param {number} dirIdx directory index, 0-index
+ *  @param {number} fileIdx  file index, 0-index
+ *  @return {HTMLElement} DOM element
  */
-function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
+function constructDirectoryItemHTML(viewItem, dirIdx, fileIdx) {
     // origin data
-    var isDir = item.is_directory;
-    var fileName = item.file_name;
+    var isDir = viewItem.isDirectory;
+    var fileName = viewItem.fileName;
 
     // li element
-    var liEle = document.createElement('li');
+    const liEle = document.createElement('li');
     liEle.setAttribute('class', 'file-item');
     liEle.setAttribute('id', 'directory-container-' + dirIdx + '-' + fileIdx);
     liEle.title = fileName;
@@ -302,8 +329,8 @@ function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
     };
 
     // img element
-    var imgEle = document.createElement('img');
-    var imgClass;
+    const imgEle = document.createElement('img');
+    let imgClass;
     // is directory
     if (isDir) {
         imgClass = 'icon directory-icon';
@@ -314,7 +341,7 @@ function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
     liEle.appendChild(imgEle);
 
     // file name element
-    var fileNameEle = document.createElement('span');
+    const fileNameEle = document.createElement('span');
     fileNameEle.innerHTML = fileName;
     liEle.appendChild(fileNameEle);
 
@@ -322,14 +349,13 @@ function constructDirectoryItemHTML(item, dirIdx, fileIdx) {
 }
 
 /**
- *  @param item  file data
- *  @param attrs  file attributes
+ *  @param {ItemViewModel} viewItem file data
+ *  @param {object} attrs file attributes
  */
-function showPropertySidebar(item, attrs) {
+function showPropertySidebar(viewItem, attrs) {
     // parse data
-    const isDir = item.is_directory;
-    const fileName = item.file_name;
-    const filePath = item.file_path;
+    const fileName = viewItem.fileName;
+    const filePath = viewItem.filePath;
     const fileSize = attrs.file_size;
     const creationTime = attrs.creation_time;
     const modificationTime = attrs.modification_time;
@@ -390,8 +416,8 @@ function showPropertySidebar(item, attrs) {
  *  hide property side bar
  */
 function hidePropertySidebar() {
-    var fileExpEle = document.getElementById('file-explorer');
-    var propertySidebarEle = document.getElementById('property-sidebar');
+    const fileExpEle = document.getElementById('file-explorer');
+    const propertySidebarEle = document.getElementById('property-sidebar');
 
     fileExpEle.style.right = '0';
     propertySidebarEle.classList.remove('active');
@@ -400,10 +426,11 @@ function hidePropertySidebar() {
 
 /**
  *  remove no longer needed data and view
+ *  @param {number} section
  */
 function removeNoNeededDataAndViews(section, row) {
     // remove no longer needed data
-    allData.splice(section + 1, allData.length - (section + 1));
+    globalAllData.splice(section + 1, globalAllData.length - (section + 1));
 
     // remove no longer needed views
     var fileExpEle = document.getElementById('file-explorer');
@@ -415,16 +442,17 @@ function removeNoNeededDataAndViews(section, row) {
 
 /**
  *  update item selected states
- *  @param section  selected section
- *  @param row  selected row
+ *  @param {number} section  selected section
+ *  @param {number} row  selected row
  */
 function updateSelectedState(section, row) {
-    var directoryContainerItem = allData[section];
-    var oldSelectedIdx = directoryContainerItem.selectedIdx;
-    var selectedEle;
+    const directoryContainerItem = globalAllData[section];
+    const oldSelectedIdx = directoryContainerItem.selectedIdx;
+    let selectedEle;
 
     // update data
     directoryContainerItem.selectedIdx = row;
+
     // update views
     if (oldSelectedIdx !== -1) {
         selectedEle = document.getElementById('directory-container-' + section + '-' + oldSelectedIdx);

@@ -115,17 +115,23 @@
     }
 
     NSInteger errNum;
+    NSArray *filesDataList;
     if (isSuccess) {
         errNum = 0;
+
+        // get the updated directory content
+        filesDataList = [HSDFileExplorerComponent constructFilesDataListInDirectory:targetDirectory];
     } else {
         errNum = -1;
+        filesDataList = [[NSArray alloc] init];
     }
 
     NSDictionary *responseDict =
     @{
       @"errno" : @(errNum),
-      @"data" : @""
+      @"data" : filesDataList
       };
+
     HSDResponseInfo *responseInfo = [[HSDResponseInfo alloc] init];
     responseInfo.data = [NSJSONSerialization dataWithJSONObject:responseDict options:0 error:nil];
     responseInfo.contentType = @"text/plain;charset=utf-8";
