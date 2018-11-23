@@ -1,9 +1,6 @@
 function initContextMenu() {
-    /* custom context menu */
-
     /**
-     * Function to check if we clicked inside an element with a particular class
-     * name.
+     * Function to check if we clicked inside an element with a particular class name.
      *
      * @param {Object} e The event
      * @param {String} className The class name to check against
@@ -53,14 +50,14 @@ function initContextMenu() {
     }
 
     // Constants
-    var contextMenuItemClassName = 'context-menu-item';
-    var contextMenuActive = 'context-menu-active';
-    var fileItemClassName = 'file-item';
-    var directoryContainerClassName = 'directory-container';
+    const contextMenuItemClassName = 'context-menu-item';
+    const contextMenuActive = 'context-menu-active';
+    const fileItemClassName = 'file-item';
+    const directoryContainerClassName = 'directory-container';
 
     // Variables
-    var fileItemInContext;
-    var directoryContainerInContext;
+    let fileItemInContext;
+    let directoryContainerInContext;
 
     var clickCoords;
     var clickCoordsX;
@@ -70,9 +67,6 @@ function initContextMenu() {
     var menuState = 0;  // 0: menu hidden; 1: menu shown
     var menuWidth;
     var menuHeight;
-    var menuPosition;
-    var menuPositionX;
-    var menuPositionY;
 
     var windowWidth;
     var windowHeight;
@@ -165,22 +159,30 @@ function initContextMenu() {
      * Turns the custom context menu on.
      */
     function toggleMenuOn() {
-        var activeClassName = 'context-menu-item-active';
-        var openEle = document.querySelector('.context-menu-item[data-action="open"]');
-        var downloadEle = document.querySelector('.context-menu-item[data-action="download"]');
-        var deleteEle = document.querySelector('.context-menu-item[data-action="delete"]');
-        var uploadEle = document.querySelector('.context-menu-item[data-action="upload"]');
+        const activeClassName = 'context-menu-item-active';
+        const openEle = document.querySelector('.context-menu-item[data-action="open"]');
+        const downloadEle = document.querySelector('.context-menu-item[data-action="download"]');
+        const deleteEle = document.querySelector('.context-menu-item[data-action="delete"]');
+        const renameEle = document.querySelector('.context-menu-item[data-action="rename"]');
+        const createDirEle = document.querySelector('.context-menu-item[data-action="create-directory"]');
+        const uploadEle = document.querySelector('.context-menu-item[data-action="upload"]');
 
         // config menu items
         if (fileItemInContext) {
             openEle.classList.add(activeClassName);
             downloadEle.classList.add(activeClassName);
             deleteEle.classList.add(activeClassName);
+            // renameEle.classList.add(activeClassName);
+            renameEle.classList.remove(activeClassName);
+            createDirEle.classList.remove(activeClassName);
             uploadEle.classList.remove(activeClassName);
         } else {
             openEle.classList.remove(activeClassName);
             downloadEle.classList.remove(activeClassName);
             deleteEle.classList.remove(activeClassName);
+            renameEle.classList.remove(activeClassName);
+            // createDirEle.classList.add(activeClassName);
+            createDirEle.classList.remove(activeClassName);
             uploadEle.classList.add(activeClassName);
         }
 
@@ -306,6 +308,10 @@ function initContextMenu() {
                 };
                 deleteXHR.send(null);
             }
+        } else if (action === 'rename') {
+
+
+            console.log('rename');
         } else if (action === 'upload') {
             // create element
             const fileEle = document.createElement('input');
@@ -365,6 +371,15 @@ function initContextMenu() {
             fileEle.dispatchEvent(event);
         }
         toggleMenuOff();
+    }
+
+    /**
+     *
+     *
+     * @param {ItemViewModel} viewItem
+     */
+    function rename(viewItem) {
+
     }
 
     /**

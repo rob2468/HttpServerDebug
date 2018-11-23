@@ -1,7 +1,19 @@
 /**
- *  show notification
- *  @param msg  displaying message
- *  @param duration  dismiss after the duration time, millisecond unit
+ *
+ * @class Notification
+ * @property {HTMLElement} view
+ */
+class Notification {
+    constructor() {
+        this.view = null;
+    }
+}
+
+/**
+ * show notification
+ * @param {string} msg displaying message
+ * @param {number} duration Millisecond unit. Dismiss after the duration time. set 0, never dismiss
+ * @returns {Notification}
  */
 function showNotification(msg, duration) {
     // notification div
@@ -22,22 +34,91 @@ function showNotification(msg, duration) {
     const groupEle = document.querySelector('#notification-group');
     groupEle.appendChild(notificationEle);
 
+    // create one instance
+    const notification = new Notification();
+    notification.view = notificationEle;
+
+    updateNotificationGroup();
+
     // dismiss action
-    if (!duration) {
+    if (typeof(duration) === 'undefined') {
+        // default value
         duration = 3000;
     }
-    setTimeout(() => {
-        notificationEle.remove();
-    }, duration);
+
+    if (duration > 0) {
+        // auto dismiss
+        setTimeout(() => {
+            dismissNotification(notification);
+        }, duration);
+    }
+    return notification;
+}
+
+/**
+ *
+ * @param {Notification} notification
+ */
+function dismissNotification(notification) {
+    if (notification && notification.view) {
+        // update notification
+        notification.view.remove();
+
+        // update notification group
+        updateNotificationGroup();
+    }
+}
+
+/**
+ *
+ */
+function updateNotificationGroup() {
+    const groupEle = document.querySelector('#notification-group');
+    const maxHeight = window.innerHeight;
+
+    // fixed or dynamic height
+    let heightVal;
+    if (groupEle.scrollHeight > maxHeight) {
+        heightVal = maxHeight + 'px';
+    } else {
+        heightVal = 'auto';
+    }
+
+    groupEle.style.height = heightVal;
 }
 
 function initNotification() {
+    // add notification group div
     const groupEle = document.createElement('div');
     groupEle.setAttribute('id', 'notification-group');
     document.body.appendChild(groupEle);
 
+    window.addEventListener('resize', function () {
+        updateNotificationGroup();
+    });
 
     // debug
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败', 0);
+    // showNotification('上传失败');
+    // showNotification('上传失败');
+    // showNotification('上传失败');
+    // showNotification('上传失败');
+    // showNotification('上传失败');
+    // showNotification('上传失败');
+    // showNotification('上传失败');
+    // showNotification('上传失败');
     // showNotification('上传失败');
     // setTimeout(() => {
     //     showNotification('上传成功');
