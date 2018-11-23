@@ -42,7 +42,6 @@
 + (HSDResponseInfo *)fetchFileExplorerAPIResponseInfo:(NSDictionary *)params {
     // parse data
     NSString *filePath = [params objectForKey:@"file_path"];
-    filePath = [filePath stringByRemovingPercentEncoding];
     NSString *action = [params objectForKey:@"action"];
 
     NSInteger errorNum = 0;
