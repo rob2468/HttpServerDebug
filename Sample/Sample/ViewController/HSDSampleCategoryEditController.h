@@ -7,14 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-@class CJCategoryDataModel;
+
+@class HSDSampleCategoryDataModel;
 @protocol HSDSampleCategoryEditControllerDelegate;
 
 @interface HSDSampleCategoryEditController : UIViewController
 
 @property (weak, nonatomic) id<HSDSampleCategoryEditControllerDelegate> delegate;
 
-- (instancetype)initWithCategory:(CJCategoryDataModel *)category;
+- (instancetype)initWithCategory:(HSDSampleCategoryDataModel *)category;
 
 @end
 

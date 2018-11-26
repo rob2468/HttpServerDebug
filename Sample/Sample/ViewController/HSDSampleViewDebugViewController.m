@@ -91,6 +91,7 @@
 @implementation HSDSampleVDCase1Controller
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"View Debug Case 1";
 
@@ -116,6 +117,7 @@
 @implementation HSDSampleVDCase2Controller
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"View Debug Case 2";
 

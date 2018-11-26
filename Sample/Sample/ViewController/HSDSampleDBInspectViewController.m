@@ -154,7 +154,7 @@ static NSString * const kCollectionViewCellReuseIdentifier = @"kCollectionViewCe
     [self showCategoryEditVC:nil];
 }
 
-- (void)showCategoryEditVC:(CJCategoryDataModel *)category {
+- (void)showCategoryEditVC:(HSDSampleCategoryDataModel *)category {
     HSDSampleCategoryEditController *addController = [[HSDSampleCategoryEditController alloc] initWithCategory:category];
     addController.delegate = self;
     HSDSampleRootController *rootController = [HSDSampleRootController fetchRootVC];
