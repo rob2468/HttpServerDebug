@@ -14,7 +14,6 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
 @interface HSDConsoleLogComponent ()
 
 @property (nonatomic, assign) int stdErrFd;                       // saved origin stderr
-@property (nonatomic, strong) NSThread *readStdErrThread;               // thread for read stderr
 @property (nonatomic, strong) NSMutableArray<NSString *> *consoleLogs;  // "products"
 
 @end
@@ -64,7 +63,7 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
     }
 
     // read
-    [[notification object] performSelector:@selector(readInBackgroundAndNotify) onThread:self.readStdErrThread withObject:nil waitUntilDone:YES];
+    [[notification object] performSelectorOnMainThread:@selector(readInBackgroundAndNotifyForModes:) withObject:@[NSRunLoopCommonModes] waitUntilDone:NO modes:@[NSRunLoopCommonModes]];
 }
 
 #pragma mark - state
@@ -92,22 +91,11 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
     NSFileHandle *readingHandle = [stdErrPipe fileHandleForReading];
     dup2(writingHandleFd, STDERR_FILENO);
 
-    // create a new thread with an active run loop
-    self.readStdErrThread = [[NSThread alloc] initWithTarget:self selector:@selector(readStdErrThreadEntryPoint:) object:nil];
-    [self.readStdErrThread start];
-
     // add notification observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(redirectReadCompletionNotificationReceived:) name:NSFileHandleReadCompletionNotification object:readingHandle];
 
     // read
-    [readingHandle performSelector:@selector(readInBackgroundAndNotify) onThread:self.readStdErrThread withObject:nil waitUntilDone:YES];
-}
-
-- (void)readStdErrThreadEntryPoint:(id)obj {
-    [[NSThread currentThread] setName:@"hsd_read_stderr"];
-    NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-    [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-    [runLoop run];
+    [readingHandle performSelectorOnMainThread:@selector(readInBackgroundAndNotifyForModes:) withObject:@[NSRunLoopCommonModes] waitUntilDone:NO modes:@[NSRunLoopCommonModes]];
 }
 
 -(void)recoverStandardErrorOutput {
@@ -117,9 +105,6 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
 
     // remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleReadCompletionNotification object:nil];
-
-    // release thread
-    self.readStdErrThread = nil;
 
     // reset STDERR_FILENO
     if (self.stdErrFd != kStdErrIllegalFd) {
