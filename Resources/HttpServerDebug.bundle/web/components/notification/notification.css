@@ -15,4 +15,18 @@
     margin: 10px 10px 0 10px;
     border-radius: 8px;
     color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.notification * {
+    margin: 0;
+}
+.notification .content {
+    width: 90%;
+}
+.notification p {
+    line-height: 20px;
+    /* height: 40px; */
+    overflow: hidden;
 }

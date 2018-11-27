@@ -25,14 +25,22 @@ function showNotification(msg, duration) {
     contentEle.setAttribute('class', 'content');
     notificationEle.appendChild(contentEle);
 
-    // p div
+    // p
     const pEle = document.createElement('p');
     pEle.innerHTML = msg;
+    pEle.style.visibility = 'hidden';
     contentEle.append(pEle);
 
     // show
     const groupEle = document.querySelector('#notification-group');
     groupEle.appendChild(notificationEle);
+
+    // limit the text displaying length
+    while (pEle.clientHeight > 40) {
+        msg = msg.slice(0, msg.length - 1);
+        pEle.innerHTML = msg + '...';
+    }
+    pEle.style.visibility = '';
 
     // create one instance
     const notification = new Notification();
@@ -99,7 +107,7 @@ function initNotification() {
 
     // debug
     // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
+    // showNotification('上传失败上传失败上传失败上传失败上传失败上传失败上传失败上传失败上传失败上传失败', 0);
     // showNotification('上传失败', 0);
     // showNotification('上传失败', 0);
     // showNotification('上传失败', 0);
