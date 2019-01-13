@@ -307,9 +307,8 @@
         NSData *data;
         if ([filePath isEqualToString:@"standardUserDefaults"]) {
             NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
-            NSString *str = [dict description];
-            data = [str dataUsingEncoding:NSUTF8StringEncoding];
-
+            NSError *error;
+            data = [NSJSONSerialization dataWithJSONObject:dict options:(NSJSONWritingPrettyPrinted) error:&error];
             responseInfo.data = data;
             responseInfo.contentType = @"text/plain;charset=utf-8";
         } else {
