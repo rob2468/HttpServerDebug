@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HttpServerDebug</title>
+<link rel="stylesheet" href="css/default.css" />
+<link rel="stylesheet" href="index.css" />
+<script src="index.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="home">HttpServerDebug</div>
+      <div class="languages" onmouseover="showLanguageList()" onmouseout="hideLanguageList()">
+        <div class="language-comp">
+          <span>Lang: </span><span class="language">简体中文</span>
+        </div>
+        <ul class="">
+          <li>简体中文</li>
+          <li>English</li>
+        </ul>
+      </div>
+    </div>
+  </header>
+  <div class="main">
+    <span class="item">
+      <a href="pages/file_explorer/file_explorer.html" target="_blank">文件浏览</a>
+    </span>
+    <span class="item">
+      <a href="pages/database_inspect/database_inspect.html?db_path=%DB_FILE_PATH%" target="_blank">数据库</a>
+    </span>
+    <span class="item">
+      <a href="api/file_preview?file_path=standardUserDefaults" target="_blank">NSUserDefaults standardUserDefaults</a>
+    </span>
+    <span class="item">
+      <a href="pages/view_debug/view_debug.html" target="_blank">视图调试</a>
+    </span>
+    <span class="item">
+      <a href="pages/send_info/send_info.html" target="_blank">发送信息</a>
+    </span>
+    <span class="item">
+      <a href="pages/console_log/console_log.html" target="_blank">控制台日志</a>
+    </span>
+  </div>
+</body>
+</html>

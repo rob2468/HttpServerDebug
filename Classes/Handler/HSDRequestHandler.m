@@ -151,7 +151,7 @@
         response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
     } else if (firstPath.length == 0) {
         // index.html
-        NSString *documentPath = [documentRoot stringByAppendingPathComponent:@"pages/index/index.html"];
+        NSString *documentPath = [documentRoot stringByAppendingPathComponent:@"index.html"];
         NSString *dbPath = [HSDManager fetchDefaultInspectDBFilePath];
         dbPath = dbPath.length > 0 ? dbPath : @"";
         NSDictionary *replacementDict = @{@"DB_FILE_PATH" : dbPath};

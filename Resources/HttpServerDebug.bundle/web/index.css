@@ -1,0 +1,77 @@
+header {
+  height: 54px;
+  line-height: 54px;
+  color: #fff;
+  background-color: #24292e;
+}
+header .container {
+  margin: 0 14% 0 25%;
+}
+header .home {
+  display: inline-block;
+  font-size: 16px;
+}
+header .languages {
+  position: relative;
+  float: right;
+}
+header .languages .language-comp {
+  cursor: pointer;
+}
+header .languages ul {
+  display: none;
+  position: absolute;
+  top: 54px;
+  width: 100px;
+  color: #fff;
+  background-color: #000;
+  list-style-type: none;
+  text-align: center;
+}
+header .languages ul.active {
+  display: block;
+}
+header .languages li {
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+}
+header .languages li:hover {
+  color: #000;
+  background-color: rgb(129, 129, 129);
+}
+div.main {
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.main .item {
+  display: inline-flex;
+  width: 130px;
+  height: 130px;
+  border-radius: 4px;
+  margin: 5px 5px;
+  background-color: #000;
+  justify-content: center;
+  align-items: center;
+}
+.item a {
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  word-wrap: break-word;
+}
+a.item:hover {
+  background-color: #333;
+}
+@media screen and (min-width: 768px) {
+  div.main {
+    width: 610px;
+  }
+}
