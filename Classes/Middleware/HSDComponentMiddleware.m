@@ -431,6 +431,18 @@
     [consoleLogComponent recoverStandardErrorOutput];
 }
 
++ (NSString *)localizedString:(NSString *)local forKey:(NSString *)key {
+    NSString *retVal;
+
+    // localized file
+    NSString *pathComponent = [NSString stringWithFormat:@"locals/%@.json", local];
+    NSString *localizedFilePath = [[HSDManager fetchDocumentRoot] stringByAppendingPathComponent:pathComponent];
+    NSData *data = [NSData dataWithContentsOfFile:localizedFilePath];
+    NSDictionary *localized = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    retVal = [localized objectForKey:key];
+    return retVal;
+}
+
 #pragma mark - Getter
 
 - (HSDConsoleLogComponent *)consoleLogComponent {

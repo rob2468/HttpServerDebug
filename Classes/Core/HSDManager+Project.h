@@ -28,7 +28,7 @@
 + (NSString *)fetchWebUploadDirectoryPath;
 
 /**
- *
+ * get web root path
  */
 + (NSString *)fetchDocumentRoot;
 

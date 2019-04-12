@@ -1,16 +1,18 @@
-const Language = {
+const Languages = {
+  zhcn: {
+    languageName: '简体中文',
+    fileName: 'zh-cn.js',
+  },
   enus: {
-    key: 'enus',
+    languageName: 'English',
     fileName: 'en-us.js',
   },
-  zhcn: {
-    key: 'zhcn',
-    fileName: 'zh-cn.js',
-  }
 }
 
 window.onload = function () {
-  const lang = localStorage.key('lang');
+  // let languageType = getCookie('languageType');
+  // languageType = languageType || 'zhcn';
+  // const languageName = Languages[languageType].languageName;
 
 };
 
@@ -22,8 +24,22 @@ function showLanguageList() {
   ulEle.setAttribute('class', 'active');
 }
 
+/**
+ * hide languages list
+ */
 function hideLanguageList() {
   const ulEle = document.querySelector('header .languages ul');
   ulEle.setAttribute('class', '');
+}
 
+/**
+ * switch language
+ * @param {HTMLElement} element html element
+ */
+function selectLanguage(element) {
+  const languageType = element.getAttribute('data-language-type');
+  setCookie('languageType', languageType);
+
+  // refresh page
+  location.reload(true);
 }

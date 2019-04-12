@@ -28,6 +28,8 @@
 
     NSString *path = request.path;
     NSDictionary *query = request.query;
+    NSString *cookie = [request.headers objectForKey:@"Cookie"];
+    NSString *languageType = [HSDRequestHandler getCookie:cookie forName:@"languageType"];
 
     // parse paths
     NSString *p = [path copy];
@@ -151,11 +153,34 @@
         response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
     } else if (firstPath.length == 0) {
         // index.html
+        // read html file
         NSString *documentPath = [documentRoot stringByAppendingPathComponent:@"index.html"];
-        NSString *dbPath = [HSDManager fetchDefaultInspectDBFilePath];
-        dbPath = dbPath.length > 0 ? dbPath : @"";
-        NSDictionary *replacementDict = @{@"DB_FILE_PATH" : dbPath};
-        response = [[GCDWebServerDataResponse alloc] initWithHTMLTemplate:documentPath variables:replacementDict];
+        NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
+
+        // replace localized string
+        do {
+            // detect with regular expression
+            NSString *pattern = [NSString stringWithFormat:@"%@(.)+%@", kHSDTemplateSeparator, kHSDTemplateSeparator];
+            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
+            NSRange range = [regex rangeOfFirstMatchInString:htmlStr options:0 range:NSMakeRange(0, [htmlStr length])];
+
+            if (range.location == NSNotFound) {
+                break;
+            } else {
+                // found
+                NSString *prefixStr = [htmlStr substringToIndex:range.location];
+                NSString *suffix = [htmlStr substringFromIndex:range.location + range.length];
+
+                range.location += [kHSDTemplateSeparator length];
+                range.length -= [kHSDTemplateSeparator length] * 2;
+                NSString *localizedStrKey = [htmlStr substringWithRange:range];
+                NSString *localizedStr = [HSDComponentMiddleware localizedString:languageType forKey:localizedStrKey];
+
+                htmlStr = [NSString stringWithFormat:@"%@%@%@", prefixStr, localizedStr, suffix];
+            }
+        } while (1);
+
+        response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
     } else {
         NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
         response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
@@ -165,6 +190,27 @@
         response = [[GCDWebServerResponse alloc] initWithStatusCode:kGCDWebServerHTTPStatusCode_BadRequest];
     }
     return response;
+}
+
+/**
+ * get cookie
+ * @param cname key
+ */
++ (NSString *)getCookie:(NSString *)cookie forName:(NSString *)cname {
+    NSString *retVal;
+    NSString *name = [cname stringByAppendingString:@"="];
+    NSArray *ca = [cookie componentsSeparatedByString:@";"];
+    for (NSInteger i = 0; i < [ca count]; i++) {
+        NSString *c = [ca objectAtIndex:i];
+        while ([[c substringToIndex:1] isEqualToString:@" "]) {
+            c = [c substringFromIndex:1];
+        }
+        if ([c hasPrefix:name]) {
+            retVal = [c substringFromIndex:[name length]];
+            break;
+        }
+    }
+    return retVal;
 }
 
 @end

@@ -67,4 +67,9 @@
  */
 + (void)consoleLogRecoverStandardErrorOutput;
 
+/**
+ * get localized string
+ */
++ (NSString *)localizedString:(NSString *)local forKey:(NSString *)key;
+
 @end
