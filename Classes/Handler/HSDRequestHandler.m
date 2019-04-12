@@ -47,31 +47,40 @@
     }
     NSString *firstPath;
     NSString *secondPath;
+    NSString *thirdPath;
     if ([pathComps count] > 0) {
         firstPath = [pathComps objectAtIndex:0];
     }
     if ([pathComps count] > 1) {
         secondPath = [pathComps objectAtIndex:1];
     }
+    if ([pathComps count] > 2) {
+        thirdPath = [pathComps objectAtIndex:2];
+    }
 
     // route
     if ([firstPath isEqualToString:@"pages"]) {
         // html pages
         if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
-            // file_explorer.html
+            // file_explorer
             NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
             response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
         } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
-            // database file path
-            NSDictionary *replacementDict = [HSDComponentMiddleware fetchDatabaseAPITemplateHTMLReplacement:query];
-            if ([replacementDict count] > 0) {
-                // valid replacement values for html template
-                NSString *htmlPath = [documentRoot stringByAppendingPathComponent:[NSString stringWithFormat:@"/pages/%@/%@.html", kHSDComponentDBInspect, kHSDComponentDBInspect]];
-                response = [[GCDWebServerDataResponse alloc] initWithHTMLTemplate:htmlPath variables:replacementDict];
+            // database_inspect
+            if ([thirdPath isEqualToString:[kHSDComponentDBInspect stringByAppendingString:@".html"]]) {
+                NSDictionary *replacementDict = [HSDComponentMiddleware fetchDatabaseAPITemplateHTMLReplacement:query];
+                if ([replacementDict count] > 0) {
+                    // valid replacement values for html template
+                    NSString *htmlPath = [documentRoot stringByAppendingPathComponent:[NSString stringWithFormat:@"/pages/%@/%@.html", kHSDComponentDBInspect, kHSDComponentDBInspect]];
+                    response = [[GCDWebServerDataResponse alloc] initWithHTMLTemplate:htmlPath variables:replacementDict];
+                } else {
+                    // show prompt message
+                    NSString *htmlText = @"<p>没有连接到可用的数据库，可通过如下方法解决。</p><p>方法一：在<a href='/pages/file_explorer/file_explorer.html'>文件浏览</a>中找到目标数据库文件，打开。</p><p>方法二：使用+[HSDManager updateDefaultInspectDBFilePath:]方法设置默认数据库文件路径，然后在首页可直接点击打开。</p>";
+                    response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlText];
+                }
             } else {
-                // show prompt message
-                NSString *htmlText = @"<p>没有连接到可用的数据库，可通过如下方法解决。</p><p>方法一：在<a href='/pages/file_explorer/file_explorer.html'>文件浏览</a>中找到目标数据库文件，打开。</p><p>方法二：使用+[HSDManager updateDefaultInspectDBFilePath:]方法设置默认数据库文件路径，然后在首页可直接点击打开。</p>";
-                response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlText];
+                NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
+                response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
             }
         } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {
             // view_debug.html
