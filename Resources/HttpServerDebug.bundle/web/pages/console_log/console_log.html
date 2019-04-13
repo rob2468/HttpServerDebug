@@ -2,17 +2,18 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>控制台日志</title>
+<title>%%LocalizedConsoleLogTitle%%</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="console_log.css">
+<script src="../../util.js"></script>
 <script src="console_log.js"></script>
 </head>
 <body>
 <div id="state-header">
-    <button type="button" id="toggle-connect" onclick="toggleConnection()">连接</button>
-    <button type="button" id="refresh-state" onclick="requestConnectionState()">刷新连接状态</button>
-    <p>状态：<span id="connection-state">未连接</span></p>
-    <hr>
+  <button type="button" id="toggle-connect" onclick="toggleConnection()">%%LocalizedConsoleLogButtonTitleConnect%%</button>
+  <button type="button" id="refresh-state" onclick="requestConnectionState()">%%LocalizedConsoleLogButtonTitleRefresh%%</button>
+  <p>%%LocalizedConsoleLogStateName%%<span id="connection-state">%%LocalizedConsoleLogStateDisconnected%%</span></p>
+  <hr>
 </div>
 <div id="log-messages"></div>
 </body>

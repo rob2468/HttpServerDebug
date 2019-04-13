@@ -8,6 +8,7 @@
   "LocalizedFileExplorerTitle": "File Explore",
   "LocalizedDatabaseInspectTitle": "Database Inspect",
   "LocalizedSendInfoTitle": "Send Information",
+  "LocalizedConsoleLogTitle": "Console Log",
   "LocalizedContextMenuOpen": "Open",
   "LocalizedContextMenuDownload": "Download",
   "LocalizedContextMenuDelete": "Delete",
@@ -27,5 +28,11 @@
   "LocalizedDBInspectErrorPromptEmptyStatement": "empty sql statement",
   "LocalizedDBInspectDBDisconnectedPromptHtml": "<p>There is no database connected. This can be solved by the following method.</p><p>Search the objective database file in <a href='/pages/file_explorer/file_explorer.html'>file explore</a>, and open it.</p>",
   "LocalizedSendInfoTextareaPlaceholder": "input and send contents to app",
-  "LocalizedSendInfoSendButtonTitle": "Send"
+  "LocalizedSendInfoSendButtonTitle": "Send",
+  "LocalizedConsoleLogButtonTitleConnect": "Connect",
+  "LocalizedConsoleLogButtonTitleDisconnect": "Disconnect",
+  "LocalizedConsoleLogButtonTitleRefresh": "Refresh connection state",
+  "LocalizedConsoleLogStateName": "State: ",
+  "LocalizedConsoleLogStateDisconnected": "Disconnected",
+  "LocalizedConsoleLogStateConnected": "Connected"
 }

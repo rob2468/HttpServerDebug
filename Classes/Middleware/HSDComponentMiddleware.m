@@ -448,7 +448,7 @@
 
     do {
         // detect with regular expression
-        NSString *pattern = [NSString stringWithFormat:@"%@(.)+%@", kHSDMarkLocalizationString, kHSDMarkLocalizationString];
+        NSString *pattern = [NSString stringWithFormat:@"%@.+?%@", kHSDMarkLocalizationString, kHSDMarkLocalizationString];
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
         NSRange range = [regex rangeOfFirstMatchInString:text options:0 range:NSMakeRange(0, [text length])];
 

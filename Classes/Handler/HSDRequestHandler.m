@@ -116,9 +116,16 @@
                 response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
             }
         } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
-            // console_log.html
+            // console_log
             NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-            response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+            if ([thirdPath isEqualToString:[kHSDComponentConsoleLog stringByAppendingString:@".html"]]) {
+                // console_log.html
+                NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
+                htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
+                response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
+            } else {
+                response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+            }
         }
     } else if ([firstPath isEqualToString:@"api"]) {
         // api requests
