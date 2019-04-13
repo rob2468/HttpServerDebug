@@ -4,5 +4,15 @@
   "LocalizedDatabaseInspectEntryName": "数据库",
   "LocalizedViewDebugEntryName": "视图调试",
   "LocalizedSendInfoEntryName": "发送信息",
-  "LocalizedConsoleLogEntryName": "控制台日志"
+  "LocalizedConsoleLogEntryName": "控制台日志",
+  "LocalizedFileExplorerTitle": "文件浏览",
+  "LocalizedContextMenuOpen": "打开",
+  "LocalizedContextMenuDownload": "下载",
+  "LocalizedContextMenuDelete": "删除",
+  "LocalizedContextMenuRename": "重新命名",
+  "LocalizedContextMenuUpload": "上传",
+  "LocalizedContextMenuCreateDirectory": "新建文件夹",
+  "LocalizedFileAttributeCreateTime": "创建时间",
+  "LocalizedFileAttributeModificationTime": "修改时间",
+  "LocalizedFileAttributeFilePath": "文件路径"
 }

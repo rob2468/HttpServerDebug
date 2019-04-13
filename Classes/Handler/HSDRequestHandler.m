@@ -30,6 +30,10 @@
     NSDictionary *query = request.query;
     NSString *cookie = [request.headers objectForKey:@"Cookie"];
     NSString *languageType = [HSDRequestHandler getCookie:cookie forName:@"languageType"];
+    if (languageType.length == 0) {
+        // default value
+        languageType = @"zhcn";
+    }
 
     // parse paths
     NSString *p = [path copy];
@@ -64,7 +68,14 @@
         if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
             // file_explorer
             NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-            response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+            if ([thirdPath isEqualToString:[kHSDComponentFileExplorer stringByAppendingString:@".html"]]) {
+                // file_explorer.html
+                NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
+                htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];  // localization
+                response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
+            } else {
+                response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+            }
         } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
             // database_inspect
             if ([thirdPath isEqualToString:[kHSDComponentDBInspect stringByAppendingString:@".html"]]) {
@@ -150,6 +161,16 @@
             // console_log api
             HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchConsoleLogResponseInfo:query];
             response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+        } else if ([secondPath isEqualToString:@"localization"]) {
+            // localization api
+            NSDictionary *json = [HSDComponentMiddleware localizationJSON:languageType];
+            json = json ? json : @{};
+            NSDictionary *dict =
+              @{ @"success": @YES,
+                 @"result": json,
+                 };
+            NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
+            response = [[GCDWebServerDataResponse alloc] initWithData:data contentType:@"text/plain;charset=utf-8"];
         }
     } else if ([firstPath isEqualToString:@"favicon.ico"]) {
         // favicon
@@ -167,28 +188,7 @@
         NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
 
         // replace localized string
-        do {
-            // detect with regular expression
-            NSString *pattern = [NSString stringWithFormat:@"%@(.)+%@", kHSDTemplateSeparator, kHSDTemplateSeparator];
-            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
-            NSRange range = [regex rangeOfFirstMatchInString:htmlStr options:0 range:NSMakeRange(0, [htmlStr length])];
-
-            if (range.location == NSNotFound) {
-                break;
-            } else {
-                // found
-                NSString *prefixStr = [htmlStr substringToIndex:range.location];
-                NSString *suffix = [htmlStr substringFromIndex:range.location + range.length];
-
-                range.location += [kHSDTemplateSeparator length];
-                range.length -= [kHSDTemplateSeparator length] * 2;
-                NSString *localizedStrKey = [htmlStr substringWithRange:range];
-                NSString *localizedStr = [HSDComponentMiddleware localizedString:languageType forKey:localizedStrKey];
-
-                htmlStr = [NSString stringWithFormat:@"%@%@%@", prefixStr, localizedStr, suffix];
-            }
-        } while (1);
-
+        htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
         response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
     } else {
         NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];

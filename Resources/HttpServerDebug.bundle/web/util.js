@@ -1,4 +1,13 @@
 /**
+ * parse language type
+ */
+function getLanguageType() {
+  let languageType = getCookie('languageType');
+  languageType = languageType || 'zhcn';
+  return languageType;
+}
+
+/**
  * set cookie
  * @param {string} cname key
  * @param {string} cvalue value

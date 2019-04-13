@@ -67,9 +67,16 @@
  */
 + (void)consoleLogRecoverStandardErrorOutput;
 
+#pragma mark - localization
+
 /**
- * get localized string
+ * localize text, content needs to be localized is marked in style: %%LocalizedLanguageName%%
  */
-+ (NSString *)localizedString:(NSString *)local forKey:(NSString *)key;
++ (NSString *)localize:(NSString *)local text:(NSString *)text;
+
+/**
+ * get localized json
+ */
++ (NSDictionary *)localizationJSON:(NSString *)local;
 
 @end

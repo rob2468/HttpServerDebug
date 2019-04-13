@@ -431,16 +431,42 @@
     [consoleLogComponent recoverStandardErrorOutput];
 }
 
-+ (NSString *)localizedString:(NSString *)local forKey:(NSString *)key {
-    NSString *retVal;
+#pragma mark - localization
 
-    // localized file
++ (NSString *)localize:(NSString *)local text:(NSString *)text {
+    // get localization json data
+    NSDictionary *localized = [HSDComponentMiddleware localizationJSON:local];
+
+    do {
+        // detect with regular expression
+        NSString *pattern = [NSString stringWithFormat:@"%@(.)+%@", kHSDTemplateSeparator, kHSDTemplateSeparator];
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
+        NSRange range = [regex rangeOfFirstMatchInString:text options:0 range:NSMakeRange(0, [text length])];
+
+        if (range.location == NSNotFound) {
+            break;
+        } else {
+            // found
+            NSString *prefixStr = [text substringToIndex:range.location];
+            NSString *suffix = [text substringFromIndex:range.location + range.length];
+
+            range.location += [kHSDTemplateSeparator length];
+            range.length -= [kHSDTemplateSeparator length] * 2;
+            NSString *localizedStrKey = [text substringWithRange:range];
+            NSString *localizedStr = [localized objectForKey:localizedStrKey];
+
+            text = [NSString stringWithFormat:@"%@%@%@", prefixStr, localizedStr, suffix];
+        }
+    } while (1);
+    return text;
+}
+
++ (NSDictionary *)localizationJSON:(NSString *)local {
     NSString *pathComponent = [NSString stringWithFormat:@"locals/%@.json", local];
     NSString *localizedFilePath = [[HSDManager fetchDocumentRoot] stringByAppendingPathComponent:pathComponent];
     NSData *data = [NSData dataWithContentsOfFile:localizedFilePath];
     NSDictionary *localized = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    retVal = [localized objectForKey:key];
-    return retVal;
+    return localized;
 }
 
 #pragma mark - Getter

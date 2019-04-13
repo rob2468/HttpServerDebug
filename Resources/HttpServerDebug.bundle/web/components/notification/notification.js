@@ -4,9 +4,9 @@
  * @property {HTMLElement} view
  */
 class Notification {
-    constructor() {
-        this.view = null;
-    }
+  constructor() {
+      this.view = null;
+  }
 }
 
 /**
@@ -16,51 +16,51 @@ class Notification {
  * @returns {Notification}
  */
 function showNotification(msg, duration) {
-    // notification div
-    const notificationEle = document.createElement('div');
-    notificationEle.setAttribute('class', 'notification');
+  // notification div
+  const notificationEle = document.createElement('div');
+  notificationEle.setAttribute('class', 'notification');
 
-    // content div
-    const contentEle = document.createElement('div');
-    contentEle.setAttribute('class', 'content');
-    notificationEle.appendChild(contentEle);
+  // content div
+  const contentEle = document.createElement('div');
+  contentEle.setAttribute('class', 'content');
+  notificationEle.appendChild(contentEle);
 
-    // p
-    const pEle = document.createElement('p');
-    pEle.innerHTML = msg;
-    pEle.style.visibility = 'hidden';
-    contentEle.append(pEle);
+  // p
+  const pEle = document.createElement('p');
+  pEle.innerHTML = msg;
+  pEle.style.visibility = 'hidden';
+  contentEle.append(pEle);
 
-    // show
-    const groupEle = document.querySelector('#notification-group');
-    groupEle.appendChild(notificationEle);
+  // show
+  const groupEle = document.querySelector('#notification-group');
+  groupEle.appendChild(notificationEle);
 
-    // limit the text displaying length
-    while (pEle.clientHeight > 40) {
-        msg = msg.slice(0, msg.length - 1);
-        pEle.innerHTML = msg + '...';
-    }
-    pEle.style.visibility = '';
+  // limit the text displaying length
+  while (pEle.clientHeight > 40) {
+      msg = msg.slice(0, msg.length - 1);
+      pEle.innerHTML = msg + '...';
+  }
+  pEle.style.visibility = '';
 
-    // create one instance
-    const notification = new Notification();
-    notification.view = notificationEle;
+  // create one instance
+  const notification = new Notification();
+  notification.view = notificationEle;
 
-    updateNotificationGroup();
+  updateNotificationGroup();
 
-    // dismiss action
-    if (typeof(duration) === 'undefined') {
-        // default value
-        duration = 3000;
-    }
+  // dismiss action
+  if (typeof(duration) === 'undefined') {
+      // default value
+      duration = 3000;
+  }
 
-    if (duration > 0) {
-        // auto dismiss
-        setTimeout(() => {
-            dismissNotification(notification);
-        }, duration);
-    }
-    return notification;
+  if (duration > 0) {
+      // auto dismiss
+      setTimeout(() => {
+          dismissNotification(notification);
+      }, duration);
+  }
+  return notification;
 }
 
 /**
@@ -68,67 +68,67 @@ function showNotification(msg, duration) {
  * @param {Notification} notification
  */
 function dismissNotification(notification) {
-    if (notification && notification.view) {
-        // update notification
-        notification.view.remove();
+  if (notification && notification.view) {
+      // update notification
+      notification.view.remove();
 
-        // update notification group
-        updateNotificationGroup();
-    }
+      // update notification group
+      updateNotificationGroup();
+  }
 }
 
 /**
  *
  */
 function updateNotificationGroup() {
-    const groupEle = document.querySelector('#notification-group');
-    const maxHeight = window.innerHeight;
+  const groupEle = document.querySelector('#notification-group');
+  const maxHeight = window.innerHeight;
 
-    // fixed or dynamic height
-    let heightVal;
-    if (groupEle.scrollHeight > maxHeight) {
-        heightVal = maxHeight + 'px';
-    } else {
-        heightVal = 'auto';
-    }
+  // fixed or dynamic height
+  let heightVal;
+  if (groupEle.scrollHeight > maxHeight) {
+      heightVal = maxHeight + 'px';
+  } else {
+      heightVal = 'auto';
+  }
 
-    groupEle.style.height = heightVal;
+  groupEle.style.height = heightVal;
 }
 
 function initNotification() {
-    // add notification group div
-    const groupEle = document.createElement('div');
-    groupEle.setAttribute('id', 'notification-group');
-    document.body.appendChild(groupEle);
+  // add notification group div
+  const groupEle = document.createElement('div');
+  groupEle.setAttribute('id', 'notification-group');
+  document.body.appendChild(groupEle);
 
-    window.addEventListener('resize', function () {
-        updateNotificationGroup();
-    });
+  window.addEventListener('resize', function () {
+      updateNotificationGroup();
+  });
 
-    // debug
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败上传失败上传失败上传失败上传失败上传失败上传失败上传失败上传失败上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败', 0);
-    // showNotification('上传失败');
-    // showNotification('上传失败');
-    // showNotification('上传失败');
-    // showNotification('上传失败');
-    // showNotification('上传失败');
-    // showNotification('上传失败');
-    // showNotification('上传失败');
-    // showNotification('上传失败');
-    // showNotification('上传失败');
-    // setTimeout(() => {
-    //     showNotification('上传成功');
-    // }, 1000);
+  // debug
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败上传失败上传失败上传失败上传失败上传失败上传失败上传失败上传失败上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败', 0);
+  // showNotification('上传失败');
+  // showNotification('上传失败');
+  // showNotification('上传失败');
+  // showNotification('上传失败');
+  // showNotification('上传失败');
+  // showNotification('上传失败');
+  // showNotification('上传失败');
+  // showNotification('上传失败');
+  // showNotification('上传失败');
+  // setTimeout(() => {
+  //     showNotification('上传成功');
+  // }, 1000);
 }

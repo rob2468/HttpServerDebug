@@ -4,5 +4,15 @@
   "LocalizedDatabaseInspectEntryName": "Database Inspect",
   "LocalizedViewDebugEntryName": "View Debug",
   "LocalizedSendInfoEntryName": "Send Information",
-  "LocalizedConsoleLogEntryName": "Console Log"
+  "LocalizedConsoleLogEntryName": "Console Log",
+  "LocalizedFileExplorerTitle": "File Explore",
+  "LocalizedContextMenuOpen": "Open",
+  "LocalizedContextMenuDownload": "Download",
+  "LocalizedContextMenuDelete": "Delete",
+  "LocalizedContextMenuRename": "Rename",
+  "LocalizedContextMenuUpload": "Upload",
+  "LocalizedContextMenuCreateDirectory": "New Directory",
+  "LocalizedFileAttributeCreateTime": "Create Time",
+  "LocalizedFileAttributeModificationTime": "Modified Time",
+  "LocalizedFileAttributeFilePath": "Path"
 }
