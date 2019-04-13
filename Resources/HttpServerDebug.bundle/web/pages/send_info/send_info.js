@@ -2,8 +2,7 @@ function submitForm() {
     var infoStr = document.getElementById('info_textarea').value.trim();
 
     var infoXHR = new XMLHttpRequest();
-    var requestURL = document.location.protocol + '//' + document.location.host
-    + '/api/send_info';
+    var requestURL = `${document.location.protocol}//${document.location.host}/api/send_info`;
     infoXHR.open('POST', requestURL);
     infoXHR.onload = function () {
         if (infoXHR.status === 200) {

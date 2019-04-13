@@ -269,21 +269,21 @@
 
 + (HSDResponseInfo *)fetchSendInfoAPIResponseInfo:(NSString *)infoStr {
     NSDictionary *result =  [HSDSendInfoComponent fetchResultWithInfo:infoStr];
-    NSInteger errorNum;
+    BOOL success;
     if (result) {
         // success
-        errorNum = 0;
+        success = YES;
     } else {
         // fail
-        errorNum = -1;
+        success = NO;
         result = [[NSDictionary alloc] init];
     }
 
     // construct response data
     NSDictionary *responseDict =
     @{
-      @"data" : result,
-      @"errno" : @(errorNum)
+      @"success": @(success),
+      @"result" : result,
       };
 
     // serialization

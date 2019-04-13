@@ -7,6 +7,7 @@
   "LocalizedConsoleLogEntryName": "控制台日志",
   "LocalizedFileExplorerTitle": "文件浏览",
   "LocalizedDatabaseInspectTitle": "数据库",
+  "LocalizedSendInfoTitle": "发送信息",
   "LocalizedContextMenuOpen": "打开",
   "LocalizedContextMenuDownload": "下载",
   "LocalizedContextMenuDelete": "删除",
@@ -24,5 +25,7 @@
   "LocalizedDBInspectExecute": "执行",
   "LocalizedDBInspectInputSQLStatement": "输入 SQL 语句",
   "LocalizedDBInspectErrorPromptEmptyStatement": "SQL 语句为空",
-  "LocalizedDBInspectDBDisconnectedPromptHtml": "<p>没有连接到可用的数据库，可通过如下方法解决。</p><p>在<a href='/pages/file_explorer/file_explorer.html'>文件浏览</a>中找到目标数据库文件，打开。</p>"
+  "LocalizedDBInspectDBDisconnectedPromptHtml": "<p>没有连接到可用的数据库，可通过如下方法解决。</p><p>在<a href='/pages/file_explorer/file_explorer.html'>文件浏览</a>中找到目标数据库文件，打开。</p>",
+  "LocalizedSendInfoTextareaPlaceholder": "输入发送至 app 的信息",
+  "LocalizedSendInfoSendButtonTitle": "发送"
 }

@@ -105,9 +105,16 @@
             NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
             response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
         } else if ([secondPath isEqualToString:kHSDComponentSendInfo]) {
-            // send_info.html
+            // send_info
             NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-            response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+            if ([thirdPath isEqualToString:[kHSDComponentSendInfo stringByAppendingString:@".html"]]) {
+                // send_info.html
+                NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
+                htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
+                response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
+            } else {
+                response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+            }
         } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
             // console_log.html
             NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
