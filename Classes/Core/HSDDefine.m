@@ -15,7 +15,8 @@ NSString *const kHSDComponentFilePreview = @"file_preview";
 NSString *const kHSDComponentViewDebug = @"view_debug";
 NSString *const kHSDComponentConsoleLog = @"console_log";
 
-NSString *const kHSDTemplateSeparator = @"%%";
+NSString *const kHSDMarkFormatString = @"@@";
+NSString *const kHSDMarkLocalizationString = @"%%";
 
 NSString *const kHSDUserDefaultsKeyAutoStart = @"hsd_userdefaultskey_is_started_automatically";
 NSString *const kHSDUserDefaultsKeyServerPort = @"hsd_userdefaultskey_server_port";

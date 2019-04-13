@@ -431,6 +431,15 @@
     [consoleLogComponent recoverStandardErrorOutput];
 }
 
++ (NSString *)formatTemplateString:(NSString *)str variables:(NSDictionary *)variables {
+    NSMutableString *mStr = [str mutableCopy];
+    [variables enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        NSString *template = [NSString stringWithFormat:@"%@%@%@", kHSDMarkFormatString, key, kHSDMarkFormatString];
+        [mStr replaceOccurrencesOfString:template withString:value options:0 range:NSMakeRange(0, mStr.length)];
+    }];
+    return mStr;
+}
+
 #pragma mark - localization
 
 + (NSString *)localize:(NSString *)local text:(NSString *)text {
@@ -439,7 +448,7 @@
 
     do {
         // detect with regular expression
-        NSString *pattern = [NSString stringWithFormat:@"%@(.)+%@", kHSDTemplateSeparator, kHSDTemplateSeparator];
+        NSString *pattern = [NSString stringWithFormat:@"%@(.)+%@", kHSDMarkLocalizationString, kHSDMarkLocalizationString];
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
         NSRange range = [regex rangeOfFirstMatchInString:text options:0 range:NSMakeRange(0, [text length])];
 
@@ -450,8 +459,8 @@
             NSString *prefixStr = [text substringToIndex:range.location];
             NSString *suffix = [text substringFromIndex:range.location + range.length];
 
-            range.location += [kHSDTemplateSeparator length];
-            range.length -= [kHSDTemplateSeparator length] * 2;
+            range.location += [kHSDMarkLocalizationString length];
+            range.length -= [kHSDMarkLocalizationString length] * 2;
             NSString *localizedStrKey = [text substringWithRange:range];
             NSString *localizedStr = [localized objectForKey:localizedStrKey];
 

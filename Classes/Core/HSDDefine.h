@@ -16,7 +16,8 @@ extern NSString *const kHSDComponentFilePreview;
 extern NSString *const kHSDComponentViewDebug;
 extern NSString *const kHSDComponentConsoleLog;
 
-extern NSString *const kHSDTemplateSeparator;
+extern NSString *const kHSDMarkFormatString;            // mark format strings
+extern NSString *const kHSDMarkLocalizationString;      // mark localization strings
 
 extern NSString *const kHSDUserDefaultsKeyAutoStart;    // should hsd start automatically
 extern NSString *const kHSDUserDefaultsKeyServerPort;   // server port

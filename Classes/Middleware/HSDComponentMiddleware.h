@@ -67,6 +67,13 @@
  */
 + (void)consoleLogRecoverStandardErrorOutput;
 
+#pragma mark -
+
+/**
+ *
+ */
++ (NSString *)formatTemplateString:(NSString *)str variables:(NSDictionary *)variables;
+
 #pragma mark - localization
 
 /**

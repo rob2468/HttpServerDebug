@@ -6,6 +6,7 @@
   "LocalizedSendInfoEntryName": "发送信息",
   "LocalizedConsoleLogEntryName": "控制台日志",
   "LocalizedFileExplorerTitle": "文件浏览",
+  "LocalizedDatabaseInspectTitle": "数据库",
   "LocalizedContextMenuOpen": "打开",
   "LocalizedContextMenuDownload": "下载",
   "LocalizedContextMenuDelete": "删除",
@@ -14,5 +15,14 @@
   "LocalizedContextMenuCreateDirectory": "新建文件夹",
   "LocalizedFileAttributeCreateTime": "创建时间",
   "LocalizedFileAttributeModificationTime": "修改时间",
-  "LocalizedFileAttributeFilePath": "文件路径"
+  "LocalizedFileAttributeFilePath": "文件路径",
+  "LocalizedDBInspectDatabaseFilePath": "数据库文件路径：",
+  "LocalizedDBInspectBrowseData": "浏览数据",
+  "LocalizedDBInspectExecuteSQL": "执行 SQL",
+  "LocalizedDBInspectDatabaseSchema": "数据库结构",
+  "LocalizedDBInspectRefresh": "刷新",
+  "LocalizedDBInspectExecute": "执行",
+  "LocalizedDBInspectInputSQLStatement": "输入 SQL 语句",
+  "LocalizedDBInspectErrorPromptEmptyStatement": "SQL 语句为空",
+  "LocalizedDBInspectDBDisconnectedPromptHtml": "<p>没有连接到可用的数据库，可通过如下方法解决。</p><p>在<a href='/pages/file_explorer/file_explorer.html'>文件浏览</a>中找到目标数据库文件，打开。</p>"
 }

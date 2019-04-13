@@ -76,7 +76,9 @@ window.onload = function () {
   initNotification();
 
   // localization
-  initLocalizationInfo();
+  requestLocalizationInfo(param => {
+    localStrings = param;
+  });
 };
 
 let clickTimerOut;  // used to distinguish between single click and double click
@@ -488,21 +490,4 @@ function updateSelectedState(section, row) {
   }
   selectedEle = document.getElementById('directory-container-' + section + '-' + row);
   selectedEle.classList.add('selected');
-}
-
-/**
- * request and init the localization json data
- */
-function initLocalizationInfo() {
-  const xhr = new XMLHttpRequest();
-  const requestURL = `${document.location.protocol}//${document.location.host}/api/localization`;
-  xhr.open('GET', requestURL);
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      const responseText = xhr.responseText;
-      const responseJSON = JSON.parse(responseText);
-      localStrings = responseJSON.result; // save in global data
-    }
-  };
-  xhr.send(null);
 }

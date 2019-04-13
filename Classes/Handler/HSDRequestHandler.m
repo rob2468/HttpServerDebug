@@ -78,19 +78,26 @@
             }
         } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
             // database_inspect
+            NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
             if ([thirdPath isEqualToString:[kHSDComponentDBInspect stringByAppendingString:@".html"]]) {
+                // database_inspect.html
                 NSDictionary *replacementDict = [HSDComponentMiddleware fetchDatabaseAPITemplateHTMLReplacement:query];
                 if ([replacementDict count] > 0) {
                     // valid replacement values for html template
-                    NSString *htmlPath = [documentRoot stringByAppendingPathComponent:[NSString stringWithFormat:@"/pages/%@/%@.html", kHSDComponentDBInspect, kHSDComponentDBInspect]];
-                    response = [[GCDWebServerDataResponse alloc] initWithHTMLTemplate:htmlPath variables:replacementDict];
+                    // replace template string
+                    NSString *htmlStr = [[NSString alloc] initWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
+                    htmlStr = [HSDComponentMiddleware formatTemplateString:htmlStr variables:replacementDict];
+
+                    // localization
+                    htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
+                    response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
                 } else {
                     // show prompt message
-                    NSString *htmlText = @"<p>没有连接到可用的数据库，可通过如下方法解决。</p><p>方法一：在<a href='/pages/file_explorer/file_explorer.html'>文件浏览</a>中找到目标数据库文件，打开。</p><p>方法二：使用+[HSDManager updateDefaultInspectDBFilePath:]方法设置默认数据库文件路径，然后在首页可直接点击打开。</p>";
+                    NSDictionary *localStrings = [HSDComponentMiddleware localizationJSON:languageType];
+                    NSString *htmlText = [localStrings objectForKey:@"LocalizedDBInspectDBDisconnectedPromptHtml"];
                     response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlText];
                 }
             } else {
-                NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
                 response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
             }
         } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {

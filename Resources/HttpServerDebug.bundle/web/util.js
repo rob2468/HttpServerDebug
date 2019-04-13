@@ -1,4 +1,23 @@
 /**
+ * request and init the localization json data
+ * @param {function} cb callback
+ */
+function requestLocalizationInfo(cb) {
+  const xhr = new XMLHttpRequest();
+  const requestURL = `${document.location.protocol}//${document.location.host}/api/localization`;
+  xhr.open('GET', requestURL);
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      const responseText = xhr.responseText;
+      const responseJSON = JSON.parse(responseText);
+      const localStrings = responseJSON.result;
+      cb && cb(localStrings);
+    }
+  };
+  xhr.send(null);
+}
+
+/**
  * parse language type
  */
 function getLanguageType() {

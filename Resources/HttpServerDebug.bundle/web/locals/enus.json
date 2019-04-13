@@ -6,6 +6,7 @@
   "LocalizedSendInfoEntryName": "Send Information",
   "LocalizedConsoleLogEntryName": "Console Log",
   "LocalizedFileExplorerTitle": "File Explore",
+  "LocalizedDatabaseInspectTitle": "Database Inspect",
   "LocalizedContextMenuOpen": "Open",
   "LocalizedContextMenuDownload": "Download",
   "LocalizedContextMenuDelete": "Delete",
@@ -14,5 +15,14 @@
   "LocalizedContextMenuCreateDirectory": "New Directory",
   "LocalizedFileAttributeCreateTime": "Create Time",
   "LocalizedFileAttributeModificationTime": "Modified Time",
-  "LocalizedFileAttributeFilePath": "Path"
+  "LocalizedFileAttributeFilePath": "Path",
+  "LocalizedDBInspectDatabaseFilePath": "Database file path: ",
+  "LocalizedDBInspectBrowseData": "Browse Data",
+  "LocalizedDBInspectExecuteSQL": "Execute SQL",
+  "LocalizedDBInspectDatabaseSchema": "Schema",
+  "LocalizedDBInspectRefresh": "Refresh",
+  "LocalizedDBInspectExecute": "Execute",
+  "LocalizedDBInspectInputSQLStatement": "SQL statement",
+  "LocalizedDBInspectErrorPromptEmptyStatement": "empty sql statement",
+  "LocalizedDBInspectDBDisconnectedPromptHtml": "<p>There is no database connected. This can be solved by the following method.</p><p>Search the objective database file in <a href='/pages/file_explorer/file_explorer.html'>file explore</a>, and open it.</p>"
 }

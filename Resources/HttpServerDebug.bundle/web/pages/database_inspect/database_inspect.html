@@ -1,56 +1,57 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>数据库</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="database_inspect.css">
-    <script src="database_inspect.js"></script>
+  <meta charset="utf-8">
+  <title>%%LocalizedDatabaseInspectTitle%%</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="database_inspect.css">
+  <script src="../../util.js"></script>
+  <script src="database_inspect.js"></script>
 </head>
 <body>
-    <!-- db file path -->
-    <div><p>数据库文件路径：<span id="db-path">%DB_FILE_PATH%</span></p></div>
-    <!-- navigation -->
-    <div class="nav-bar">
-        <ul>
-            <li class="nav-item active" id="browse-data" onclick="onNavBarItemClick(this.id)">浏览数据</li>
-            <li class="nav-item" id="execute-sql" onclick="onNavBarItemClick(this.id)">执行SQL</li>
-            <li class="nav-item" id="db-structure" onclick="onNavBarItemClick(this.id)">数据库结构</li>
-        </ul>
+  <!-- db file path -->
+  <div><p>%%LocalizedDBInspectDatabaseFilePath%%<span id="db-path">@@DB_FILE_PATH@@</span></p></div>
+  <!-- navigation -->
+  <div class="nav-bar">
+    <ul>
+      <li class="nav-item active" id="browse-data" onclick="onNavBarItemClick(this.id)">%%LocalizedDBInspectBrowseData%%</li>
+      <li class="nav-item" id="execute-sql" onclick="onNavBarItemClick(this.id)">%%LocalizedDBInspectExecuteSQL%%</li>
+      <li class="nav-item" id="db-structure" onclick="onNavBarItemClick(this.id)">%%LocalizedDBInspectDatabaseSchema%%</li>
+    </ul>
+  </div>
+  <!-- browse data -->
+  <div class="tab-pane active" id="browse-data-tab">
+    <div class="ctrl-head">
+    <select id="table-name-select" onchange="onDatabaseTableReload()">@@SELECT_HTML@@</select>
+    <button type="button" id="browse-data-reload-button" class="reload reload-normal" onclick="onDatabaseTableReload()">
+      <img src="../../resources/loading-bubbles.svg" alt="loading"><span>%%LocalizedDBInspectRefresh%%</span>
+    </button>
     </div>
-    <!-- browse data -->
-    <div class="tab-pane active" id="browse-data-tab">
-        <div class="ctrl-head">
-        <select id="table-name-select" onchange="onDatabaseTableReload()">%SELECT_HTML%</select>
-        <button type="button" id="browse-data-reload-button" class="reload reload-normal" onclick="onDatabaseTableReload()">
-            <img src="../../resources/loading-bubbles.svg" alt="loading"><span>刷新</span>
-        </button>
-        </div>
-        <div class="table" id="browse-data-table">
-            <!-- generate by ajax -->
-        </div>
+    <div class="table" id="browse-data-table">
+        <!-- generate by ajax -->
     </div>
-    <!-- execute SQL -->
-    <div class="tab-pane" id="execute-sql-tab">
-        <div class="ctrl-head">
-        <button type="button" id="execute-sql-reload-button" class="reload reload-normal" onclick="onDatabaseExecuteSQL()">
-        <img src="../../resources/loading-bubbles.svg" alt="loading"><span>执行</span>
-        </button>
-        </div>
-        <div class="execute-sql-result">
-            <div>
-                <textarea name="content" class="input" id="sql-textarea" placeholder="输入SQL语句"></textarea>
-            </div>
-            <div id="execute-sql-result-msg"></div>
-            <div class="table" id="execute-sql-table">
-                <!-- generate by ajax -->
-            </div>
-        </div>
+  </div>
+  <!-- execute SQL -->
+  <div class="tab-pane" id="execute-sql-tab">
+    <div class="ctrl-head">
+    <button type="button" id="execute-sql-reload-button" class="reload reload-normal" onclick="onDatabaseExecuteSQL()">
+    <img src="../../resources/loading-bubbles.svg" alt="loading"><span>%%LocalizedDBInspectExecute%%</span>
+    </button>
     </div>
-    <!-- db structure -->
-    <div class="tab-pane" id="db-structure-tab">
-        <div id="database-schema">
-        </div>
+    <div class="execute-sql-result">
+      <div>
+        <textarea name="content" class="input" id="sql-textarea" placeholder="%%LocalizedDBInspectInputSQLStatement%%"></textarea>
+      </div>
+      <div id="execute-sql-result-msg"></div>
+      <div class="table" id="execute-sql-table">
+        <!-- generate by ajax -->
+      </div>
     </div>
+  </div>
+  <!-- db structure -->
+  <div class="tab-pane" id="db-structure-tab">
+    <div id="database-schema">
+    </div>
+  </div>
 </body>
 </html>
