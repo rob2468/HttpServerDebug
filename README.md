@@ -15,9 +15,9 @@ Requirements:
 
 ## Demo screenshot
 
-<img src="https://user-images.githubusercontent.com/1450652/44396867-ca139000-a570-11e8-9a5c-80da964159ba.gif" alt="index" width="400px">
+<img src="https://user-images.githubusercontent.com/1450652/56089694-5c362300-5ec9-11e9-82b8-2744a8224f7e.gif" alt="index" width="400px">
 
-<img src="https://user-images.githubusercontent.com/1450652/44396868-ca139000-a570-11e8-8a05-871de9efeb34.gif" alt="file explorer" width="400px">
+<img src="https://user-images.githubusercontent.com/1450652/56089753-53921c80-5eca-11e9-9378-98e7c2aad831.gif" alt="file explorer" width="400px">
 
 <img src="https://user-images.githubusercontent.com/1450652/44396869-ca139000-a570-11e8-9018-dc27634ebd9d.gif" alt="view debug" width="400px">
 
@@ -55,7 +55,7 @@ As HSD is started as a http server in your device, you can access it just like b
 
 HSD provides a control pannel, where you can make HSD running in the way that you want.
 
-<div align="center"><img src="https://user-images.githubusercontent.com/1450652/44397124-b87eb800-a571-11e8-85c8-23d34aa97fc2.gif" alt="control pannel" width="220px"></div>
+<div align="center"><img src="https://user-images.githubusercontent.com/1450652/56089765-8e945000-5eca-11e9-96f7-28630b5fed46.png" alt="control pannel" width="220px"></div>
 
 ### Public Host Name Resolving Interface
 
