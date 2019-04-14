@@ -102,7 +102,7 @@
     self.portTextField.translatesAutoresizingMaskIntoConstraints = NO;
     self.portTextField.borderStyle = UITextBorderStyleRoundedRect;
     self.portTextField.font = [UIFont systemFontOfSize:15];
-    self.portTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"端口号 [1024, 65535]" attributes: @{NSFontAttributeName: [UIFont systemFontOfSize:15]}];
+    self.portTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Port Number [1024, 65535]" attributes: @{NSFontAttributeName: [UIFont systemFontOfSize:15]}];
     self.portTextField.keyboardType = UIKeyboardTypeNumberPad;
     [contentView addSubview:self.portTextField];
 
@@ -115,7 +115,7 @@
     // portButton
     UIButton *portButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     portButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [portButton setTitle:@"设置端口号" forState:UIControlStateNormal];
+    [portButton setTitle:@"Set" forState:UIControlStateNormal];
     [portButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     portButton.titleLabel.font = [UIFont systemFontOfSize:15];
     [portButton addTarget:self action:@selector(onPortButtonPressed) forControlEvents:UIControlEventTouchUpInside];
@@ -146,7 +146,7 @@
     // titleLabel
     UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    titleLabel.text = @"启动";
+    titleLabel.text = @"Start";
     titleLabel.textColor = [UIColor blackColor];
     titleLabel.font = [UIFont systemFontOfSize:15];
     [contentView addSubview:titleLabel];
@@ -179,7 +179,7 @@
     // titleLabel
     titleLabel = [[UILabel alloc] init];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    titleLabel.text = @"自动启动";
+    titleLabel.text = @"Auto Start";
     titleLabel.textColor = [UIColor blackColor];
     titleLabel.font = [UIFont systemFontOfSize:15];
     [contentView addSubview:titleLabel];
@@ -214,7 +214,7 @@
 
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.frame = contentView.bounds;
-    [button setTitle:@"返回" forState:UIControlStateNormal];
+    [button setTitle:@"Back" forState:UIControlStateNormal];
     [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     button.titleLabel.font = [UIFont systemFontOfSize:15];
     [button addTarget:self action:@selector(backButtonPressed) forControlEvents:UIControlEventTouchUpInside];
@@ -239,18 +239,18 @@
         // 删除端口号
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:kHSDUserDefaultsKeyServerPort];
 
-        message = @"端口号设置已删除。";
+        message = @"Port number setting is deleted.";
     } else if (port >= kHSDServerPortUserSettingMin && port <= kHSDServerPostUserSettingMax) {
         // 设置端口号
         [[NSUserDefaults standardUserDefaults] setInteger:port forKey:kHSDUserDefaultsKeyServerPort];
 
-        message = [NSString stringWithFormat:@"端口号已设置为：%@, 请重新启动 HSD。", @(port)];
+        message = [NSString stringWithFormat:@"Port number %@ set, should restart HSD to make it work.", @(port)];
     } else {
-        message = @"端口号设置不合法。";
+        message = @"Illegal port number.";
     }
 
     // alertView
-    UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
+    UIAlertView *alerView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alerView show];
 }
 
@@ -284,9 +284,9 @@
 - (void)resolveHostName {
     [HSDManager resolveHostName:^(HSDHostNameResolveState state, NSArray<NSString *> *results, NSDictionary<NSString *,NSNumber *> *errorDict) {
         if (state == HSDHostNameResolveStateReady) {
-            [self showLog:@"开始查找域名...\n"];
+            [self showLog:@"Start resolving domain name...\n"];
         } else if (state == HSDHostNameResolveStateSuccess) {
-            NSMutableString *logStr = [@"查找域名成功，可通过如下地址访问HSD：\n" mutableCopy];
+            NSMutableString *logStr = [@"Domain name resolving successfully, HSD can be accessed with the following address:\n" mutableCopy];
             for (NSString *result in results) {
                 NSString *tmp = result.length > 0 ? result : @"";
                 [logStr appendString:tmp];
@@ -294,9 +294,9 @@
             }
             [self showLog:logStr];
         } else if (state == HSDHostNameResolveStateFail) {
-            [self showLog:@"查找失败\n"];
+            [self showLog:@"Resolving fail\n"];
         } else if (state == HSDHostNameResolveStateStop) {
-            [self showLog:@"查找结束\n"];
+            [self showLog:@"Resolving successfully\n"];
         }
     }];
 }
@@ -318,7 +318,7 @@
         NSString *name = notification.name;
         if ([name isEqualToString:kHSDNotificationServerStarted]) {
             self.startSwitchView.on = YES;
-            [self showLog:@"HSD启动\n"];
+            [self showLog:@"HSD Start\n"];
             
             // dispatch after, make sure bonjour has published
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -326,7 +326,7 @@
             });
         } else if ([name isEqualToString:kHSDNotificationServerStopped]) {
             self.startSwitchView.on = NO;
-            [self showLog:@"HSD关闭\n"];
+            [self showLog:@"HSD Stop\n"];
         }
     });
 }
