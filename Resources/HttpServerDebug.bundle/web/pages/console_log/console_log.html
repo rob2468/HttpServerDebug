@@ -2,19 +2,62 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>%%LocalizedConsoleLogTitle%%</title>
+<title>控制台日志</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="console_log.css">
-<script src="../../util.js"></script>
-<script src="console_log.js"></script>
+<style type="text/css">
+#state-header {
+  position: absolute;
+  top: 0;
+  height: 60px;
+  left: 0;
+  right: 0;
+}
+#logs-content {
+  position: absolute;
+  top: 60px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-y: scroll;
+}
+</style>
 </head>
 <body>
 <div id="state-header">
-  <button type="button" id="toggle-connect" onclick="toggleConnection()">%%LocalizedConsoleLogButtonTitleConnect%%</button>
-  <button type="button" id="refresh-state" onclick="requestConnectionState()">%%LocalizedConsoleLogButtonTitleRefresh%%</button>
-  <p>%%LocalizedConsoleLogStateName%%<span id="connection-state">%%LocalizedConsoleLogStateDisconnected%%</span></p>
+  <p id="connection_state"></p>
   <hr>
 </div>
-<div id="log-messages"></div>
+<div id="logs-content"></div>
+<script type="text/javascript">
+if ('WebSocket' in window) {
+  var ws = new WebSocket('ws://ali-195496.local.:5155');
+  ws.onopen = function () {
+    var stateEle = document.getElementById('connection_state');
+    stateEle.innerHTML = 'CONNECTED';
+  };
+  ws.onmessage = function (evt) {
+    var needScrollToBottom = false;
+    var logsEle = document.getElementById('logs-content');
+    if (logsEle.scrollTop + logsEle.clientHeight === logsEle.scrollHeight) {
+      needScrollToBottom = true;
+    }
+    // show log string
+    var htmlStr = '<p>' + evt.data + '</p>';
+    logsEle.insertAdjacentHTML('beforeend', htmlStr);
+    // auto scroll to bottom
+    if (needScrollToBottom) {
+      logsEle.scrollTop = logsEle.scrollHeight - logsEle.clientHeight;
+    }
+  };
+  ws.onclose = function () {
+    var stateEle = document.getElementById('connection_state');
+    stateEle.innerHTML = 'DISCONNECTED';
+  };
+  ws.onerror = function () {
+  };
+} else {
+  alert('Browser doesn\'t support WebSocket!');
+}
+</script>
 </body>
 </html>

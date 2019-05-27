@@ -734,7 +734,8 @@ static inline NSString* _EncodeBase64(NSString* string) {
     _options = options ? [options copy] : @{};
 #if TARGET_OS_IPHONE
     _suspendInBackground = [_GetOption(_options, GCDWebServerOption_AutomaticallySuspendInBackground, @YES) boolValue];
-    if (((_suspendInBackground == NO) || ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground)) && ![self _start:error])
+    if (((_suspendInBackground == NO) || ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground))
+        && ![self _start:error])
 #else
     if (![self _start:error])
 #endif
