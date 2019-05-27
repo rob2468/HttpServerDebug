@@ -152,7 +152,6 @@ static void _ExecuteMainThreadRunLoopSources() {
   Class _connectionClass;
   CFTimeInterval _disconnectDelay;
   dispatch_source_t _source4;
-  dispatch_source_t _source6;
   CFNetServiceRef _registrationService;
   CFNetServiceRef _resolutionService;
   DNSServiceRef _dnsService;
@@ -238,22 +237,20 @@ static void _ExecuteMainThreadRunLoopSources() {
 
 - (void)willStartConnection:(GCDWebServerConnection*)connection {
   dispatch_sync(_syncQueue, ^{
-
-    GWS_DCHECK(_activeConnections >= 0);
-    if (_activeConnections == 0) {
+    GWS_DCHECK(self->_activeConnections >= 0);
+    if (self->_activeConnections == 0) {
       dispatch_async(dispatch_get_main_queue(), ^{
-        if (_disconnectTimer) {
-          CFRunLoopTimerInvalidate(_disconnectTimer);
-          CFRelease(_disconnectTimer);
-          _disconnectTimer = NULL;
+        if (self->_disconnectTimer) {
+          CFRunLoopTimerInvalidate(self->_disconnectTimer);
+          CFRelease(self->_disconnectTimer);
+          self->_disconnectTimer = NULL;
         }
-        if (_connected == NO) {
+        if (self->_connected == NO) {
           [self _didConnect];
         }
       });
     }
-    _activeConnections += 1;
-
+    self->_activeConnections += 1;
   });
 }
 
@@ -427,32 +424,31 @@ static inline NSString* _EncodeBase64(NSString* string) {
   return [[NSString alloc] initWithData:[data base64EncodedDataWithOptions:0] encoding:NSASCIIStringEncoding];
 }
 
-- (int)_createListeningSocket:(BOOL)useIPv6
-                 localAddress:(const void*)address
+- (int)_createListeningSocketLocalAddress:(const void*)address
                        length:(socklen_t)length
         maxPendingConnections:(NSUInteger)maxPendingConnections
                         error:(NSError**)error {
-  int listeningSocket = socket(useIPv6 ? PF_INET6 : PF_INET, SOCK_STREAM, IPPROTO_TCP);
+  int listeningSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (listeningSocket > 0) {
     int yes = 1;
     setsockopt(listeningSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 
     if (bind(listeningSocket, address, length) == 0) {
       if (listen(listeningSocket, (int)maxPendingConnections) == 0) {
-        GWS_LOG_DEBUG(@"Did open %s listening socket %i", useIPv6 ? "IPv6" : "IPv4", listeningSocket);
+        GWS_LOG_DEBUG(@"Did open %s listening socket %i", "IPv4", listeningSocket);
         return listeningSocket;
       } else {
         if (error) {
           *error = GCDWebServerMakePosixError(errno);
         }
-        GWS_LOG_ERROR(@"Failed starting %s listening socket: %s (%i)", useIPv6 ? "IPv6" : "IPv4", strerror(errno), errno);
+        GWS_LOG_ERROR(@"Failed starting %s listening socket: %s (%i)", "IPv4", strerror(errno), errno);
         close(listeningSocket);
       }
     } else {
       if (error) {
         *error = GCDWebServerMakePosixError(errno);
       }
-      GWS_LOG_ERROR(@"Failed binding %s listening socket: %s (%i)", useIPv6 ? "IPv6" : "IPv4", strerror(errno), errno);
+      GWS_LOG_ERROR(@"Failed binding %s listening socket: %s (%i)", "IPv4", strerror(errno), errno);
       close(listeningSocket);
     }
 
@@ -460,12 +456,12 @@ static inline NSString* _EncodeBase64(NSString* string) {
     if (error) {
       *error = GCDWebServerMakePosixError(errno);
     }
-    GWS_LOG_ERROR(@"Failed creating %s listening socket: %s (%i)", useIPv6 ? "IPv6" : "IPv4", strerror(errno), errno);
+    GWS_LOG_ERROR(@"Failed creating %s listening socket: %s (%i)", "IPv4", strerror(errno), errno);
   }
   return -1;
 }
 
-- (dispatch_source_t)_createDispatchSourceWithListeningSocket:(int)listeningSocket isIPv6:(BOOL)isIPv6 {
+- (dispatch_source_t)_createDispatchSourceWithListeningSocket:(int)listeningSocket {
   dispatch_group_enter(_sourceGroup);
   dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, listeningSocket, 0, dispatch_get_global_queue(_dispatchQueuePriority, 0));
   dispatch_source_set_cancel_handler(source, ^{
@@ -473,16 +469,15 @@ static inline NSString* _EncodeBase64(NSString* string) {
     @autoreleasepool {
       int result = close(listeningSocket);
       if (result != 0) {
-        GWS_LOG_ERROR(@"Failed closing %s listening socket: %s (%i)", isIPv6 ? "IPv6" : "IPv4", strerror(errno), errno);
+        GWS_LOG_ERROR(@"Failed closing %s listening socket: %s (%i)", "IPv4", strerror(errno), errno);
       } else {
-        GWS_LOG_DEBUG(@"Did close %s listening socket %i", isIPv6 ? "IPv6" : "IPv4", listeningSocket);
+        GWS_LOG_DEBUG(@"Did close %s listening socket %i", "IPv4", listeningSocket);
       }
     }
-    dispatch_group_leave(_sourceGroup);
+    dispatch_group_leave(self->_sourceGroup);
 
   });
   dispatch_source_set_event_handler(source, ^{
-
     @autoreleasepool {
       struct sockaddr_storage remoteSockAddr;
       socklen_t remoteAddrLen = sizeof(remoteSockAddr);
@@ -495,7 +490,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
         NSData* localAddress = nil;
         if (getsockname(socket, (struct sockaddr*)&localSockAddr, &localAddrLen) == 0) {
           localAddress = [NSData dataWithBytes:&localSockAddr length:localAddrLen];
-          GWS_DCHECK((!isIPv6 && localSockAddr.ss_family == AF_INET) || (isIPv6 && localSockAddr.ss_family == AF_INET6));
+          GWS_DCHECK(localSockAddr.ss_family == AF_INET);
         } else {
           GWS_DNOT_REACHED();
         }
@@ -503,13 +498,12 @@ static inline NSString* _EncodeBase64(NSString* string) {
         int noSigPipe = 1;
         setsockopt(socket, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));  // Make sure this socket cannot generate SIG_PIPE
 
-        GCDWebServerConnection* connection = [[_connectionClass alloc] initWithServer:self localAddress:localAddress remoteAddress:remoteAddress socket:socket];  // Connection will automatically retain itself while opened
+        GCDWebServerConnection* connection = [[self->_connectionClass alloc] initWithServer:self localAddress:localAddress remoteAddress:remoteAddress socket:socket];  // Connection will automatically retain itself while opened
         [connection self];  // Prevent compiler from complaining about unused variable / useless statement
       } else {
-        GWS_LOG_ERROR(@"Failed accepting %s socket: %s (%i)", isIPv6 ? "IPv6" : "IPv4", strerror(errno), errno);
+        GWS_LOG_ERROR(@"Failed accepting %s socket: %s (%i)", "IPv4", strerror(errno), errno);
       }
     }
-
   });
   return source;
 }
@@ -527,7 +521,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
   addr4.sin_family = AF_INET;
   addr4.sin_port = htons(port);
   addr4.sin_addr.s_addr = bindToLocalhost ? htonl(INADDR_LOOPBACK) : htonl(INADDR_ANY);
-  int listeningSocket4 = [self _createListeningSocket:NO localAddress:&addr4 length:sizeof(addr4) maxPendingConnections:maxPendingConnections error:error];
+  int listeningSocket4 = [self _createListeningSocketLocalAddress:&addr4 length:sizeof(addr4) maxPendingConnections:maxPendingConnections error:error];
   if (listeningSocket4 <= 0) {
     return NO;
   }
@@ -541,42 +535,13 @@ static inline NSString* _EncodeBase64(NSString* string) {
     }
   }
 
-  struct sockaddr_in6 addr6;
-  bzero(&addr6, sizeof(addr6));
-  addr6.sin6_len = sizeof(addr6);
-  addr6.sin6_family = AF_INET6;
-  addr6.sin6_port = htons(port);
-  addr6.sin6_addr = bindToLocalhost ? in6addr_loopback : in6addr_any;
-  int listeningSocket6 = [self _createListeningSocket:YES localAddress:&addr6 length:sizeof(addr6) maxPendingConnections:maxPendingConnections error:error];
-  if (listeningSocket6 <= 0) {
-    close(listeningSocket4);
-    return NO;
-  }
-
   _serverName = [_GetOption(_options, GCDWebServerOption_ServerName, NSStringFromClass([self class])) copy];
-  NSString* authenticationMethod = _GetOption(_options, GCDWebServerOption_AuthenticationMethod, nil);
-  if ([authenticationMethod isEqualToString:GCDWebServerAuthenticationMethod_Basic]) {
-    _authenticationRealm = [_GetOption(_options, GCDWebServerOption_AuthenticationRealm, _serverName) copy];
-    _authenticationBasicAccounts = [[NSMutableDictionary alloc] init];
-    NSDictionary* accounts = _GetOption(_options, GCDWebServerOption_AuthenticationAccounts, @{});
-    [accounts enumerateKeysAndObjectsUsingBlock:^(NSString* username, NSString* password, BOOL* stop) {
-      [_authenticationBasicAccounts setObject:_EncodeBase64([NSString stringWithFormat:@"%@:%@", username, password]) forKey:username];
-    }];
-  } else if ([authenticationMethod isEqualToString:GCDWebServerAuthenticationMethod_DigestAccess]) {
-    _authenticationRealm = [_GetOption(_options, GCDWebServerOption_AuthenticationRealm, _serverName) copy];
-    _authenticationDigestAccounts = [[NSMutableDictionary alloc] init];
-    NSDictionary* accounts = _GetOption(_options, GCDWebServerOption_AuthenticationAccounts, @{});
-    [accounts enumerateKeysAndObjectsUsingBlock:^(NSString* username, NSString* password, BOOL* stop) {
-      [_authenticationDigestAccounts setObject:GCDWebServerComputeMD5Digest(@"%@:%@:%@", username, _authenticationRealm, password) forKey:username];
-    }];
-  }
   _connectionClass = _GetOption(_options, GCDWebServerOption_ConnectionClass, [GCDWebServerConnection class]);
   _shouldAutomaticallyMapHEADToGET = [_GetOption(_options, GCDWebServerOption_AutomaticallyMapHEADToGET, @YES) boolValue];
   _disconnectDelay = [_GetOption(_options, GCDWebServerOption_ConnectedStateCoalescingInterval, @1.0) doubleValue];
   _dispatchQueuePriority = [_GetOption(_options, GCDWebServerOption_DispatchQueuePriority, @(DISPATCH_QUEUE_PRIORITY_DEFAULT)) longValue];
 
-  _source4 = [self _createDispatchSourceWithListeningSocket:listeningSocket4 isIPv6:NO];
-  _source6 = [self _createDispatchSourceWithListeningSocket:listeningSocket6 isIPv6:YES];
+  _source4 = [self _createDispatchSourceWithListeningSocket:listeningSocket4];
   _port = port;
   _bindToLocalhost = bindToLocalhost;
 
@@ -604,31 +569,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
     }
   }
 
-  if ([_GetOption(_options, GCDWebServerOption_RequestNATPortMapping, @NO) boolValue]) {
-    DNSServiceErrorType status = DNSServiceNATPortMappingCreate(&_dnsService, 0, 0, kDNSServiceProtocol_TCP, htons(port), htons(port), 0, _DNSServiceCallBack, (__bridge void*)self);
-    if (status == kDNSServiceErr_NoError) {
-      CFSocketContext context = {0, (__bridge void*)self, NULL, NULL, NULL};
-      _dnsSocket = CFSocketCreateWithNative(kCFAllocatorDefault, DNSServiceRefSockFD(_dnsService), kCFSocketReadCallBack, _SocketCallBack, &context);
-      if (_dnsSocket) {
-        CFSocketSetSocketFlags(_dnsSocket, CFSocketGetSocketFlags(_dnsSocket) & ~kCFSocketCloseOnInvalidate);
-        _dnsSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _dnsSocket, 0);
-        if (_dnsSource) {
-          CFRunLoopAddSource(CFRunLoopGetMain(), _dnsSource, kCFRunLoopCommonModes);
-        } else {
-          GWS_LOG_ERROR(@"Failed creating CFRunLoopSource");
-          GWS_DNOT_REACHED();
-        }
-      } else {
-        GWS_LOG_ERROR(@"Failed creating CFSocket");
-        GWS_DNOT_REACHED();
-      }
-    } else {
-      GWS_LOG_ERROR(@"Failed creating NAT port mapping (%i)", status);
-    }
-  }
-
   dispatch_resume(_source4);
-  dispatch_resume(_source6);
   GWS_LOG_INFO(@"%@ started on port %i and reachable at %@", [self class], (int)_port, self.serverURL);
   if ([_delegate respondsToSelector:@selector(webServerDidStart:)]) {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -673,13 +614,9 @@ static inline NSString* _EncodeBase64(NSString* string) {
     _registrationService = NULL;
   }
 
-  dispatch_source_cancel(_source6);
   dispatch_source_cancel(_source4);
   dispatch_group_wait(_sourceGroup, DISPATCH_TIME_FOREVER);  // Wait until the cancellation handlers have been called which guarantees the listening sockets are closed
-#if !OS_OBJECT_USE_OBJC_RETAIN_RELEASE
-  dispatch_release(_source6);
-#endif
-  _source6 = NULL;
+
 #if !OS_OBJECT_USE_OBJC_RETAIN_RELEASE
   dispatch_release(_source4);
 #endif
