@@ -129,20 +129,19 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)_startProcessingRequest {
-  GWS_DCHECK(_responseMessage == NULL);
+    GWS_DCHECK(_responseMessage == NULL);
 
-  GCDWebServerResponse* preflightResponse = [self preflightRequest:_request];
-  if (preflightResponse) {
-    [self _finishProcessingRequest:preflightResponse];
-  } else {
-    [self processRequest:_request
-              completion:^(GCDWebServerResponse* processResponse) {
-                [self _finishProcessingRequest:processResponse];
-              }];
-  }
+    GCDWebServerResponse* preflightResponse = [self preflightRequest:_request];
+    if (preflightResponse) {
+        [self _finishProcessingRequest:preflightResponse];
+    } else {
+        [self processRequest:_request completion:^(GCDWebServerResponse* processResponse) {
+            [self _finishProcessingRequest:processResponse];
+        }];
+    }
 }
 
-// http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+// Status Code Definitions: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 - (void)_finishProcessingRequest:(GCDWebServerResponse*)response {
   GWS_DCHECK(_responseMessage == NULL);
   BOOL hasBody = NO;
@@ -191,7 +190,6 @@ NS_ASSUME_NONNULL_END
       CFHTTPMessageSetHeaderFieldValue(self->_responseMessage, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);
     }];
     [self writeHeadersWithCompletionBlock:^(BOOL success) {
-
       if (success) {
         if (hasBody) {
           [self writeBodyWithCompletionBlock:^(BOOL successInner) {
@@ -379,26 +377,26 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)dealloc {
-  int result = close(_socket);
-  if (result != 0) {
-    GWS_LOG_ERROR(@"Failed closing socket %i for connection: %s (%i)", _socket, strerror(errno), errno);
-  } else {
-    GWS_LOG_DEBUG(@"Did close connection on socket %i", _socket);
-  }
+    int result = close(_socket);
+    if (result != 0) {
+        GWS_LOG_ERROR(@"Failed closing socket %i for connection: %s (%i)", _socket, strerror(errno), errno);
+    } else {
+        GWS_LOG_DEBUG(@"Did close connection on socket %i", _socket);
+    }
 
-  if (_opened) {
-    [self close];
-  }
+    if (_opened) {
+        [self close];
+    }
 
-  [_server didEndConnection:self];
+    [_server didEndConnection:self];
 
-  if (_requestMessage) {
-    CFRelease(_requestMessage);
-  }
+    if (_requestMessage) {
+        CFRelease(_requestMessage);
+    }
 
-  if (_responseMessage) {
-    CFRelease(_responseMessage);
-  }
+    if (_responseMessage) {
+        CFRelease(_responseMessage);
+    }
 }
 
 @end
@@ -439,14 +437,20 @@ NS_ASSUME_NONNULL_END
   GWS_DCHECK(_requestMessage);
   [self readData:headersData withLength:NSUIntegerMax completionBlock:^(BOOL success) {
       if (success) {
+          // header data range
           NSRange range = [headersData rangeOfData:_CRLFCRLFData options:0 range:NSMakeRange(0, headersData.length)];
+
           if (range.location == NSNotFound) {
               [self readHeaders:headersData withCompletionBlock:block];
           } else {
+              // extraData begin position
               NSUInteger length = range.location + range.length;
+
               if (CFHTTPMessageAppendBytes(self->_requestMessage, headersData.bytes, length)) {
+                  // append data to CFHTTPMessage successfully
                   if (CFHTTPMessageIsHeaderComplete(self->_requestMessage)) {
-                      block([headersData subdataWithRange:NSMakeRange(length, headersData.length - length)]);
+                      NSData *extraData = [headersData subdataWithRange:NSMakeRange(length, headersData.length - length)];
+                      block(extraData);
                   } else {
                       GWS_LOG_ERROR(@"Failed parsing request headers from socket %i", self->_socket);
                       block(nil);
@@ -557,25 +561,23 @@ static inline NSUInteger _ScanHexNumber(const void* bytes, NSUInteger size) {
 @implementation GCDWebServerConnection (Write)
 
 - (void)writeData:(NSData*)data withCompletionBlock:(WriteDataCompletionBlock)block {
-  dispatch_data_t buffer = dispatch_data_create(data.bytes, data.length, dispatch_get_global_queue(_server.dispatchQueuePriority, 0), ^{
-    [data self];  // Keeps ARC from releasing data too early
-  });
-  dispatch_write(_socket, buffer, dispatch_get_global_queue(_server.dispatchQueuePriority, 0), ^(dispatch_data_t remainingData, int error) {
-
-    @autoreleasepool {
-      if (error == 0) {
-        GWS_DCHECK(remainingData == NULL);
-        [self didWriteBytes:data.bytes length:data.length];
-        block(YES);
-      } else {
-        GWS_LOG_ERROR(@"Error while writing to socket %i: %s (%i)", self->_socket, strerror(error), error);
-        block(NO);
-      }
-    }
-
-  });
+    dispatch_data_t buffer = dispatch_data_create(data.bytes, data.length, dispatch_get_global_queue(_server.dispatchQueuePriority, 0), ^{
+        [data self];  // Keeps ARC from releasing data too early
+    });
+    dispatch_write(_socket, buffer, dispatch_get_global_queue(_server.dispatchQueuePriority, 0), ^(dispatch_data_t remainingData, int error) {
+        @autoreleasepool {
+            if (error == 0) {
+                GWS_DCHECK(remainingData == NULL);
+                [self didWriteBytes:data.bytes length:data.length];
+                block(YES);
+            } else {
+                GWS_LOG_ERROR(@"Error while writing to socket %i: %s (%i)", self->_socket, strerror(error), error);
+                block(NO);
+            }
+        }
+    });
 #if !OS_OBJECT_USE_OBJC_RETAIN_RELEASE
-  dispatch_release(buffer);
+    dispatch_release(buffer);
 #endif
 }
 

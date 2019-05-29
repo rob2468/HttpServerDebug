@@ -201,18 +201,16 @@ static void _ExecuteMainThreadRunLoopSources() {
 
 // Always called on main thread
 - (void)_startBackgroundTask {
-  GWS_DCHECK([NSThread isMainThread]);
-  if (_backgroundTask == UIBackgroundTaskInvalid) {
-    GWS_LOG_DEBUG(@"Did start background task");
-    _backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-
-      GWS_LOG_WARNING(@"Application is being suspended while %@ is still connected", [self class]);
-      [self _endBackgroundTask];
-
-    }];
-  } else {
-    GWS_DNOT_REACHED();
-  }
+    GWS_DCHECK([NSThread isMainThread]);
+    if (_backgroundTask == UIBackgroundTaskInvalid) {
+        GWS_LOG_DEBUG(@"Did start background task");
+        _backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            GWS_LOG_WARNING(@"Application is being suspended while %@ is still connected", [self class]);
+            [self _endBackgroundTask];
+        }];
+    } else {
+        GWS_DNOT_REACHED();
+    }
 }
 
 #endif
@@ -289,22 +287,22 @@ static void _ExecuteMainThreadRunLoopSources() {
 
 - (void)didEndConnection:(GCDWebServerConnection*)connection {
   dispatch_sync(_syncQueue, ^{
-    GWS_DCHECK(_activeConnections > 0);
-    _activeConnections -= 1;
-    if (_activeConnections == 0) {
+    GWS_DCHECK(self->_activeConnections > 0);
+    self->_activeConnections -= 1;
+    if (self->_activeConnections == 0) {
       dispatch_async(dispatch_get_main_queue(), ^{
-        if ((_disconnectDelay > 0.0) && (_source4 != NULL)) {
-          if (_disconnectTimer) {
-            CFRunLoopTimerInvalidate(_disconnectTimer);
-            CFRelease(_disconnectTimer);
+        if ((self->_disconnectDelay > 0.0) && (self->_source4 != NULL)) {
+          if (self->_disconnectTimer) {
+            CFRunLoopTimerInvalidate(self->_disconnectTimer);
+            CFRelease(self->_disconnectTimer);
           }
-          _disconnectTimer = CFRunLoopTimerCreateWithHandler(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent() + _disconnectDelay, 0.0, 0, 0, ^(CFRunLoopTimerRef timer) {
+          self->_disconnectTimer = CFRunLoopTimerCreateWithHandler(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent() + self->_disconnectDelay, 0.0, 0, 0, ^(CFRunLoopTimerRef timer) {
             GWS_DCHECK([NSThread isMainThread]);
             [self _didDisconnect];
-            CFRelease(_disconnectTimer);
-            _disconnectTimer = NULL;
+            CFRelease(self->_disconnectTimer);
+            self->_disconnectTimer = NULL;
           });
-          CFRunLoopAddTimer(CFRunLoopGetMain(), _disconnectTimer, kCFRunLoopCommonModes);
+          CFRunLoopAddTimer(CFRunLoopGetMain(), self->_disconnectTimer, kCFRunLoopCommonModes);
         } else {
           [self _didDisconnect];
         }
@@ -374,60 +372,12 @@ static void _NetServiceResolveCallBack(CFNetServiceRef service, CFStreamError* e
   }
 }
 
-static void _DNSServiceCallBack(DNSServiceRef sdRef, DNSServiceFlags flags, uint32_t interfaceIndex, DNSServiceErrorType errorCode, uint32_t externalAddress, DNSServiceProtocol protocol, uint16_t internalPort, uint16_t externalPort, uint32_t ttl, void* context) {
-  GWS_DCHECK([NSThread isMainThread]);
-  @autoreleasepool {
-    GCDWebServer* server = (__bridge GCDWebServer*)context;
-    if ((errorCode == kDNSServiceErr_NoError) || (errorCode == kDNSServiceErr_DoubleNAT)) {
-      struct sockaddr_in addr4;
-      bzero(&addr4, sizeof(addr4));
-      addr4.sin_len = sizeof(addr4);
-      addr4.sin_family = AF_INET;
-      addr4.sin_addr.s_addr = externalAddress;  // Already in network byte order
-      server->_dnsAddress = GCDWebServerStringFromSockAddr((const struct sockaddr*)&addr4, NO);
-      server->_dnsPort = ntohs(externalPort);
-      GWS_LOG_INFO(@"%@ now publicly reachable at %@", [server class], server.publicServerURL);
-    } else {
-      GWS_LOG_ERROR(@"DNS service error %i", errorCode);
-      server->_dnsAddress = nil;
-      server->_dnsPort = 0;
-    }
-    if ([server.delegate respondsToSelector:@selector(webServerDidUpdateNATPortMapping:)]) {
-      [server.delegate webServerDidUpdateNATPortMapping:server];
-    }
-  }
-}
-
-static void _SocketCallBack(CFSocketRef s, CFSocketCallBackType type, CFDataRef address, const void* data, void* info) {
-  GWS_DCHECK([NSThread isMainThread]);
-  @autoreleasepool {
-    GCDWebServer* server = (__bridge GCDWebServer*)info;
-    DNSServiceErrorType status = DNSServiceProcessResult(server->_dnsService);
-    if (status != kDNSServiceErr_NoError) {
-      GWS_LOG_ERROR(@"DNS service error %i", status);
-    }
-  }
-}
-
 static inline id _GetOption(NSDictionary* options, NSString* key, id defaultValue) {
   id value = [options objectForKey:key];
   return value ? value : defaultValue;
 }
 
-static inline NSString* _EncodeBase64(NSString* string) {
-  NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
-#if (TARGET_OS_IPHONE && !(__IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0)) || (!TARGET_OS_IPHONE && !(__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_9))
-  if (![data respondsToSelector:@selector(base64EncodedDataWithOptions:)]) {
-    return [data base64Encoding];
-  }
-#endif
-  return [[NSString alloc] initWithData:[data base64EncodedDataWithOptions:0] encoding:NSASCIIStringEncoding];
-}
-
-- (int)_createListeningSocketLocalAddress:(const void*)address
-                       length:(socklen_t)length
-        maxPendingConnections:(NSUInteger)maxPendingConnections
-                        error:(NSError**)error {
+- (int)_createListeningSocketLocalAddress:(const void*)address length:(socklen_t)length maxPendingConnections:(NSUInteger)maxPendingConnections error:(NSError**)error {
   int listeningSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (listeningSocket > 0) {
     int yes = 1;
@@ -465,7 +415,6 @@ static inline NSString* _EncodeBase64(NSString* string) {
   dispatch_group_enter(_sourceGroup);
   dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, listeningSocket, 0, dispatch_get_global_queue(_dispatchQueuePriority, 0));
   dispatch_source_set_cancel_handler(source, ^{
-
     @autoreleasepool {
       int result = close(listeningSocket);
       if (result != 0) {
@@ -475,7 +424,6 @@ static inline NSString* _EncodeBase64(NSString* string) {
       }
     }
     dispatch_group_leave(self->_sourceGroup);
-
   });
   dispatch_source_set_event_handler(source, ^{
     @autoreleasepool {
@@ -573,7 +521,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
   GWS_LOG_INFO(@"%@ started on port %i and reachable at %@", [self class], (int)_port, self.serverURL);
   if ([_delegate respondsToSelector:@selector(webServerDidStart:)]) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [_delegate webServerDidStart:self];
+      [self->_delegate webServerDidStart:self];
     });
   }
 
@@ -630,10 +578,10 @@ static inline NSString* _EncodeBase64(NSString* string) {
   _authenticationDigestAccounts = nil;
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (_disconnectTimer) {
-      CFRunLoopTimerInvalidate(_disconnectTimer);
-      CFRelease(_disconnectTimer);
-      _disconnectTimer = NULL;
+    if (self->_disconnectTimer) {
+      CFRunLoopTimerInvalidate(self->_disconnectTimer);
+      CFRelease(self->_disconnectTimer);
+      self->_disconnectTimer = NULL;
       [self _didDisconnect];
     }
   });
@@ -641,7 +589,7 @@ static inline NSString* _EncodeBase64(NSString* string) {
   GWS_LOG_INFO(@"%@ stopped", [self class]);
   if ([_delegate respondsToSelector:@selector(webServerDidStop:)]) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [_delegate webServerDidStop:self];
+      [self->_delegate webServerDidStop:self];
     });
   }
 }
@@ -649,19 +597,19 @@ static inline NSString* _EncodeBase64(NSString* string) {
 #if TARGET_OS_IPHONE
 
 - (void)_didEnterBackground:(NSNotification*)notification {
-  GWS_DCHECK([NSThread isMainThread]);
-  GWS_LOG_DEBUG(@"Did enter background");
-  if ((_backgroundTask == UIBackgroundTaskInvalid) && _source4) {
-    [self _stop];
-  }
+    GWS_DCHECK([NSThread isMainThread]);
+    GWS_LOG_DEBUG(@"Did enter background");
+    if ((_backgroundTask == UIBackgroundTaskInvalid) && _source4) {
+        [self _stop];
+    }
 }
 
 - (void)_willEnterForeground:(NSNotification*)notification {
-  GWS_DCHECK([NSThread isMainThread]);
-  GWS_LOG_DEBUG(@"Will enter foreground");
-  if (!_source4) {
-    [self _start:NULL];  // TODO: There's probably nothing we can do on failure
-  }
+    GWS_DCHECK([NSThread isMainThread]);
+    GWS_LOG_DEBUG(@"Will enter foreground");
+    if (!_source4) {
+        [self _start:NULL];  // TODO: There's probably nothing we can do on failure
+    }
 }
 
 #endif
