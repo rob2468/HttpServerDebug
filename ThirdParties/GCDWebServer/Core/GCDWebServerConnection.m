@@ -36,7 +36,7 @@
 #endif
 
 #import "GCDWebServerPrivate.h"
-#import "HSDWebSocket.h"
+#import "HSDGCDWebSocket.h"
 
 #define kHeadersReadCapacity (1 * 1024)
 #define kBodyReadCapacity (256 * 1024)
@@ -61,16 +61,25 @@ static int32_t _connectionCounter = 0;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface GCDWebServerConnection (Read)
+
 - (void)readData:(NSMutableData*)data withLength:(NSUInteger)length completionBlock:(ReadDataCompletionBlock)block;
+
 - (void)readHeaders:(NSMutableData*)headersData withCompletionBlock:(ReadHeadersCompletionBlock)block;
+
 - (void)readBodyWithRemainingLength:(NSUInteger)length completionBlock:(ReadBodyCompletionBlock)block;
+
 - (void)readNextBodyChunk:(NSMutableData*)chunkData completionBlock:(ReadBodyCompletionBlock)block;
+
 @end
 
 @interface GCDWebServerConnection (Write)
+
 - (void)writeData:(NSData*)data withCompletionBlock:(WriteDataCompletionBlock)block;
+
 - (void)writeHeadersWithCompletionBlock:(WriteHeadersCompletionBlock)block;
+
 - (void)writeBodyWithCompletionBlock:(WriteBodyCompletionBlock)block;
+
 @end
 
 NS_ASSUME_NONNULL_END
@@ -88,7 +97,7 @@ NS_ASSUME_NONNULL_END
 
     BOOL _opened;
 
-    HSDWebSocket *_webSocket;
+    HSDGCDWebSocket *_webSocket;
 
 #ifdef __GCDWEBSERVER_ENABLE_TESTING__
     NSUInteger _connectionIndex;
@@ -280,7 +289,15 @@ NS_ASSUME_NONNULL_END
                 requestMethod = @"GET";
                 self->_virtualHEAD = YES;
             }
-            NSDictionary* requestHeaders = CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(self->_requestMessage));  // Header names are case-insensitive but CFHTTPMessageCopyAllHeaderFields() will standardize the common ones
+            NSDictionary *requestHeaders = CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(self->_requestMessage));  // Header names are case-insensitive but CFHTTPMessageCopyAllHeaderFields() will standardize the common ones
+
+            BOOL isWebSocketRequest = [HSDGCDWebSocket isWebSocketRequest:requestHeaders];
+            if (isWebSocketRequest) {
+                GWS_LOG_INFO(@"websocket: %@", requestHeaders);
+                self->_webSocket = [[HSDGCDWebSocket alloc] initWithServer:self->_server requestMessage:self->_requestMessage socket:self->_socket];
+                [self->_webSocket start];
+//                return;
+            }
 
             NSURL* requestURL = CFBridgingRelease(CFHTTPMessageCopyRequestURL(self->_requestMessage));
 

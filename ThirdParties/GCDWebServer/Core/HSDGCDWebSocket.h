@@ -1,5 +1,5 @@
 //
-//  HSDWebSocket.h
+//  HSDGCDWebSocket.h
 //  HttpServerDebug
 //
 //  Created by jam.chenjun on 2019/4/17.
@@ -10,9 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface HSDWebSocket : NSObject
+@class GCDWebServer;
+
+@interface HSDGCDWebSocket : NSObject
 
 + (BOOL)isWebSocketRequest:(NSDictionary *)requestHeaders;
+
+- (instancetype)initWithServer:(GCDWebServer *)server requestMessage:(CFHTTPMessageRef)requestMessage socket:(CFSocketNativeHandle)socket;
+
+- (void)start;
 
 @end
 

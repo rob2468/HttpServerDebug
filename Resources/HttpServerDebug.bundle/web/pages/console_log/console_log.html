@@ -30,7 +30,7 @@
 <div id="logs-content"></div>
 <script type="text/javascript">
 if ('WebSocket' in window) {
-  var ws = new WebSocket('ws://ali-195496.local.:5155');
+  var ws = new WebSocket('ws://localhost:5555');
   ws.onopen = function () {
     var stateEle = document.getElementById('connection_state');
     stateEle.innerHTML = 'CONNECTED';
