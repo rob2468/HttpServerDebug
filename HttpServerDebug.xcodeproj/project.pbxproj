@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		39749F522267050B00370192 /* HSDWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 39749F502267050B00370192 /* HSDWebSocket.m */; };
+		394A80D4229FE0DD002BD375 /* HSDWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 394A80D3229FE0DD002BD375 /* HSDWebSocket.m */; };
 		8F1218DB207B8B58000C2E48 /* HttpServerDebug.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F1218C9207B8AED000C2E48 /* HttpServerDebug.h */; };
 		8F1218F2207C5BB6000C2E48 /* HttpServerDebug.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8F1218F1207C5BB6000C2E48 /* HttpServerDebug.bundle */; };
 		8F32317C20BAEF5800E3254B /* HSDConsoleLogComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F32316420BAEF5800E3254B /* HSDConsoleLogComponent.m */; };
@@ -87,8 +87,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		39749F502267050B00370192 /* HSDWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDWebSocket.m; sourceTree = "<group>"; };
-		39749F512267050B00370192 /* HSDWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDWebSocket.h; sourceTree = "<group>"; };
+		394A80D2229FE0DD002BD375 /* HSDWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDWebSocket.h; sourceTree = "<group>"; };
+		394A80D3229FE0DD002BD375 /* HSDWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDWebSocket.m; sourceTree = "<group>"; };
 		8F1218C9207B8AED000C2E48 /* HttpServerDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpServerDebug.h; sourceTree = "<group>"; };
 		8F1218F1207C5BB6000C2E48 /* HttpServerDebug.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HttpServerDebug.bundle; sourceTree = "<group>"; };
 		8F13E2B21F3C7B4500FF8881 /* libHttpServerDebug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHttpServerDebug.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -204,15 +204,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		39749F4F2267050B00370192 /* WebSocket */ = {
-			isa = PBXGroup;
-			children = (
-				39749F512267050B00370192 /* HSDWebSocket.h */,
-				39749F502267050B00370192 /* HSDWebSocket.m */,
-			);
-			path = WebSocket;
-			sourceTree = "<group>";
-		};
 		8F1218B1207B8AED000C2E48 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -372,7 +363,6 @@
 		8F8A482F218D9E9A00B2770B /* GCDWebServer */ = {
 			isa = PBXGroup;
 			children = (
-				39749F4F2267050B00370192 /* WebSocket */,
 				8F8A4830218D9E9A00B2770B /* Core */,
 				8F8A483D218D9E9A00B2770B /* Responses */,
 				8F8A4846218D9E9A00B2770B /* Requests */,
@@ -383,6 +373,8 @@
 		8F8A4830218D9E9A00B2770B /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				394A80D2229FE0DD002BD375 /* HSDWebSocket.h */,
+				394A80D3229FE0DD002BD375 /* HSDWebSocket.m */,
 				8F8A4835218D9E9A00B2770B /* GCDWebServer.h */,
 				8F8A483A218D9E9A00B2770B /* GCDWebServer.m */,
 				8F8A4831218D9E9A00B2770B /* GCDWebServerFunctions.h */,
@@ -635,7 +627,7 @@
 				8F8A486F218D9FCC00B2770B /* GCDWebServerFileResponse.m in Sources */,
 				8F8A4870218D9FCC00B2770B /* GCDWebServerDataResponse.m in Sources */,
 				8F8A4871218D9FCC00B2770B /* GCDWebServerStreamedResponse.m in Sources */,
-				39749F522267050B00370192 /* HSDWebSocket.m in Sources */,
+				394A80D4229FE0DD002BD375 /* HSDWebSocket.m in Sources */,
 				8F8A4872218D9FCC00B2770B /* GCDWebServerURLEncodedFormRequest.m in Sources */,
 				8F8A4873218D9FCC00B2770B /* GCDWebServerMultiPartFormRequest.m in Sources */,
 				8F8A4874218D9FCC00B2770B /* GCDWebServerDataRequest.m in Sources */,

@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HSDWebSocket : NSObject
 
++ (BOOL)isWebSocketRequest:(NSDictionary *)requestHeaders;
+
 @end
 
 NS_ASSUME_NONNULL_END
