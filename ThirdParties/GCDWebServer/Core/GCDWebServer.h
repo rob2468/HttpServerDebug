@@ -26,7 +26,6 @@
  */
 
 #import <TargetConditionals.h>
-
 #import "GCDWebServerRequest.h"
 #import "GCDWebServerResponse.h"
 
@@ -68,6 +67,11 @@ typedef GCDWebServerResponse* _Nullable (^GCDWebServerProcessBlock)(__kindof GCD
  */
 typedef void (^GCDWebServerCompletionBlock)(GCDWebServerResponse* _Nullable response);
 typedef void (^GCDWebServerAsyncProcessBlock)(__kindof GCDWebServerRequest* request, GCDWebServerCompletionBlock completionBlock);
+
+/**
+ * WebSocket
+ */
+typedef Class _Nullable(^HSDGCDWebServerWebSocketMatchBlock)(void);
 
 /**
  *  The port used by the GCDWebServer (NSNumber / NSUInteger).
@@ -358,6 +362,11 @@ extern NSString* const GCDWebServerAuthenticationMethod_DigestAccess;
  *  @warning Removing handlers while the server is running is not allowed.
  */
 - (void)removeAllHandlers;
+
+/**
+ *
+ */
+- (void)setWebSocketHandlerClassWithBlock:(HSDGCDWebServerWebSocketMatchBlock)block;
 
 /**
  *  Starts the server with explicit options. This method is the designated way

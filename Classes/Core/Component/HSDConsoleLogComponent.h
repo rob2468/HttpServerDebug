@@ -11,6 +11,11 @@
 @interface HSDConsoleLogComponent : NSObject
 
 /**
+ *  finish reading from stderr
+ */
+@property (nonatomic, copy) void(^readCompletionBlock)(NSString *);
+
+/**
  *
  */
 - (NSArray<NSString *> *)consumeLogs;

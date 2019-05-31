@@ -207,10 +207,16 @@ NS_ASSUME_NONNULL_END
                 if (hasBody) {
                     [self writeBodyWithCompletionBlock:^(BOOL successInner) {
                         [self->_response performClose];  // TODO: There's nothing we can do on failure as headers have already been sent
+
+                        // close connection
+                        [self closeConnection];
                     }];
                 }
             } else if (hasBody) {
                 [self->_response performClose];
+
+                // close connection
+                [self closeConnection];
             }
 
         }];
@@ -293,12 +299,21 @@ NS_ASSUME_NONNULL_END
 
             BOOL isWebSocketRequest = [HSDGCDWebSocket isWebSocketRequest:requestHeaders];
             if (isWebSocketRequest) {
+                // WebSocket protocol
                 GWS_LOG_INFO(@"websocket: %@", requestHeaders);
-                self->_webSocket = [[HSDGCDWebSocket alloc] initWithServer:self->_server requestMessage:self->_requestMessage socket:self->_socket];
-                [self->_webSocket start];
-//                return;
+                Class webSocketClass;
+                if (self->_server.webSocketMatchBlock) {
+                    webSocketClass = self->_server.webSocketMatchBlock();
+                }
+                if (!webSocketClass) {
+                    webSocketClass = [HSDGCDWebSocket class];
+                }
+                self->_webSocket = [[webSocketClass alloc] initWithServer:self->_server requestMessage:self->_requestMessage socket:self->_socket];
+                // TODO notify GCDWebServerConnection closeConnection
+                return;
             }
 
+            // HTTP protocol
             NSURL* requestURL = CFBridgingRelease(CFHTTPMessageCopyRequestURL(self->_requestMessage));
 
             NSString* urlPath = requestURL ? CFBridgingRelease(CFURLCopyPath((CFURLRef)requestURL)) : nil;  // Don't use -[NSURL path] which strips the ending slash
@@ -395,7 +410,11 @@ NS_ASSUME_NONNULL_END
     return GCDWebServerStringFromSockAddr(_remoteAddressData.bytes, YES);
 }
 
-- (void)dealloc {
+/**
+ * close connection
+ */
+- (void)closeConnection {
+    // close sockect
     int result = close(_socket);
     if (result != 0) {
         GWS_LOG_ERROR(@"Failed closing socket %i for connection: %s (%i)", _socket, strerror(errno), errno);
@@ -407,12 +426,15 @@ NS_ASSUME_NONNULL_END
         [self close];
     }
 
+    // tell back to server
     [_server didEndConnection:self];
+}
 
+- (void)dealloc {
+    GWS_LOG_DEBUG(@"GCDWebServerConnection dealloc");
     if (_requestMessage) {
         CFRelease(_requestMessage);
     }
-
     if (_responseMessage) {
         CFRelease(_responseMessage);
     }

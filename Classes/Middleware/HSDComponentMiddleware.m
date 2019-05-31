@@ -420,6 +420,7 @@
  */
 + (void)consoleLogRedirectStandardErrorOutput:(void(^)(NSString *))readCompletionBlock {
     HSDConsoleLogComponent *consoleLogComponent = [HSDComponentMiddleware sharedInstance].consoleLogComponent;
+    consoleLogComponent.readCompletionBlock = readCompletionBlock;
     [consoleLogComponent redirectStandardErrorOutput];
 }
 

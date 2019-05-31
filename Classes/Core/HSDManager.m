@@ -17,6 +17,7 @@
 #import "GCDWebServerResponse.h"
 #import "GCDWebServerHTTPStatusCodes.h"
 #import "HSDRequestHandler.h"
+#import "HSDWebSocketHandler.h"
 
 NSString *kHSDNotificationServerStarted = @"kHSDNotificationServerStarted";
 NSString *kHSDNotificationServerStopped = @"kHSDNotificationServerStopped";
@@ -139,6 +140,11 @@ static NSUInteger kHttpServerPortDefault = 0;
         if (completionBlock) {
             completionBlock(response);
         }
+    }];
+
+    // add WebSocket handler
+    [server setWebSocketHandlerClassWithBlock:^Class _Nullable{
+        return [HSDWebSocketHandler class];
     }];
 
     // port

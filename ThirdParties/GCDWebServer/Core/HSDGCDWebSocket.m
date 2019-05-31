@@ -83,12 +83,15 @@
         self.server = server;
         self.requestMessage = requestMessage;
         self.socket = socket;
+
+        [self sendResponseHeaders];
+        [self didOpen];
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self sendMessage:@"wowowowowow"];
+        });
     }
     return self;
-}
-
-- (void)start {
-    [self sendResponseHeaders];
 }
 
 - (void)sendResponseHeaders {
@@ -178,6 +181,35 @@
     CFRelease(data);
 }
 
+- (void)sendMessage:(NSString *)msg {
+    NSData *msgData = [msg dataUsingEncoding:NSUTF8StringEncoding];
+    NSMutableData *data = nil;
+
+    NSUInteger length = msgData.length;
+    if (length <= 125) {
+        data = [NSMutableData dataWithCapacity:(length + 2)];
+        [data appendBytes:"\x81" length:1];
+        UInt8 len = (UInt8)length;
+        [data appendBytes:&len length:1];
+        [data appendData:msgData];
+    } else if (length <= 0xFFFF) {
+        data = [NSMutableData dataWithCapacity:(length + 4)];
+        [data appendBytes:"\x81\x7E" length:2];
+        UInt16 len = (UInt16)length;
+        [data appendBytes:(UInt8[]){len >> 8, len & 0xFF} length:2];
+        [data appendData:msgData];
+    } else {
+        data = [NSMutableData dataWithCapacity:(length + 10)];
+        [data appendBytes:"\x81\x7F" length:2];
+        [data appendBytes:(UInt8[]){0, 0, 0, 0, (UInt8)(length >> 24), (UInt8)(length >> 16), (UInt8)(length >> 8), length & 0xFF} length:8];
+        [data appendData:msgData];
+    }
+
+    [self writeData:data withCompletionBlock:^(BOOL success) {
+
+    }];
+}
+
 - (void)writeData:(NSData *)data withCompletionBlock:(void(^)(BOOL))block {
     dispatch_data_t buffer = dispatch_data_create(data.bytes, data.length, dispatch_get_global_queue(self.server.dispatchQueuePriority, 0), ^{
         [data self];  // Keeps ARC from releasing data too early
@@ -196,6 +228,15 @@
 #if !OS_OBJECT_USE_OBJC_RETAIN_RELEASE
     dispatch_release(buffer);
 #endif
+}
+
+- (void)didOpen {
+}
+
+- (void)didReceiveMessage:(NSString *)msg {
+}
+
+- (void)didClose {
 }
 
 @end

@@ -62,6 +62,10 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
         }
     }
 
+    if (self.readCompletionBlock) {
+        self.readCompletionBlock(str);
+    }
+
     // read
     [[notification object] performSelectorOnMainThread:@selector(readInBackgroundAndNotifyForModes:) withObject:@[NSRunLoopCommonModes] waitUntilDone:NO modes:@[NSRunLoopCommonModes]];
 }

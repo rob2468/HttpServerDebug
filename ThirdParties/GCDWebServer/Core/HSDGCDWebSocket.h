@@ -14,11 +14,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HSDGCDWebSocket : NSObject
 
+/**
+ * judge websocket request with header
+ */
 + (BOOL)isWebSocketRequest:(NSDictionary *)requestHeaders;
 
+/**
+ * init method
+ */
 - (instancetype)initWithServer:(GCDWebServer *)server requestMessage:(CFHTTPMessageRef)requestMessage socket:(CFSocketNativeHandle)socket;
 
-- (void)start;
+/**
+ * send message from server to client
+ */
+- (void)sendMessage:(NSString *)msg;
 
 @end
 
