@@ -84,6 +84,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
+@interface GCDWebServerConnection () <HSDGCDWebSocketDelegate>
+
+@end
+
 @implementation GCDWebServerConnection {
     CFSocketNativeHandle _socket;
     BOOL _virtualHEAD;
@@ -309,7 +313,7 @@ NS_ASSUME_NONNULL_END
                     webSocketClass = [HSDGCDWebSocket class];
                 }
                 self->_webSocket = [[webSocketClass alloc] initWithServer:self->_server requestMessage:self->_requestMessage socket:self->_socket];
-                // TODO notify GCDWebServerConnection closeConnection
+                self->_webSocket.webSocketDelegate = self;
                 return;
             }
 
@@ -439,6 +443,16 @@ NS_ASSUME_NONNULL_END
         CFRelease(_responseMessage);
     }
 }
+
+#pragma mark - HSDGCDWebSocketDelegate
+
+- (void)webSocketDidClose {
+    if (_opened) {
+        [self close];
+    }
+
+    // tell back to server
+    [_server didEndConnection:self];}
 
 @end
 

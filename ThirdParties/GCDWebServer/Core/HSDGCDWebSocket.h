@@ -11,8 +11,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class GCDWebServer;
+@protocol HSDGCDWebSocketDelegate;
 
 @interface HSDGCDWebSocket : NSObject
+
+@property (nonatomic, weak) id<HSDGCDWebSocketDelegate> webSocketDelegate;
 
 /**
  * judge websocket request with header
@@ -28,6 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
  * send message from server to client
  */
 - (void)sendMessage:(NSString *)msg;
+
+@end
+
+@protocol HSDGCDWebSocketDelegate <NSObject>
+
+- (void)webSocketDidClose;
 
 @end
 

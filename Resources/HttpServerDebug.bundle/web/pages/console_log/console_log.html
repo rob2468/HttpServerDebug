@@ -34,6 +34,10 @@ if ('WebSocket' in window) {
   ws.onopen = function () {
     var stateEle = document.getElementById('connection_state');
     stateEle.innerHTML = 'CONNECTED';
+
+    setTimeout(() => {
+               ws.send('我是谁hahah');
+    }, 5000);
   };
   ws.onmessage = function (evt) {
     var needScrollToBottom = false;

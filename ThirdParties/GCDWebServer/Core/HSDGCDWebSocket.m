@@ -11,6 +11,37 @@
 #import "GCDWebServerPrivate.h"
 #import <CommonCrypto/CommonDigest.h>
 
+#define TIMEOUT_NONE          -1
+#define TIMEOUT_REQUEST_BODY  10
+
+#define TAG_HTTP_REQUEST_BODY      100
+#define TAG_HTTP_RESPONSE_HEADERS  200
+#define TAG_HTTP_RESPONSE_BODY     201
+
+#define TAG_PREFIX                 300
+#define TAG_MSG_PLUS_SUFFIX        301
+#define TAG_MSG_WITH_LENGTH        302
+#define TAG_MSG_MASKING_KEY        303
+#define TAG_PAYLOAD_PREFIX         304
+#define TAG_PAYLOAD_LENGTH         305
+#define TAG_PAYLOAD_LENGTH16       306
+#define TAG_PAYLOAD_LENGTH64       307
+
+#define WS_OP_CONTINUATION_FRAME   0
+#define WS_OP_TEXT_FRAME           1
+#define WS_OP_BINARY_FRAME         2
+#define WS_OP_CONNECTION_CLOSE     8
+#define WS_OP_PING                 9
+#define WS_OP_PONG                 10
+
+static inline BOOL WS_PAYLOAD_IS_MASKED(UInt8 frame) {
+    return (frame & 0x80) ? YES : NO;
+}
+
+static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
+    return frame & 0x7F;
+}
+
 @interface NSData (DDData)
 
 - (NSData *)md5Digest;
@@ -26,9 +57,11 @@
 
 @interface HSDGCDWebSocket ()
 
-@property (nonatomic, weak) GCDWebServer *server;
-@property (nonatomic, assign) CFSocketNativeHandle socket;
+@property (nonatomic, weak) GCDWebServer *server;               // web server
+@property (nonatomic, assign) CFSocketNativeHandle socket;      // the socket
 @property (nonatomic, assign) CFHTTPMessageRef requestMessage;
+@property (nonatomic, strong) dispatch_source_t readSource;
+@property (nonatomic, strong) NSData *term;
 
 @end
 
@@ -83,6 +116,10 @@
         self.server = server;
         self.requestMessage = requestMessage;
         self.socket = socket;
+        self.term = [[NSData alloc] initWithBytes:"\xFF" length:1];
+
+        // create the read dispatch source
+        self.readSource = [self createReadDispatchSource];
 
         [self sendResponseHeaders];
         [self didOpen];
@@ -93,6 +130,44 @@
     }
     return self;
 }
+
+- (void)dealloc {
+    dispatch_source_cancel(self.readSource);
+}
+
+
+- (void)closeWebSocket {
+    [self didClose];
+
+    if ([self.webSocketDelegate respondsToSelector:@selector(webSocketDidClose)]) {
+        [self.webSocketDelegate webSocketDidClose];
+    }
+}
+
+- (dispatch_source_t)createReadDispatchSource {
+    dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, self.socket, 0, dispatch_get_global_queue(self.server.dispatchQueuePriority, 0));
+    dispatch_source_set_cancel_handler(source, ^{
+        @autoreleasepool {
+            int result = close(self.socket);
+            if (result != 0) {
+                GWS_LOG_ERROR(@"Failed closing IPv4 WebSocket socket: %s (%i)", strerror(errno), errno);
+            } else {
+                GWS_LOG_DEBUG(@"Did close IPv4 listening socket %i", self.socket);
+            }
+        }
+    });
+    dispatch_source_set_event_handler(source, ^{
+        @autoreleasepool {
+            [self readData:nil withLength:NSUIntegerMax completionBlock:^(BOOL success, NSData *data) {
+                [self handleReceivedData:data];
+            }];
+        }
+    });
+    dispatch_resume(source);
+    return source;
+}
+
+#pragma mark -
 
 - (void)sendResponseHeaders {
     // Request (Draft 75):
@@ -175,9 +250,7 @@
     }
 
     CFDataRef data = CFHTTPMessageCopySerializedMessage(responseMessage);
-    [self writeData:(__bridge NSData*)data withCompletionBlock:^(BOOL sucess) {
-
-    }];
+    [self writeData:(__bridge NSData*)data withCompletionBlock:^(BOOL sucess) {}];
     CFRelease(data);
 }
 
@@ -205,10 +278,105 @@
         [data appendData:msgData];
     }
 
-    [self writeData:data withCompletionBlock:^(BOOL success) {
-
-    }];
+    [self writeData:data withCompletionBlock:^(BOOL success) {}];
 }
+
+// WebSocket data frame structure https://github.com/abbshr/abbshr.github.io/issues/22
+// 0                   1                   2                   3
+// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-------+-+-------------+-------------------------------+
+// |F|R|R|R| opcode|M| Payload len |    Extended payload length    |
+// |I|S|S|S|  (4)  |A|     (7)     |             (16/64)           |
+// |N|V|V|V|       |S|             |   (if payload len==126/127)   |
+// | |1|2|3|       |K|             |                               |
+// +-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +
+// |     Extended payload length continued, if payload len == 127  |
+// + - - - - - - - - - - - - - - - +-------------------------------+
+// |                               |Masking-key, if MASK set to 1  |
+// +-------------------------------+-------------------------------+
+// | Masking-key (continued)       |          Payload Data         |
+// +-------------------------------- - - - - - - - - - - - - - - - +
+// :                     Payload Data continued ...                :
+// + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
+// |                     Payload Data continued ...                |
+// +---------------------------------------------------------------+
+- (void)handleReceivedData:(NSData *)data {
+    NSUInteger curPointPos = 0;     // pointer postion cursor
+    NSUInteger msgLength;           // payload length
+    NSUInteger opCode;
+    BOOL frameMasked;
+    NSData *maskingKey;
+
+    NSData *tmp = [[NSData alloc] initWithBytes:(UInt8 *)[data bytes] length:1];// first byte
+    curPointPos++;
+
+    UInt8 frame = *(UInt8 *)[tmp bytes];
+    if ([self isValidWebSocketFrame:frame]) {
+        opCode = frame & 0x0F;
+    } else {
+        return;
+    }
+
+    tmp = [[NSData alloc] initWithBytes:((UInt8 *)[data bytes] + curPointPos) length:1];
+    curPointPos++;
+
+    frame = *(UInt8 *)[tmp bytes];
+    frameMasked = WS_PAYLOAD_IS_MASKED(frame);
+    NSUInteger length = WS_PAYLOAD_LENGTH(frame);
+
+    if (length <= 125) {
+        if (frameMasked) {
+            maskingKey = [[NSData alloc] initWithBytes:((UInt8 *)[data bytes] + curPointPos) length:4];
+            curPointPos += 4;
+        }
+        msgLength = length;
+    } else if (length == 126) {
+        tmp = [[NSData alloc] initWithBytes:((UInt8 *)[data bytes] + curPointPos) length:2];
+        curPointPos += 2;
+
+        UInt8 *pFrame = (UInt8 *)[tmp bytes];
+        NSUInteger length = ((NSUInteger)pFrame[0] << 8) | (NSUInteger)pFrame[1];
+        if (frameMasked) {
+            maskingKey = [[NSData alloc] initWithBytes:((UInt8 *)[data bytes] + curPointPos) length:4];
+            curPointPos += 4;
+        }
+        msgLength = length;
+    } else {
+        tmp = [[NSData alloc] initWithBytes:((UInt8 *)[data bytes] + curPointPos) length:8];
+        curPointPos += 8;
+        // FIXME: 64bit data size in memory?
+        [self closeWebSocket];
+        return;
+    }
+
+    NSData *remainingData = [[NSData alloc] initWithBytes:((UInt8 *)[data bytes] + curPointPos) length:msgLength];
+    if (frameMasked && maskingKey) {
+        NSMutableData *masked = [remainingData mutableCopy];
+        UInt8 *pData = (UInt8 *)masked.mutableBytes;
+        UInt8 *pMask = (UInt8 *)maskingKey.bytes;
+        for (NSUInteger i = 0; i < msgLength; i++) {
+            pData[i] = pData[i] ^ pMask[i % 4];
+        }
+        remainingData = masked;
+    }
+    if (opCode == WS_OP_TEXT_FRAME) {
+        NSString *msg = [[NSString alloc] initWithBytes:[remainingData bytes] length:msgLength encoding:NSUTF8StringEncoding];
+        [self didReceiveMessage:msg];
+    } else {
+        [self closeWebSocket];
+    }
+}
+
+- (BOOL)isValidWebSocketFrame:(UInt8)frame {
+    NSUInteger rsv =  frame & 0x70;
+    NSUInteger opcode = frame & 0x0F;
+    if (rsv || (3 <= opcode && opcode <= 7) || (0xB <= opcode && opcode <= 0xF)) {
+        return NO;
+    }
+    return YES;
+}
+
+#pragma mark - basic write and read operation
 
 - (void)writeData:(NSData *)data withCompletionBlock:(void(^)(BOOL))block {
     dispatch_data_t buffer = dispatch_data_create(data.bytes, data.length, dispatch_get_global_queue(self.server.dispatchQueuePriority, 0), ^{
@@ -230,10 +398,42 @@
 #endif
 }
 
+- (void)readData:(NSData *)data withLength:(NSUInteger)length completionBlock:(void(^)(BOOL success, NSData *data))block {
+    dispatch_read(self.socket, length, dispatch_get_global_queue(self.server.dispatchQueuePriority, 0), ^(dispatch_data_t buffer, int error) {
+        @autoreleasepool {
+            if (error == 0) {
+                size_t size = dispatch_data_get_size(buffer);
+                if (size > 0) {
+                    NSMutableData *mData;
+                    if (data) {
+                        mData = [[NSMutableData alloc] initWithData:data];
+                    } else {
+                        mData = [[NSMutableData alloc] init];
+                    }
+                    dispatch_data_apply(buffer, ^bool(dispatch_data_t region, size_t chunkOffset, const void* chunkBytes, size_t chunkSize) {
+                        [mData appendBytes:chunkBytes length:chunkSize];
+                        return true;
+                    });
+                    block(YES, mData);
+                } else {
+                    GWS_LOG_WARNING(@"No data received from socket %i", self.socket);
+                    block(NO, nil);
+                }
+            } else {
+                GWS_LOG_ERROR(@"Error while reading from socket %i: %s (%i)", self.socket, strerror(error), error);
+                block(NO, nil);
+            }
+        }
+    });
+}
+
+#pragma mark - subclassing method
+
 - (void)didOpen {
 }
 
 - (void)didReceiveMessage:(NSString *)msg {
+
 }
 
 - (void)didClose {
