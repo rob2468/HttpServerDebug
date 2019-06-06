@@ -228,7 +228,6 @@ static void _ExecuteMainThreadRunLoopSources() {
     GWS_DCHECK([NSThread isMainThread]);
     GWS_DCHECK(_connected == NO);
     _connected = YES;
-    GWS_LOG_DEBUG(@"Did connect");
 
 #if TARGET_OS_IPHONE
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
@@ -465,8 +464,7 @@ static inline id _GetOption(NSDictionary* options, NSString* key, id defaultValu
                 int noSigPipe = 1;
                 setsockopt(socket, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));  // Make sure this socket cannot generate SIG_PIPE
 
-                GCDWebServerConnection* connection = [[self->_connectionClass alloc] initWithServer:self localAddress:localAddress remoteAddress:remoteAddress socket:socket];  // Connection will automatically retain itself while opened
-                [connection self];  // Prevent compiler from complaining about unused variable / useless statement
+                GCDWebServerConnection *connection = [[self->_connectionClass alloc] initWithServer:self localAddress:localAddress remoteAddress:remoteAddress socket:socket];  // Connection will automatically retain itself while opened
 
                 [self->_connectionsLock lock];
                 [self->_connections addObject:connection];

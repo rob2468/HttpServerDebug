@@ -57,11 +57,14 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
 
 @interface HSDGCDWebSocket ()
 
-@property (nonatomic, weak) GCDWebServer *server;               // web server
-@property (nonatomic, assign) CFSocketNativeHandle socket;      // the socket
+@property (nonatomic, weak) GCDWebServer *server;                   // web server
+@property (nonatomic, assign) CFSocketNativeHandle socket;          // the socket
 @property (nonatomic, assign) CFHTTPMessageRef requestMessage;
-@property (nonatomic, strong) dispatch_source_t readSource;
+@property (nonatomic, strong) dispatch_source_t readSource;         // read dispatch source
 @property (nonatomic, strong) NSData *term;
+
+@property (nonatomic, assign) BOOL isReadSourceSuspended;           // read dispatch source is suspended or not
+@property (nonatomic, assign) NSUInteger socketFDBytesAvailable;    // bytes number available to read
 
 @end
 
@@ -117,50 +120,45 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
         self.requestMessage = requestMessage;
         self.socket = socket;
         self.term = [[NSData alloc] initWithBytes:"\xFF" length:1];
+        self.socketFDBytesAvailable = 0;
+        self.isReadSourceSuspended = NO;
 
         // create the read dispatch source
         self.readSource = [self createReadDispatchSource];
 
         [self sendResponseHeaders];
         [self didOpen];
-
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self sendMessage:@"wowowowowow"];
-        });
     }
     return self;
 }
 
 - (void)dealloc {
-    dispatch_source_cancel(self.readSource);
+    GWS_LOG_DEBUG(@"HSDGCDWebSocket dealloc");
 }
 
-
 - (void)closeWebSocket {
-    [self didClose];
+    GWS_LOG_DEBUG(@"HSDGCDWebSocket closeWebSocket");
+    int result = close(self.socket);
+    if (result != 0) {
+        GWS_LOG_ERROR(@"Failed closing WebSocket socket: %s (%i)", strerror(errno), errno);
+    } else {
+        GWS_LOG_DEBUG(@"Did close WebSocket on socket %i", self.socket);
+    }
 
     if ([self.webSocketDelegate respondsToSelector:@selector(webSocketDidClose)]) {
         [self.webSocketDelegate webSocketDidClose];
     }
+
+    [self didClose];
 }
 
 - (dispatch_source_t)createReadDispatchSource {
     dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, self.socket, 0, dispatch_get_global_queue(self.server.dispatchQueuePriority, 0));
-    dispatch_source_set_cancel_handler(source, ^{
-        @autoreleasepool {
-            int result = close(self.socket);
-            if (result != 0) {
-                GWS_LOG_ERROR(@"Failed closing IPv4 WebSocket socket: %s (%i)", strerror(errno), errno);
-            } else {
-                GWS_LOG_DEBUG(@"Did close IPv4 listening socket %i", self.socket);
-            }
-        }
-    });
+    __weak HSDGCDWebSocket *weakSelf = self;
     dispatch_source_set_event_handler(source, ^{
         @autoreleasepool {
-            [self readData:nil withLength:NSUIntegerMax completionBlock:^(BOOL success, NSData *data) {
-                [self handleReceivedData:data];
-            }];
+            NSInteger socketFDBytesAvailable = dispatch_source_get_data(source);
+            [weakSelf doReadData:socketFDBytesAvailable];
         }
     });
     dispatch_resume(source);
@@ -281,6 +279,26 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
     [self writeData:data withCompletionBlock:^(BOOL success) {}];
 }
 
+- (void)doReadData:(NSUInteger)socketFDBytesAvailable {
+    if (socketFDBytesAvailable > 0) {
+        // socket has data to read
+        if (self.socketFDBytesAvailable == 0) {
+            // read dispatch source event first triggered
+            self.socketFDBytesAvailable = socketFDBytesAvailable;
+
+            [self readData:nil withLength:NSUIntegerMax completionBlock:^(BOOL success, NSData *data) {
+                [self handleReceivedData:data];
+            }];
+        } else {
+            // already received read event
+            GWS_LOG_WARNING(@"HSDGCDWebSocket dispatch_suspend read source");
+
+            dispatch_suspend(self.readSource);
+            self.isReadSourceSuspended = YES;
+        }
+    }
+}
+
 // WebSocket data frame structure https://github.com/abbshr/abbshr.github.io/issues/22
 // 0                   1                   2                   3
 // 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -314,6 +332,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
     if ([self isValidWebSocketFrame:frame]) {
         opCode = frame & 0x0F;
     } else {
+        [self closeWebSocket];
         return;
     }
 
@@ -362,6 +381,12 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
     if (opCode == WS_OP_TEXT_FRAME) {
         NSString *msg = [[NSString alloc] initWithBytes:[remainingData bytes] length:msgLength encoding:NSUTF8StringEncoding];
         [self didReceiveMessage:msg];
+
+        if (self.isReadSourceSuspended) {
+            // current reading finished, prepare for the next read event
+            dispatch_resume(self.readSource);
+            self.socketFDBytesAvailable = 0;
+        }
     } else {
         [self closeWebSocket];
     }

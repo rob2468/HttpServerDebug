@@ -301,10 +301,20 @@ NS_ASSUME_NONNULL_END
             }
             NSDictionary *requestHeaders = CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(self->_requestMessage));  // Header names are case-insensitive but CFHTTPMessageCopyAllHeaderFields() will standardize the common ones
 
+            NSURL *requestURL = CFBridgingRelease(CFHTTPMessageCopyRequestURL(self->_requestMessage));
+
+            NSString *urlPath = requestURL ? CFBridgingRelease(CFURLCopyPath((CFURLRef)requestURL)) : nil;  // Don't use -[NSURL path] which strips the ending slash
+            if (urlPath == nil) {
+                urlPath = @"/";  // CFURLCopyPath() returns NULL for a relative URL with path "//" contrary to -[NSURL path] which returns "/"
+            }
+            NSString *requestPath = urlPath ? GCDWebServerUnescapeURLString(urlPath) : nil;
+            NSString *queryString = requestURL ? CFBridgingRelease(CFURLCopyQueryString((CFURLRef)requestURL, NULL)) : nil;  // Don't use -[NSURL query] to make sure query is not unescaped;
+            NSDictionary *requestQuery = queryString ? GCDWebServerParseURLEncodedForm(queryString) : @{};
+            GWS_LOG_DEBUG(@"New Connection, request url: %@, socket: %i", requestURL.absoluteString, self->_socket);
+
+            // WebSocket protocol
             BOOL isWebSocketRequest = [HSDGCDWebSocket isWebSocketRequest:requestHeaders];
             if (isWebSocketRequest) {
-                // WebSocket protocol
-                GWS_LOG_INFO(@"websocket: %@", requestHeaders);
                 Class webSocketClass;
                 if (self->_server.webSocketMatchBlock) {
                     webSocketClass = self->_server.webSocketMatchBlock();
@@ -318,15 +328,6 @@ NS_ASSUME_NONNULL_END
             }
 
             // HTTP protocol
-            NSURL* requestURL = CFBridgingRelease(CFHTTPMessageCopyRequestURL(self->_requestMessage));
-
-            NSString* urlPath = requestURL ? CFBridgingRelease(CFURLCopyPath((CFURLRef)requestURL)) : nil;  // Don't use -[NSURL path] which strips the ending slash
-            if (urlPath == nil) {
-                urlPath = @"/";  // CFURLCopyPath() returns NULL for a relative URL with path "//" contrary to -[NSURL path] which returns "/"
-            }
-            NSString* requestPath = urlPath ? GCDWebServerUnescapeURLString(urlPath) : nil;
-            NSString* queryString = requestURL ? CFBridgingRelease(CFURLCopyQueryString((CFURLRef)requestURL, NULL)) : nil;  // Don't use -[NSURL query] to make sure query is not unescaped;
-            NSDictionary* requestQuery = queryString ? GCDWebServerParseURLEncodedForm(queryString) : @{};
             if (requestMethod && requestURL && requestHeaders && requestPath && requestQuery) {
                 for (self->_handler in self->_server.handlers) {
                     self->_request = self->_handler.matchBlock(requestMethod, requestURL, requestHeaders, requestPath, requestQuery);
@@ -452,7 +453,8 @@ NS_ASSUME_NONNULL_END
     }
 
     // tell back to server
-    [_server didEndConnection:self];}
+    [_server didEndConnection:self];
+}
 
 @end
 
