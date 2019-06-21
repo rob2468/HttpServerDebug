@@ -6,11 +6,11 @@
 //  Copyright © 2019 chenjun. All rights reserved.
 //
 
-#import "HSDGCDWebSocket.h"
+#import "HSDGWebSocket.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface HSDWebSocketHandler : HSDGCDWebSocket
+@interface HSDWebSocketHandler : HSDGWebSocket
 
 @end
 

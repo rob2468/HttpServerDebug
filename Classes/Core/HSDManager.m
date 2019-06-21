@@ -10,12 +10,12 @@
 #import "HSDDelegate.h"
 #import "HSDDefine.h"
 #import "HSDHostNameResolveComponent.h"
-#import "GCDWebServer.h"
-#import "GCDWebServerRequest.h"
-#import "GCDWebServerDataRequest.h"
-#import "GCDWebServerMultiPartFormRequest.h"
-#import "GCDWebServerResponse.h"
-#import "GCDWebServerHTTPStatusCodes.h"
+#import "HSDGWebServer.h"
+#import "HSDGWebServerRequest.h"
+#import "HSDGWebServerDataRequest.h"
+#import "HSDGWebServerMultiPartFormRequest.h"
+#import "HSDGWebServerResponse.h"
+#import "HSDGWebServerHTTPStatusCodes.h"
 #import "HSDRequestHandler.h"
 #import "HSDWebSocketHandler.h"
 
@@ -26,7 +26,7 @@ static NSUInteger kHttpServerPortDefault = 0;
 
 @interface HSDManager ()
 
-@property (nonatomic, strong) GCDWebServer *server;
+@property (nonatomic, strong) HSDGWebServer *server;
 @property (nonatomic, copy) NSString *dbFilePath;       // default inspect db file path
 @property (nonatomic, assign) NSUInteger serverPort;        // serverPort
 @property (nonatomic, copy) NSString *serverName;
@@ -93,14 +93,14 @@ static NSUInteger kHttpServerPortDefault = 0;
 
 + (NSString *)fetchHttpServerName {
     HSDManager *manager = [HSDManager sharedInstance];
-    GCDWebServer *server = manager.server;
+    HSDGWebServer *server = manager.server;
     NSString *serviceName = server.bonjourName;
     return serviceName;
 }
 
 + (BOOL)isHttpServerRunning {
     HSDManager *manager = [HSDManager sharedInstance];
-    GCDWebServer *server = manager.server;
+    HSDGWebServer *server = manager.server;
     BOOL isRunning = server.isRunning;
     return isRunning;
 }
@@ -112,30 +112,30 @@ static NSUInteger kHttpServerPortDefault = 0;
     }
 
     HSDManager *manager = [HSDManager sharedInstance];
-    GCDWebServer *server = [[GCDWebServer alloc] init];
+    HSDGWebServer *server = [[HSDGWebServer alloc] init];
 
     // set http server parameters
     // add handler
-    [server addHandlerWithMatchBlock:^GCDWebServerRequest * _Nullable(NSString * _Nonnull requestMethod, NSURL * _Nonnull requestURL, NSDictionary * _Nonnull requestHeaders, NSString * _Nonnull urlPath, NSDictionary * _Nonnull urlQuery) {
-        GCDWebServerRequest *request;
+    [server addHandlerWithMatchBlock:^HSDGWebServerRequest * _Nullable(NSString * _Nonnull requestMethod, NSURL * _Nonnull requestURL, NSDictionary * _Nonnull requestHeaders, NSString * _Nonnull urlPath, NSDictionary * _Nonnull urlQuery) {
+        HSDGWebServerRequest *request;
         if ([requestMethod isEqualToString:@"POST"]) {
             NSString *action = [urlQuery objectForKey:@"action"];
             if ([action isEqualToString:@"upload"]) {
-                request = [[GCDWebServerMultiPartFormRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
+                request = [[HSDGWebServerMultiPartFormRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
             }
 
             if (!request) {
-                request = [[GCDWebServerDataRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
+                request = [[HSDGWebServerDataRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
             }
         }
 
         if (!request) {
             // generic request
-            request = [[GCDWebServerRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
+            request = [[HSDGWebServerRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:urlPath query:urlQuery];
         }
         return request;
-    } asyncProcessBlock:^(__kindof GCDWebServerRequest * _Nonnull request, GCDWebServerCompletionBlock  _Nonnull completionBlock) {
-        GCDWebServerResponse *response;
+    } asyncProcessBlock:^(__kindof HSDGWebServerRequest * _Nonnull request, HSDGWebServerCompletionBlock  _Nonnull completionBlock) {
+        HSDGWebServerResponse *response;
         response = [HSDRequestHandler handleRequest:request];
         if (completionBlock) {
             completionBlock(response);
@@ -165,7 +165,7 @@ static NSUInteger kHttpServerPortDefault = 0;
     NSString *bonjourName = manager.serverName;
 
     // server log level
-    [GCDWebServer setLogLevel:0];
+    [HSDGWebServer setLogLevel:0];
 
     // start server
     BOOL isSucc = [server startWithPort:port bonjourName:bonjourName];

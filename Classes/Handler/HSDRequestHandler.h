@@ -8,11 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-@class GCDWebServerRequest;
-@class GCDWebServerResponse;
+@class HSDGWebServerRequest;
+@class HSDGWebServerResponse;
 
 @interface HSDRequestHandler : NSObject
 
-+ (GCDWebServerResponse *)handleRequest:(GCDWebServerRequest *)request;
++ (HSDGWebServerResponse *)handleRequest:(HSDGWebServerRequest *)request;
 
 @end

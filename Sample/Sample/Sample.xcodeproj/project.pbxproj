@@ -19,7 +19,6 @@
 		8F8973C820BED5A80081CA70 /* HSDSampleCategoryEditController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F8973BC20BED5A70081CA70 /* HSDSampleCategoryEditController.m */; };
 		8F8973CA20BED5A80081CA70 /* HSDSampleDBInspectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F8973C020BED5A70081CA70 /* HSDSampleDBInspectViewController.m */; };
 		8F8973CC20BED5A80081CA70 /* HSDSampleHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F8973C420BED5A70081CA70 /* HSDSampleHomeViewController.m */; };
-		8F8A4877218DA0A100B2770B /* libGCDWebServer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8A4876218DA0A100B2770B /* libGCDWebServer.a */; };
 		8FC504A920BED728007D55B9 /* HSDSampleViewDebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FC504A720BED727007D55B9 /* HSDSampleViewDebugViewController.m */; };
 		8FEFE7091F3D6FE100D841E0 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FEFE7081F3D6FE100D841E0 /* libxml2.tbd */; };
 		8FF652511FBBDAA200E4F924 /* libFMDB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FF652571FBBDAA200E4F924 /* libFMDB.a */; };
@@ -72,7 +71,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F8A4877218DA0A100B2770B /* libGCDWebServer.a in Frameworks */,
 				8FF652511FBBDAA200E4F924 /* libFMDB.a in Frameworks */,
 				8FF652521FBBDAA200E4F924 /* libHttpServerDebug.a in Frameworks */,
 				8FEFE7091F3D6FE100D841E0 /* libxml2.tbd in Frameworks */,

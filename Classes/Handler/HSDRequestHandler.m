@@ -12,18 +12,18 @@
 #import "HSDComponentMiddleware.h"
 #import "HSDResponseInfo.h"
 #import "HSDDBInspectComponent.h"
-#import "GCDWebServerRequest.h"
-#import "GCDWebServerDataRequest.h"
-#import "GCDWebServerMultiPartFormRequest.h"
-#import "GCDWebServerResponse.h"
-#import "GCDWebServerFileResponse.h"
-#import "GCDWebServerDataResponse.h"
-#import "GCDWebServerHTTPStatusCodes.h"
+#import "HSDGWebServerRequest.h"
+#import "HSDGWebServerDataRequest.h"
+#import "HSDGWebServerMultiPartFormRequest.h"
+#import "HSDGWebServerResponse.h"
+#import "HSDGWebServerFileResponse.h"
+#import "HSDGWebServerDataResponse.h"
+#import "HSDGWebServerHTTPStatusCodes.h"
 
 @implementation HSDRequestHandler
 
-+ (GCDWebServerResponse *)handleRequest:(GCDWebServerRequest *)request {
-    GCDWebServerResponse *response;
++ (HSDGWebServerResponse *)handleRequest:(HSDGWebServerRequest *)request {
+    HSDGWebServerResponse *response;
     NSString *documentRoot = [HSDManager fetchDocumentRoot];
 
     NSString *path = request.path;
@@ -72,9 +72,9 @@
                 // file_explorer.html
                 NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
                 htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];  // localization
-                response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
+                response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
             } else {
-                response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+                response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
             }
         } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
             // database_inspect
@@ -90,20 +90,20 @@
 
                     // localization
                     htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
-                    response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
+                    response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
                 } else {
                     // show prompt message
                     NSDictionary *localStrings = [HSDComponentMiddleware localizationJSON:languageType];
                     NSString *htmlText = [localStrings objectForKey:@"LocalizedDBInspectDBDisconnectedPromptHtml"];
-                    response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlText];
+                    response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlText];
                 }
             } else {
-                response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+                response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
             }
         } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {
             // view_debug.html
             NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-            response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+            response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
         } else if ([secondPath isEqualToString:kHSDComponentSendInfo]) {
             // send_info
             NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
@@ -111,9 +111,9 @@
                 // send_info.html
                 NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
                 htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
-                response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
+                response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
             } else {
-                response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+                response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
             }
         } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
             // console_log
@@ -122,19 +122,19 @@
                 // console_log.html
                 NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
                 htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
-                response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
+                response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
             } else {
-                response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+                response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
             }
         }
     } else if ([firstPath isEqualToString:@"api"]) {
         // api requests
         if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
             // file_explorer api
-            if ([request isKindOfClass:[GCDWebServerMultiPartFormRequest class]]) {
+            if ([request isKindOfClass:[HSDGWebServerMultiPartFormRequest class]]) {
                 // upload file
-                GCDWebServerMultiPartFormRequest *uploadRequest = (GCDWebServerMultiPartFormRequest *)request;
-                GCDWebServerMultiPartFile *file = [uploadRequest firstFileForControlName:@"selectedfile"];
+                HSDGWebServerMultiPartFormRequest *uploadRequest = (HSDGWebServerMultiPartFormRequest *)request;
+                HSDGWebServerMultiPartFile *file = [uploadRequest firstFileForControlName:@"selectedfile"];
                 NSString *temporaryPath = [file.temporaryPath copy];    // uploaded temporary file path
 
                 // target directory and file name
@@ -142,46 +142,46 @@
                 NSString *targetFileName = [file.fileName copy];
 
                 HSDResponseInfo *responseInfo = [HSDComponentMiddleware uploadTemporaryFile:temporaryPath targetDirectory:targetDirectory fileName:targetFileName];
-                response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+                response = [[HSDGWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
             } else {
                 // general request
                 HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchFileExplorerAPIResponseInfo:query];
-                response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+                response = [[HSDGWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
             }
         } else if ([secondPath isEqualToString:kHSDComponentFilePreview]) {
             // file_preview api
             HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchFilePreviewResponseInfo:query];
-            response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+            response = [[HSDGWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
         } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
             // database_inspect api
             HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchDatabaseAPIResponseInfo:query];
-            response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+            response = [[HSDGWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
         } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {
             // view_debug api
             HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchViewDebugAPIResponseInfo:query];
-            response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+            response = [[HSDGWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
         } else if ([secondPath isEqualToString:kHSDComponentSendInfo]) {
             // send_info api
-            if ([request isKindOfClass:[GCDWebServerDataRequest class]]) {
+            if ([request isKindOfClass:[HSDGWebServerDataRequest class]]) {
                 // information sent with POST method
-                GCDWebServerDataRequest *dataRequest = (GCDWebServerDataRequest*)request;
+                HSDGWebServerDataRequest *dataRequest = (HSDGWebServerDataRequest*)request;
                 NSData *data = dataRequest.data;
                 if (data.length >= 0) {
                     NSString *infoStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                     HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchSendInfoAPIResponseInfo:infoStr];
-                    response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+                    response = [[HSDGWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
                 }
             } else {
                 // information sent with GET method
                 NSString *infoStr = [query objectForKey:@"info"];
                 infoStr = [infoStr stringByRemovingPercentEncoding];
                 HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchSendInfoAPIResponseInfo:infoStr];
-                response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+                response = [[HSDGWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
             }
         } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
             // console_log api
             HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchConsoleLogResponseInfo:query];
-            response = [[GCDWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
+            response = [[HSDGWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
         } else if ([secondPath isEqualToString:@"localization"]) {
             // localization api
             NSDictionary *json = [HSDComponentMiddleware localizationJSON:languageType];
@@ -191,17 +191,17 @@
                  @"result": json,
                  };
             NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
-            response = [[GCDWebServerDataResponse alloc] initWithData:data contentType:@"text/plain;charset=utf-8"];
+            response = [[HSDGWebServerDataResponse alloc] initWithData:data contentType:@"text/plain;charset=utf-8"];
         }
     } else if ([firstPath isEqualToString:@"favicon.ico"]) {
         // favicon
         NSString *relativePath = [NSString stringWithFormat:@"resources/favicon.ico"];
         NSString *documentPath = [documentRoot stringByAppendingPathComponent:relativePath];
-        response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+        response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
     } else if ([firstPath isEqualToString:@"resources"]) {
         // set resources Content-Type manually
         NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-        response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+        response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
     } else if (firstPath.length == 0) {
         // index.html
         // read html file
@@ -210,14 +210,14 @@
 
         // replace localized string
         htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
-        response = [[GCDWebServerDataResponse alloc] initWithHTML:htmlStr];
+        response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
     } else {
         NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-        response = [[GCDWebServerFileResponse alloc] initWithFile:documentPath];
+        response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
     }
 
     if (!response) {
-        response = [[GCDWebServerResponse alloc] initWithStatusCode:kGCDWebServerHTTPStatusCode_BadRequest];
+        response = [[HSDGWebServerResponse alloc] initWithStatusCode:kGCDWebServerHTTPStatusCode_BadRequest];
     }
     return response;
 }
