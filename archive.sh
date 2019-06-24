@@ -5,7 +5,6 @@ CONFIGURATION_SETTING="Release"
 
 # Dependencies onfiguration
 FMDB_INCLUDE=1
-GCDWebServer_INCLUDE=1
 
 # Constant variables
 PROJECT_NAME="HttpServerDebug"
@@ -27,10 +26,6 @@ build_combine() {
     if [[ FMDB_INCLUDE -eq 1 ]]; then
         eval ${build_cmd}' -target "FMDB"'
         combine_cmd=${combine_cmd}' "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${SDK}/libFMDB.a"'
-    fi
-    if [[ GCDWebServer_INCLUDE -eq 1 ]]; then
-        eval ${build_cmd}' -target "GCDWebServer"'
-        combine_cmd=${combine_cmd}' "${BUILD_FOLDER_NAME}/${CONFIGURATION_SETTING}-${SDK}/libGCDWebServer.a"'
     fi
     eval ${combine_cmd}
 }
