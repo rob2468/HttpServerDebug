@@ -165,7 +165,7 @@ static NSUInteger kHttpServerPortDefault = 0;
     NSString *bonjourName = manager.serverName;
 
     // server log level
-    [HSDGWebServer setLogLevel:0];
+    [HSDGWebServer setLogLevel:4];
 
     // start server
     BOOL isSucc = [server startWithPort:port bonjourName:bonjourName];
