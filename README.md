@@ -27,12 +27,11 @@ Requirements:
 
 In the root directory, there is the "archive.sh" script. `cd` to the root directory, then `bash archive.sh`. This script will generate files in the "output" folder in the same directory. The "output" folder contains three kinds of files, headers, library and bundle. These are all files that needed.
 
-HttpServerDebug utilizes some third party libraries, GCDWebServer and FMDB. "archive.sh" script will compile all source files and integrate all contents in one static library, libHttpServerDebug.a. But sometimes you may want to exclude some third party libraries if your project has already import. You can update "archive.sh". For example, if you want to remove FMDB, set `FMDB_INCLUDE=0`.
+HttpServerDebug utilizes some third party libraries, e.g. FMDB. "archive.sh" script will compile all source files and integrate all contents in one static library, libHttpServerDebug.a. But sometimes you may want to exclude some third party libraries if your project has already import. You can update "archive.sh". For example, if you want to remove FMDB, set `FMDB_INCLUDE=0`.
 
 ```shell
 # Dependencies onfiguration
 FMDB_INCLUDE=0            # exclude FMDB
-GCDWebServer_INCLUDE=1
 ```
 
 ### Source code way
