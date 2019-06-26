@@ -12,6 +12,85 @@
 
 @implementation HSDFilePreviewComponent
 
++ (NSData *)fetchContentsOfStandardUserDefaults {
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+    NSDictionary *serializableDict = [self fetchSerializableDictionary:dict];
+    NSError *error;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:serializableDict options:(NSJSONWritingPrettyPrinted) error:&error];
+    return data;
+}
+
+/**
+ *  get dictionary, that is valid for [NSJSONSerialization dataWithJSONObject:options:error:];
+ */
++ (NSDictionary *)fetchSerializableDictionary:(NSDictionary *)dict {
+    NSMutableDictionary *retDict = [[NSMutableDictionary alloc] init];
+    NSArray *allKeys = [dict allKeys];
+    for (id ele in allKeys) {
+        if ([ele isKindOfClass:[NSString class]]) {
+            // valid key
+            id value = [dict objectForKey:ele];
+            id val = [self fetchSerializableObject:value];
+            if (val) {
+                [retDict setObject:val forKey:ele];
+            }
+        }
+    }
+    return retDict;
+}
+
+/**
+ *  get arrary, that is valid for [NSJSONSerialization dataWithJSONObject:options:error:];
+ */
++ (NSArray *)fetchSerializableArray:(NSArray *)arr {
+    NSMutableArray *retArr = [[NSMutableArray alloc] init];
+    for (id value in arr) {
+        id val = [self fetchSerializableObject:value];
+        if (val) {
+            [retArr addObject:val];;
+        }
+    }
+    return retArr;
+}
+
+/**
+ *  get object, that is valid for [NSJSONSerialization dataWithJSONObject:options:error:];
+ */
++ (id)fetchSerializableObject:(id)value {
+    id retVal;
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss zzz"];
+
+    if ([value isKindOfClass:[NSString class]]
+        || [value isKindOfClass:[NSNumber class]]) {
+        // NSString or NSNumber value
+        retVal = value;
+    } else if ([value isKindOfClass:[NSData class]]) {
+        // NSDate value
+        NSString *str = [[NSString alloc] initWithData:value encoding:(NSASCIIStringEncoding)];
+        if (str) {
+            retVal = str;
+        }
+    } else if ([value isKindOfClass:[NSDate class]]) {
+        // NSDate value
+        NSString *dateStr = [dateFormatter stringFromDate:(NSDate *)value];
+        retVal = dateStr;
+    } else if ([value isKindOfClass:[NSDictionary class]]) {
+        // NSDictionary value
+        NSDictionary *dictVal = [self fetchSerializableDictionary:(NSDictionary *)value];
+        if (dictVal) {
+            retVal = dictVal;
+        }
+    } else if ([value isKindOfClass:[NSArray class]]) {
+        // NSArray value
+        NSArray *arrVal = [self fetchSerializableArray:(NSArray *)value];
+        if (arrVal) {
+            retVal = arrVal;
+        }
+    }
+    return retVal;
+}
+
 + (NSData *)fetchContentsWithFilePath:(NSString *)filePath contentType:(NSString **)contentType {
     NSData *data;
     // generate response data

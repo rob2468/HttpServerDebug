@@ -11,6 +11,11 @@
 @interface HSDFilePreviewComponent : NSObject
 
 /**
+ *  return contents of standardUserDefaults
+ */
++ (NSData *)fetchContentsOfStandardUserDefaults;
+
+/**
  *  return contents of file
  */
 + (NSData *)fetchContentsWithFilePath:(NSString *)filePath contentType:(NSString **)contentType;

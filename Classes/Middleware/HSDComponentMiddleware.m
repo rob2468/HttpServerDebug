@@ -306,9 +306,9 @@
         filePath = [filePath stringByRemovingPercentEncoding];
         NSData *data;
         if ([filePath isEqualToString:@"standardUserDefaults"]) {
-            NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
-            NSError *error;
-            data = [NSJSONSerialization dataWithJSONObject:dict options:(NSJSONWritingPrettyPrinted) error:&error];
+            // contents of standardUserDefaults
+            data = [HSDFilePreviewComponent fetchContentsOfStandardUserDefaults];
+
             responseInfo.data = data;
             responseInfo.contentType = @"text/plain;charset=utf-8";
         } else {
