@@ -12,7 +12,6 @@
 @implementation HSDWebSocketHandler
 
 - (void)didOpen {
-    return;
     // redirect stderr
     [HSDComponentMiddleware consoleLogRedirectStandardErrorOutput:^(NSString *logStr) {
         [self sendMessage:logStr];
@@ -24,7 +23,6 @@
 }
 
 - (void)didClose {
-    return;
     // reset stderr
     [HSDComponentMiddleware consoleLogRecoverStandardErrorOutput];
 }

@@ -180,8 +180,6 @@
             }
         } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
             // console_log api
-            HSDResponseInfo *responseInfo = [HSDComponentMiddleware fetchConsoleLogResponseInfo:query];
-            response = [[HSDGWebServerDataResponse alloc] initWithData:responseInfo.data contentType:responseInfo.contentType];
         } else if ([secondPath isEqualToString:@"localization"]) {
             // localization api
             NSDictionary *json = [HSDComponentMiddleware localizationJSON:languageType];

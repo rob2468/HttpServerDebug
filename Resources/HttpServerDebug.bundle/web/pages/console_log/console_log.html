@@ -4,23 +4,9 @@
 <meta charset="utf-8">
 <title>控制台日志</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style type="text/css">
-#state-header {
-  position: absolute;
-  top: 0;
-  height: 60px;
-  left: 0;
-  right: 0;
-}
-#logs-content {
-  position: absolute;
-  top: 60px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow-y: scroll;
-}
-</style>
+<link rel="text/css" href="./console_log.css" />
+<script src="../../util.js"></script>
+<script src="./console_log.js"></script>
 </head>
 <body>
 <div id="state-header">
@@ -28,43 +14,5 @@
   <hr>
 </div>
 <div id="logs-content"></div>
-<script type="text/javascript">
-if ('WebSocket' in window) {
-  var ws = new WebSocket('ws://localhost:5555');
-  ws.onopen = function () {
-    var stateEle = document.getElementById('connection_state');
-    stateEle.innerHTML = 'CONNECTED';
-
-    setTimeout(() => {
-      ws.send('我是谁hahah');
-    }, 5000);
-    setTimeout(() => {
-      ws.send('你是谁hahah');
-    }, 10000);
-  };
-  ws.onmessage = function (evt) {
-    var needScrollToBottom = false;
-    var logsEle = document.getElementById('logs-content');
-    if (logsEle.scrollTop + logsEle.clientHeight === logsEle.scrollHeight) {
-      needScrollToBottom = true;
-    }
-    // show log string
-    var htmlStr = '<p>' + evt.data + '</p>';
-    logsEle.insertAdjacentHTML('beforeend', htmlStr);
-    // auto scroll to bottom
-    if (needScrollToBottom) {
-      logsEle.scrollTop = logsEle.scrollHeight - logsEle.clientHeight;
-    }
-  };
-  ws.onclose = function () {
-    var stateEle = document.getElementById('connection_state');
-    stateEle.innerHTML = 'DISCONNECTED';
-  };
-  ws.onerror = function () {
-  };
-} else {
-  alert('Browser doesn\'t support WebSocket!');
-}
-</script>
 </body>
 </html>

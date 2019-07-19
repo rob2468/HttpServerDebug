@@ -14,7 +14,6 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
 @interface HSDConsoleLogComponent ()
 
 @property (nonatomic, assign) int stdErrFd;                       // saved origin stderr
-@property (nonatomic, strong) NSMutableArray<NSString *> *consoleLogs;  // "products"
 
 @end
 
@@ -24,7 +23,6 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
     self = [super init];
     if (self) {
         self.stdErrFd = kStdErrIllegalFd;
-        self.consoleLogs = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -40,27 +38,10 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
     }
 }
 
-- (NSArray<NSString *> *)consumeLogs {
-    NSArray *logs;
-    @synchronized (self) {
-        // consume
-        logs = [self.consoleLogs copy];
-        [self.consoleLogs removeAllObjects];
-    }
-    return logs;
-}
-
 - (void)redirectReadCompletionNotificationReceived:(NSNotification *)notification {
     // parse data
     NSData *data = [[notification userInfo] objectForKey:NSFileHandleNotificationDataItem];
     NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-
-    @synchronized (self) {
-        // produce
-        if (str.length > 0) {
-            [self.consoleLogs addObject:str];
-        }
-    }
 
     if (self.readCompletionBlock) {
         self.readCompletionBlock(str);
@@ -103,10 +84,6 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
 }
 
 -(void)recoverStandardErrorOutput {
-    @synchronized (self) {
-        [self.consoleLogs removeAllObjects];
-    }
-
     // remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleReadCompletionNotification object:nil];
 

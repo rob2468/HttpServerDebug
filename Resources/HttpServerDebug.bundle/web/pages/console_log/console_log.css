@@ -1,22 +1,15 @@
-body {
-    background-color: white;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 14px;
-    text-align: left;
-    width: auto;
-}
 #state-header {
     position: absolute;
     top: 0;
     height: 60px;
     left: 0;
     right: 0;
-}
-#log-messages {
+  }
+  #logs-content {
     position: absolute;
-    top: 100px;
+    top: 60px;
     bottom: 0;
     left: 0;
     right: 0;
     overflow-y: scroll;
-}
+  }
