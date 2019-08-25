@@ -13,55 +13,61 @@
 <link rel="stylesheet" href="view_debug.css">
 </head>
 <body>
-
+<!-- canvas -->
 <div class="view-hierarchy-area">
-    <div id="canvas-frame"></div>
+  <div id="canvas-frame"></div>
 </div>
 
+<!-- navigation siderbar -->
 <div class="sidebar navigation-sidebar active">
-    <div class="container">
-        <div id="view-hierarchy-list">
-        </div>
-    </div>
-    <div class="split-handler"></div>
+  <div class="container">
+    <div id="view-hierarchy-list"></div>
+  </div>
+  <div class="split-handler"></div>
+</div>
+
+<!-- navigation toolbar -->
+<div class="navigation-toolbar">
+  <div class="item">1</div>
+  <div class="item">2</div>
 </div>
 
 <!-- toolbar -->
 <div id="canvas-toolbar">
-    <div class="control-tool depth-unit available" title="Adjust the spacing between views">
-        <input type="range" class="depth-unit" min="1" max="150" value="20" step="1" onchange="onDepthUnitChange()">
-    </div>
-    <div class="tools-collection">
-        <button type="button" onclick="onShowClippedContentClick()" class="control-tool show-clipped-content available selected" title="Show Clipped Content">
-            <div><img src="/resources/db_icon_view_show_clipped.png"></div>
-        </button>
-        <button type="button" onclick="onOrientTo2DClick()" class="control-tool orient-to-2d" title="Orient to 2D">
-            <div><img src="/resources/db_icon_view_orient_2d.png"></div>
-        </button>
-        <button type="button" onclick="onOrientTo3DClick()" class="control-tool orient-to-3d available" title="Orient to 3D">
-            <div><img src="/resources/db_icon_view_orient_3d.png"></div>
-        </button>
-        <button type="button" onclick="onZoomOutClick()" class="control-tool text-content available" title="Zoom out"><span>-</span></button>
-        <button type="button" onclick="onActualSizeClick()" class="control-tool text-content available" title="Actual size"><span>=</span></button>
-        <button type="button" onclick="onZoomInClick()" class="control-tool text-content available" title="Zoom in"><span>+</span></button>
-    </div>
-    <div class="area-control-collection">
-        <button type="button" onclick="onShowNavigationSidebarClick()" class="control-tool navigator-control available selected" title="Hide or show the Navigator">
-            <div><img src="/resources/XC_O_area_button_navigator.png"></div>
-        </button>
-        <button type="button" onclick="onShowPropertySidebarClick()" class="control-tool utilities-control available" title="Hide or show the Utilities">
-            <div><img src="/resources/XC_O_utilities_button.png"></div>
-        </button>
-    </div>
+  <div class="control-tool depth-unit available" title="Adjust the spacing between views">
+    <input type="range" class="depth-unit" min="1" max="150" value="20" step="1" onchange="onDepthUnitChange()">
+  </div>
+  <div class="tools-collection">
+      <button type="button" onclick="onShowClippedContentClick()" class="control-tool show-clipped-content available selected" title="Show Clipped Content">
+        <div><img src="/resources/db_icon_view_show_clipped.png"></div>
+      </button>
+      <button type="button" onclick="onOrientTo2DClick()" class="control-tool orient-to-2d" title="Orient to 2D">
+        <div><img src="/resources/db_icon_view_orient_2d.png"></div>
+      </button>
+      <button type="button" onclick="onOrientTo3DClick()" class="control-tool orient-to-3d available" title="Orient to 3D">
+        <div><img src="/resources/db_icon_view_orient_3d.png"></div>
+      </button>
+      <button type="button" onclick="onZoomOutClick()" class="control-tool text-content available" title="Zoom out"><span>-</span></button>
+      <button type="button" onclick="onActualSizeClick()" class="control-tool text-content available" title="Actual size"><span>=</span></button>
+      <button type="button" onclick="onZoomInClick()" class="control-tool text-content available" title="Zoom in"><span>+</span></button>
+  </div>
+  <div class="area-control-collection">
+    <button type="button" onclick="onShowNavigationSidebarClick()" class="control-tool navigator-control available selected" title="Hide or show the Navigator">
+      <div><img src="/resources/XC_O_area_button_navigator.png"></div>
+    </button>
+    <button type="button" onclick="onShowPropertySidebarClick()" class="control-tool utilities-control available" title="Hide or show the Utilities">
+      <div><img src="/resources/XC_O_utilities_button.png"></div>
+    </button>
+  </div>
 </div>
 
 <!-- property siderbar -->
 <div class="sidebar property-sidebar">
-    <div class="container">
-        <div id="view-property-list">
-        </div>
-    </div>
-    <div class="split-handler"></div>
+  <div class="container">
+    <div class="view-property-list"></div>
+    <div class="not-applicable"><span>Not Applicable</span></div>
+  </div>
+  <div class="split-handler"></div>
 </div>
 </body>
 </html>
