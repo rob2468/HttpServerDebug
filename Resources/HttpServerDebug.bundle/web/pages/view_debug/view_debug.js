@@ -6,11 +6,13 @@ var selectedID; // view-hierarchy-list active list item id
 var isClippedContentShown = true;
 
 // constant variables
-var MESHBORDERDEFAULTCOLOR = 0xA9A9A9;      // mesh border default color
-var MESHBORDERSELECTEDCOLOR = 0x457CD3;     // mesh border selected color
-var kSiderbarWidth = 300;
-var kNavigationSidebarShownKey = 'kNavigationSidebarShownKey';
-var kPropertySidebarShownKey = 'kPropertySidebarShownKey';
+const MESHBORDERDEFAULTCOLOR = 0xA9A9A9;      // mesh border default color
+const MESHBORDERSELECTEDCOLOR = 0x457CD3;     // mesh border selected color
+const kSiderbarWidth = 300;
+const kNavigationSidebarShownKey = 'kNavigationSidebarShownKey';
+const kPropertySidebarShownKey = 'kPropertySidebarShownKey';
+const kViewDataKeyDescription = 'description';
+const kViewDataKeyParent = 'parent';
 
 /* THREE */
 var camera;
@@ -110,6 +112,9 @@ function onViewHierarchyNavigationItemClick(id) {
     viewData.three.wireframe.material.color.setHex(MESHBORDERSELECTEDCOLOR);
   }
 
+  // update navigation toolbar
+  generateNavigationToolbarHTML(viewData);
+
   // update property list
   generateViewPropertyListHTML(viewData);
 }
@@ -123,7 +128,7 @@ function generateViewHierarchyListHTML() {
   for (var i = 0; i < allViewsData.length; i++) {
     // parse data
     var viewData = allViewsData[i];
-    var title = viewData['description'];
+    var title = viewData[kViewDataKeyDescription];
     var depth = viewData['hierarchyDepth'];
 
     // create li element
@@ -143,7 +148,7 @@ function generateViewHierarchyListHTML() {
       spanEle = tmpSpanEle;
       j--;
     }
-    spanEle.innerHTML = title;
+    spanEle.innerHTML = i +';' + title + ' p: ' + viewData['parent'] + '; c: ' + JSON.stringify(viewData['children']);
 
     ulEle.appendChild(liEle);
   }
@@ -154,6 +159,38 @@ function generateViewHierarchyListHTML() {
     listEle.removeChild(listEle.firstChild);
   }
   listEle.appendChild(ulEle);
+}
+
+function generateNavigationToolbarHTML(viewData) {
+  const navToolbarEle = document.querySelector('.navigation-toolbar');
+  // remove all HTMLElement
+  while (navToolbarEle.firstChild) {
+    navToolbarEle.removeChild(navToolbarEle.firstChild);
+  }
+
+  let guardViewData = viewData;
+  while (guardViewData) {
+    // create HTMLElement item
+    const itemEle = document.createElement('div');
+    itemEle.setAttribute('class', 'item');
+    const title = guardViewData[kViewDataKeyDescription];
+    itemEle.innerHTML = title;
+
+    // add HTMLElement item
+    if (navToolbarEle.firstChild) {
+      navToolbarEle.insertBefore(itemEle, navToolbarEle.firstChild);
+    } else {
+      navToolbarEle.appendChild(itemEle);
+    }
+
+    // prev item
+    const parentIdx = guardViewData[kViewDataKeyParent];
+    if (parentIdx >= 0) {
+      guardViewData = allViewsData[parentIdx];
+    } else {
+      guardViewData = null;
+    }
+  }
 }
 
 function generateViewPropertyListHTML(viewData) {
@@ -408,41 +445,47 @@ function onShowPropertySidebarClick() {
 }
 
 function showNavigationSidebar(show) {
-  var navSidebarEle = document.querySelector('.navigation-sidebar');
-  var navToolbarEle = document.querySelector('#canvas-toolbar button.navigator-control');
-  var toolbarEle = document.querySelector('#canvas-toolbar');
+  const navSidebarEle = document.querySelector('.navigation-sidebar');
+  const navToolbarEle = document.querySelector('.navigation-toolbar');
+  const navCanvasToolbarEle = document.querySelector('#canvas-toolbar button.navigator-control');
+  const canvasToolbarEle = document.querySelector('#canvas-toolbar');
 
   // update view
   if (show) {
     // show
     navSidebarEle.classList.add('active');
     navSidebarEle.style.width = kSiderbarWidth + 'px';
-    navToolbarEle.classList.add('selected');
-    toolbarEle.style.left = kSiderbarWidth + 'px';
+    navToolbarEle.style.left = kSiderbarWidth + 'px';
+    navCanvasToolbarEle.classList.add('selected');
+    canvasToolbarEle.style.left = kSiderbarWidth + 'px';
   } else {
     // hide
     navSidebarEle.classList.remove('active');
-    navToolbarEle.classList.remove('selected');
-    toolbarEle.style.left = 0;
+    navToolbarEle.style.left = 0;
+    navCanvasToolbarEle.classList.remove('selected');
+    canvasToolbarEle.style.left = 0;
   }
 }
 
 function showPropertySidebar(show) {
-  var propSidebarEle = document.querySelector('.property-sidebar');
-  var propToolbarEle = document.querySelector('#canvas-toolbar button.utilities-control');
-  var toolbarEle = document.querySelector('#canvas-toolbar');
+  const propSidebarEle = document.querySelector('.property-sidebar');
+  const navToolbarEle = document.querySelector('.navigation-toolbar');
+  const propCanvasToolbarEle = document.querySelector('#canvas-toolbar button.utilities-control');
+  const canvasToolbarEle = document.querySelector('#canvas-toolbar');
 
   // update view
   if (show) {
     // show
     propSidebarEle.classList.add('active');
     propSidebarEle.style.width = kSiderbarWidth + 'px';
-    propToolbarEle.classList.add('selected');
-    toolbarEle.style.right = kSiderbarWidth + 'px';
+    navToolbarEle.style.right = kSiderbarWidth + 'px';
+    propCanvasToolbarEle.classList.add('selected');
+    canvasToolbarEle.style.right = kSiderbarWidth + 'px';
   } else {
     // hide
     propSidebarEle.classList.remove('active');
-    propToolbarEle.classList.remove('selected');
-    toolbarEle.style.right = 0;
+    navToolbarEle.style.right = 0;
+    propCanvasToolbarEle.classList.remove('selected');
+    canvasToolbarEle.style.right = 0;
   }
 }

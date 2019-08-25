@@ -9,6 +9,10 @@
 #import "HSDViewDebugComponent.h"
 #import <objc/runtime.h>
 
+static NSString * const kViewDataKeyParent = @"parent";
+static NSString * const kViewDataKeyChildren = @"children";
+static NSInteger kViewDataValueRootParent = -1;
+
 @implementation HSDViewDebugComponent
 
 + (NSArray *)fetchAllViewsDataInHierarchy {
@@ -18,9 +22,16 @@
         for (UIWindow *window in windows) {
             // generate all views data of displayed window
             if (![[self class] viewBaseClassIsHidden:window]) {
-                NSDictionary *viewData = [self fetchViewData:window inWindow:window];
+                // root view data
+                NSMutableDictionary *viewData = [[self fetchViewData:window inWindow:window] mutableCopy];
+                [viewData setObject:@(kViewDataValueRootParent) forKey:kViewDataKeyParent];
                 [allViewsData addObject:viewData];
-                [allViewsData addObjectsFromArray:[self allRecursiveSubviewsInView:window inWindow:window]];
+
+                // recursive subviews
+                NSInteger viewIndex = [allViewsData count] - 1;
+                NSArray *subviewsData = [self allRecursiveSubviewsInView:window viewData:viewData viewIndex:viewIndex inWindow:window];
+
+                [allViewsData addObjectsFromArray:subviewsData];
             }
         }
         return allViewsData;
@@ -36,14 +47,34 @@
     return allViews;
 }
 
-+ (NSArray *)allRecursiveSubviewsInView:(UIView *)view inWindow:(UIWindow *)window {
++ (NSArray *)allRecursiveSubviewsInView:(UIView *)view viewData:(NSMutableDictionary *)viewData viewIndex:(NSInteger)viewIndex inWindow:(UIWindow *)window {
     NSMutableArray *subviews = [[NSMutableArray alloc] init];
     for (UIView *subview in view.subviews) {
         // generate data of displayed subview
         if (![[self class] viewBaseClassIsHidden:subview]) {
-            NSDictionary *subviewData = [self fetchViewData:subview inWindow:window];
+            // view data
+            NSMutableDictionary *subviewData = [[self fetchViewData:subview inWindow:window] mutableCopy];
+            [subviewData setObject:@(viewIndex) forKey:kViewDataKeyParent];
             [subviews addObject:subviewData];
-            [subviews addObjectsFromArray:[self allRecursiveSubviewsInView:subview inWindow:window]];
+
+            // recursive subviews
+            NSInteger currentIndex = viewIndex + [subviews count];
+            NSArray *subviewsData = [self allRecursiveSubviewsInView:subview viewData:subviewData viewIndex:currentIndex inWindow:window];
+
+            // update subviewData children
+            if (![subviewData objectForKey:kViewDataKeyChildren]) {
+                [subviewData setObject:[@[] mutableCopy] forKey:kViewDataKeyChildren];
+            }
+
+            // update parent viewData
+            NSMutableArray *children = [viewData objectForKey:kViewDataKeyChildren];
+            if (!children) {
+                children = [@[] mutableCopy];
+            }
+            [children addObject:@(currentIndex)];
+            [viewData setObject:children forKey:kViewDataKeyChildren];
+
+            [subviews addObjectsFromArray:subviewsData];
         }
     }
     return subviews;
@@ -94,6 +125,8 @@
  *  "clipsToBounds": ,
  *  "backgroundColor":{"r":,"g":,"b":,"a":} | {"r":"nil color"}
  *  "three": {"mesh": , "wireframe": }, // webgl elements, set in js context
+ *  "parent": 0,            // parent view index in the all views array. For the root, the value is -1
+ *  "children": [1, 2, 3],  // subview index in the all view array
  *  }
  */
 + (NSDictionary *)fetchViewData:(UIView *)view inWindow:(UIWindow *)window {

@@ -123,12 +123,15 @@ div.view-hierarchy-area {
   background-color: #fff;
   display: flex;
   align-items: center;
+  overflow-x: scroll;
 }
 .navigation-toolbar .item {
   min-width: 23px;
   margin-left: 5px;
   text-align: center;
-  background-color: gray;
+  background-color: lightgrey;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
 }
 
 /* canvas toolbar */
