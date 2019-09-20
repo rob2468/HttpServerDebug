@@ -148,7 +148,7 @@ function generateViewHierarchyListHTML() {
       spanEle = tmpSpanEle;
       j--;
     }
-    spanEle.innerHTML = i +';' + title + ' p: ' + viewData['parent'] + '; c: ' + JSON.stringify(viewData['children']);
+    spanEle.innerHTML = title;
 
     ulEle.appendChild(liEle);
   }

@@ -223,7 +223,7 @@ static NSUInteger kHttpServerPortDefault = 0;
     NSString *documentRoot = [resourcePath stringByAppendingPathComponent:@"web"];
 #ifdef DEBUG
     // develop web in simulator, use files in the project bundle directly
-    documentRoot = @"/Users/jam/Desktop/workspace/ios-app/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
+//    documentRoot = @"/Users/jam/Desktop/workspace/ios-app/HttpServerDebug/Resources/HttpServerDebug.bundle/web";
 #endif
     NSAssert([[NSFileManager defaultManager] fileExistsAtPath:documentRoot], @"root document not exist");
     return documentRoot;
