@@ -25,12 +25,12 @@ static NSInteger kViewDataValueRootParent = -1;
                 // root view data
                 NSMutableDictionary *viewData = [[self fetchViewData:window inWindow:window] mutableCopy];
                 [viewData setObject:@(kViewDataValueRootParent) forKey:kViewDataKeyParent];
+                [viewData setObject:[@[] mutableCopy] forKey:kViewDataKeyChildren];
                 [allViewsData addObject:viewData];
 
                 // recursive subviews
                 NSInteger viewIndex = [allViewsData count] - 1;
                 NSArray *subviewsData = [self allRecursiveSubviewsInView:window viewData:viewData viewIndex:viewIndex inWindow:window];
-
                 [allViewsData addObjectsFromArray:subviewsData];
             }
         }
@@ -47,37 +47,29 @@ static NSInteger kViewDataValueRootParent = -1;
     return allViews;
 }
 
-+ (NSArray *)allRecursiveSubviewsInView:(UIView *)view viewData:(NSMutableDictionary *)viewData viewIndex:(NSInteger)viewIndex inWindow:(UIWindow *)window {
-    NSMutableArray *subviews = [[NSMutableArray alloc] init];
-    for (UIView *subview in view.subviews) {
++ (NSArray *)allRecursiveSubviewsInView:(UIView *)superView viewData:(NSMutableDictionary *)superViewData viewIndex:(NSInteger)superViewIndex inWindow:(UIWindow *)window {
+    NSMutableArray *viewsData = [[NSMutableArray alloc] init];
+    for (UIView *view in superView.subviews) {
         // generate data of displayed subview
-        if (![[self class] viewBaseClassIsHidden:subview]) {
+        if (![[self class] viewBaseClassIsHidden:view]) {
             // view data
-            NSMutableDictionary *subviewData = [[self fetchViewData:subview inWindow:window] mutableCopy];
-            [subviewData setObject:@(viewIndex) forKey:kViewDataKeyParent];
-            [subviews addObject:subviewData];
+            NSMutableDictionary *viewData = [[self fetchViewData:view inWindow:window] mutableCopy];
+            [viewData setObject:@(superViewIndex) forKey:kViewDataKeyParent];
+            [viewData setObject:[@[] mutableCopy] forKey:kViewDataKeyChildren];
+            [viewsData addObject:viewData];
 
             // recursive subviews
-            NSInteger currentIndex = viewIndex + [subviews count];
-            NSArray *subviewsData = [self allRecursiveSubviewsInView:subview viewData:subviewData viewIndex:currentIndex inWindow:window];
-
-            // update subviewData children
-            if (![subviewData objectForKey:kViewDataKeyChildren]) {
-                [subviewData setObject:[@[] mutableCopy] forKey:kViewDataKeyChildren];
-            }
+            NSInteger currentIndex = superViewIndex + [viewsData count];
+            NSArray *subviewsData = [self allRecursiveSubviewsInView:view viewData:viewData viewIndex:currentIndex inWindow:window];
+            [viewsData addObjectsFromArray:subviewsData];
 
             // update parent viewData
-            NSMutableArray *children = [viewData objectForKey:kViewDataKeyChildren];
-            if (!children) {
-                children = [@[] mutableCopy];
-            }
+            NSMutableArray *children = [superViewData objectForKey:kViewDataKeyChildren];
             [children addObject:@(currentIndex)];
-            [viewData setObject:children forKey:kViewDataKeyChildren];
-
-            [subviews addObjectsFromArray:subviewsData];
+            [superViewData setObject:children forKey:kViewDataKeyChildren];
         }
     }
-    return subviews;
+    return viewsData;
 }
 
 + (NSArray *)fetchAllWindows {
