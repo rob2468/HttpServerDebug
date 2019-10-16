@@ -211,7 +211,9 @@
         response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
     } else {
         NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-        response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:documentPath]) {
+            response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
+        }
     }
 
     if (!response) {

@@ -94,10 +94,10 @@ div.view-hierarchy-area {
   padding-left: 4px;
   display: inline-block;
 }
-#view-property-list ul {
+.view-property-list ul {
   padding: 0;
 }
-#view-property-list img {
+.view-property-list img {
   width: 75%;
   margin-left: auto;
   margin-right: auto;
