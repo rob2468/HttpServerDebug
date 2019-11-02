@@ -191,11 +191,6 @@
             NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
             response = [[HSDGWebServerDataResponse alloc] initWithData:data contentType:@"text/plain;charset=utf-8"];
         }
-    } else if ([firstPath isEqualToString:@"favicon.ico"]) {
-        // favicon
-        NSString *relativePath = [NSString stringWithFormat:@"resources/favicon.ico"];
-        NSString *documentPath = [documentRoot stringByAppendingPathComponent:relativePath];
-        response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
     } else if ([firstPath isEqualToString:@"resources"]) {
         // set resources Content-Type manually
         NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
@@ -212,7 +207,16 @@
     } else {
         NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
         if ([[NSFileManager defaultManager] fileExistsAtPath:documentPath]) {
-            response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
+            // file exist
+            if ([[documentPath pathExtension] isEqualToString:@"html"]) {
+                // html template
+                NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
+                htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];  // localization
+                response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
+            } else {
+                response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
+            }
+
         }
     }
 

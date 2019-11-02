@@ -388,10 +388,13 @@
 }
 
 + (NSDictionary *)localizationJSON:(NSString *)local {
-    NSString *pathComponent = [NSString stringWithFormat:@"locals/%@.json", local];
+    NSString *pathComponent = [NSString stringWithFormat:@"%@.json", local];
     NSString *localizedFilePath = [[HSDManager fetchDocumentRoot] stringByAppendingPathComponent:pathComponent];
     NSData *data = [NSData dataWithContentsOfFile:localizedFilePath];
-    NSDictionary *localized = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    NSDictionary *localized = @{};
+    if (data) {
+        localized = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    }
     return localized;
 }
 

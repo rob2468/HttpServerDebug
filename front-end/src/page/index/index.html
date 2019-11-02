@@ -4,22 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HttpServerDebug</title>
-<link rel="stylesheet" href="css/default.css" />
-<link rel="stylesheet" href="index.css" />
-<script src="util.js"></script>
-<script src="index.js"></script>
+<!-- <script src="util.js"></script> -->
 </head>
 <body>
   <header>
     <div class="container">
       <div class="home">HttpServerDebug</div>
-      <div class="languages" onmouseover="showLanguageList()" onmouseout="hideLanguageList()">
+      <div class="languages">
         <div class="language-comp">
           <span>Lang: </span><span class="language">%%LocalizedLanguageName%%</span>
         </div>
         <ul class="">
-          <li onclick="selectLanguage(this)" data-language-type="zhcn">简体中文</li>
-          <li onclick="selectLanguage(this)" data-language-type="enus">English</li>
+          <li data-language-type="zhcn">简体中文</li>
+          <li data-language-type="enus">English</li>
         </ul>
       </div>
     </div>
