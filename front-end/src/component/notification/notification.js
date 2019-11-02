@@ -1,3 +1,5 @@
+import './notification.css'
+
 /**
  *
  * @class Notification
@@ -95,7 +97,7 @@ function updateNotificationGroup() {
   groupEle.style.height = heightVal;
 }
 
-function initNotification() {
+export function initNotification() {
   // add notification group div
   const groupEle = document.createElement('div');
   groupEle.setAttribute('id', 'notification-group');

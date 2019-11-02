@@ -21,6 +21,12 @@ module.exports = {
           { loader: 'css-loader' },
         ],
       },
+      {
+        test: /\.(png|jpg|gif)$/,
+        use: [
+          { loader: 'file-loader' },
+        ],
+      },
     ],
   },
   plugins: [
@@ -37,6 +43,7 @@ module.exports = {
       hash: true,
     }),
     new CopyWebpackPlugin([
+      { from: './src/common/image/favicon.ico', to: path.resolve(destRootPath, 'favicon.ico') },
       { from: './src/common/locals/enus.json', to: path.resolve(destRootPath, 'enus.json') },
       { from: './src/common/locals/zhcn.json', to: path.resolve(destRootPath, 'zhcn.json') },
     ]),

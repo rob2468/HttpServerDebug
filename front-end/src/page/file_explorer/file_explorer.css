@@ -68,10 +68,10 @@ div.split-handler {
     height: 20px;
 }
 .directory-container img.directory-icon {
-    content: url(../../resources/directory-icon.png);
+    content: url(../../common/image/directory-icon.png);
 }
 .directory-container img.file-icon {
-    content: url(../../resources/file-icon.png);
+    content: url(../../common/image/file-icon.png);
 }
 .directory-container li span {
     display: inline-block;

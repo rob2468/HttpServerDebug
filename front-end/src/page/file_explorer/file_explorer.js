@@ -1,3 +1,10 @@
+import { initContextMenu } from './file_explorer_context_menu';
+import { initResizeDrag } from './file_explorer_resize';
+import { initNotification } from '../../component/notification/notification';
+import { requestLocalizationInfo } from '../../util/util';
+import './file_explorer.css';
+import fileIcon from '../../common/image/file-icon.png';
+
 /* Data Model constructor */
 /**
  *  create one directory container instance
@@ -79,7 +86,15 @@ window.onload = function () {
   requestLocalizationInfo(param => {
     localStrings = param;
   });
+
+  addEventListener();
 };
+
+function addEventListener() {
+  document.querySelector('#property-sidebar .split-handler').addEventListener('mousedown', event => {
+    initResizeDrag(event);
+  });
+}
 
 let clickTimerOut;  // used to distinguish between single click and double click
 function onItemClicked(element) {
@@ -249,7 +264,7 @@ function openFileOrDirectory(viewItem) {
  *  @param {HTMLElement} element
  *  @returns {ItemViewModel}
  */
-function parseDataOfItemElement(element) {
+export function parseDataOfItemElement(element) {
   // parse data
   const eleID = element.id;
   const separatedArr = eleID.split('-');
@@ -269,7 +284,7 @@ function parseDataOfItemElement(element) {
  *  @param {HTMLElement} element
  *  @returns {ItemViewModel}
  */
-function parseDataOfContainerElement(element) {
+export function parseDataOfContainerElement(element) {
   // parse data
   const eleID = element.id;
   const separatedArr = eleID.split('-');
@@ -398,7 +413,7 @@ function showPropertySidebar(viewItem, attrs) {
       iconSRC = document.location.origin + '/api/file_preview?file_path=' + encodeURIComponent(filePath);
   } else {
       // regular file
-      iconSRC = document.location.origin + '/resources/file-icon.png';
+      iconSRC = fileIcon;
   }
   ele.setAttribute('src', iconSRC);
   contentContainerEle.appendChild(ele);

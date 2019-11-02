@@ -3,7 +3,7 @@ var startResizeX;
 var startResizeWidth;
 var targetResizeEle;
 
-function initResizeDrag(event) {
+export function initResizeDrag(event) {
     targetResizeEle = event.currentTarget.parentElement;
 
     // initial value

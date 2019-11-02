@@ -191,10 +191,6 @@
             NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
             response = [[HSDGWebServerDataResponse alloc] initWithData:data contentType:@"text/plain;charset=utf-8"];
         }
-    } else if ([firstPath isEqualToString:@"resources"]) {
-        // set resources Content-Type manually
-        NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-        response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
     } else if (firstPath.length == 0) {
         // index.html
         // read html file

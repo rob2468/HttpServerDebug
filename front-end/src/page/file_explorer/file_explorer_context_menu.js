@@ -1,4 +1,7 @@
-function initContextMenu() {
+import { parseDataOfItemElement, parseDataOfContainerElement } from './file_explorer';
+import './file_explorer_context_menu.css'
+
+export function initContextMenu() {
   /**
    * Function to check if we clicked inside an element with a particular class name.
    *
