@@ -7,6 +7,10 @@ module.exports = {
   entry: {
     index: './src/page/index/index.js',
     file_explorer: './src/page/file_explorer/file_explorer.js',
+    database_inspect: './src/page/database_inspect/database_inspect.js',
+    view_debug: './src/page/view_debug/view_debug.js',
+    send_info: './src/page/send_info/send_info.js',
+    console_log: './src/page/console_log/console_log.js',
   },
   output: {
     filename: '[name].js',
@@ -22,7 +26,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|jpg|gif)$/,
+        test: /\.(png|jpg|gif|svg)$/,
         use: [
           { loader: 'file-loader' },
         ],
@@ -42,11 +46,17 @@ module.exports = {
       chunks: [ 'file_explorer' ],
       hash: true,
     }),
+    new HtmlWebpackPlugin({
+      filename: 'database_inspect.html',
+      template: './src/page/database_inspect/database_inspect.html',
+      chunks: [ 'database_inspect' ],
+      hash: true,
+    }),
     new CopyWebpackPlugin([
       { from: './src/common/image/favicon.ico', to: path.resolve(destRootPath, 'favicon.ico') },
       { from: './src/common/locals/enus.json', to: path.resolve(destRootPath, 'enus.json') },
       { from: './src/common/locals/zhcn.json', to: path.resolve(destRootPath, 'zhcn.json') },
     ]),
   ],
-  mode: 'production',
+  mode: 'development',
 };

@@ -4,9 +4,6 @@
   <meta charset="utf-8">
   <title>%%LocalizedDatabaseInspectTitle%%</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="database_inspect.css">
-  <script src="../../util.js"></script>
-  <script src="database_inspect.js"></script>
 </head>
 <body>
   <!-- db file path -->
@@ -14,17 +11,17 @@
   <!-- navigation -->
   <div class="nav-bar">
     <ul>
-      <li class="nav-item active" id="browse-data" onclick="onNavBarItemClick(this.id)">%%LocalizedDBInspectBrowseData%%</li>
-      <li class="nav-item" id="execute-sql" onclick="onNavBarItemClick(this.id)">%%LocalizedDBInspectExecuteSQL%%</li>
-      <li class="nav-item" id="db-structure" onclick="onNavBarItemClick(this.id)">%%LocalizedDBInspectDatabaseSchema%%</li>
+      <li class="nav-item active" id="browse-data">%%LocalizedDBInspectBrowseData%%</li>
+      <li class="nav-item" id="execute-sql">%%LocalizedDBInspectExecuteSQL%%</li>
+      <li class="nav-item" id="db-structure">%%LocalizedDBInspectDatabaseSchema%%</li>
     </ul>
   </div>
   <!-- browse data -->
   <div class="tab-pane active" id="browse-data-tab">
     <div class="ctrl-head">
-    <select id="table-name-select" onchange="onDatabaseTableReload()">@@SELECT_HTML@@</select>
-    <button type="button" id="browse-data-reload-button" class="reload reload-normal" onclick="onDatabaseTableReload()">
-      <img src="../../resources/loading-bubbles.svg" alt="loading"><span>%%LocalizedDBInspectRefresh%%</span>
+    <select id="table-name-select">@@SELECT_HTML@@</select>
+    <button type="button" id="browse-data-reload-button" class="reload reload-normal">
+      <img alt="loading"><span>%%LocalizedDBInspectRefresh%%</span>
     </button>
     </div>
     <div class="table" id="browse-data-table">
@@ -34,8 +31,8 @@
   <!-- execute SQL -->
   <div class="tab-pane" id="execute-sql-tab">
     <div class="ctrl-head">
-    <button type="button" id="execute-sql-reload-button" class="reload reload-normal" onclick="onDatabaseExecuteSQL()">
-    <img src="../../resources/loading-bubbles.svg" alt="loading"><span>%%LocalizedDBInspectExecute%%</span>
+    <button type="button" id="execute-sql-reload-button" class="reload reload-normal">
+    <img alt="loading"><span>%%LocalizedDBInspectExecute%%</span>
     </button>
     </div>
     <div class="execute-sql-result">

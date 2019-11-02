@@ -65,18 +65,7 @@
     // route
     if ([firstPath isEqualToString:@"pages"]) {
         // html pages
-        if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
-            // file_explorer
-            NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-            if ([thirdPath isEqualToString:[kHSDComponentFileExplorer stringByAppendingString:@".html"]]) {
-                // file_explorer.html
-                NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
-                htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];  // localization
-                response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
-            } else {
-                response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
-            }
-        } else if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
+        if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
             // database_inspect
             NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
             if ([thirdPath isEqualToString:[kHSDComponentDBInspect stringByAppendingString:@".html"]]) {
@@ -208,11 +197,24 @@
                 // html template
                 NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
                 htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];  // localization
+
+                if ([path isEqualToString:@"/database_inspect.html"]) {
+                    // database_inspect.html
+                    NSDictionary *replacementDict = [HSDComponentMiddleware fetchDatabaseAPITemplateHTMLReplacement:query];
+                    if ([replacementDict count] > 0) {
+                        // valid replacement values for html template
+                        // replace template string
+                        htmlStr = [HSDComponentMiddleware formatTemplateString:htmlStr variables:replacementDict];
+                    } else {
+                        // show prompt message
+                        NSDictionary *localStrings = [HSDComponentMiddleware localizationJSON:languageType];
+                        htmlStr = [localStrings objectForKey:@"LocalizedDBInspectDBDisconnectedPromptHtml"];
+                    }
+                }
                 response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
             } else {
                 response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
             }
-
         }
     }
 

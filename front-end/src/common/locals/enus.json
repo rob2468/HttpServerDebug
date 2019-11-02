@@ -26,7 +26,7 @@
   "LocalizedDBInspectExecute": "Execute",
   "LocalizedDBInspectInputSQLStatement": "SQL statement",
   "LocalizedDBInspectErrorPromptEmptyStatement": "empty sql statement",
-  "LocalizedDBInspectDBDisconnectedPromptHtml": "<p>There is no database connected. This can be solved by the following method.</p><p>Search the objective database file in <a href='/pages/file_explorer/file_explorer.html'>file explore</a>, and open it.</p>",
+  "LocalizedDBInspectDBDisconnectedPromptHtml": "<p>There is no database connected. This can be solved by the following method.</p><p>Search the objective database file in <a href='/file_explorer.html'>file explore</a>, and open it.</p>",
   "LocalizedSendInfoTextareaPlaceholder": "input and send contents to app",
   "LocalizedSendInfoSendButtonTitle": "Send",
   "LocalizedConsoleLogButtonTitleConnect": "Connect",

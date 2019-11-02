@@ -223,7 +223,7 @@ function openFileOrDirectory(viewItem) {
         || fileExtension === 'sqlite'
         || fileExtension === 'sqlite3') {
         // database inspect
-        url = document.location.origin + '/pages/database_inspect/database_inspect.html?db_path=' + encodeURIComponent(filePath);
+        url = document.location.origin + '/database_inspect.html?db_path=' + encodeURIComponent(filePath);
     } else {
         // file preview (append fileName to url, for when browser decides to download this file, it will fill with the right file name)
         url = document.location.origin + '/api/file_preview/' + fileName + '?file_path=' + encodeURIComponent(filePath);

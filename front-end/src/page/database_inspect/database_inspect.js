@@ -1,3 +1,6 @@
+import { requestLocalizationInfo } from '../../util/util';
+import './database_inspect.css';
+
 /**
  * localization data
  * @type {object}
@@ -15,7 +18,30 @@ window.onload = function () {
   requestLocalizationInfo(param => {
     localStrings = param;
   });
+
+  addEventListener();
 };
+
+function addEventListener() {
+  document.querySelector('#browse-data').addEventListener('click', event => {
+    onNavBarItemClick(event.target.id);
+  });
+  document.querySelector('#execute-sql').addEventListener('click', event => {
+    onNavBarItemClick(event.target.id);
+  });
+  document.querySelector('#db-structure').addEventListener('click', event => {
+    onNavBarItemClick(event.target.id);
+  });
+  document.querySelector('#table-name-select').addEventListener('change', event => {
+    onDatabaseTableReload();
+  });
+  document.querySelector('#browse-data-reload-button').addEventListener('click', event => {
+    onDatabaseTableReload();
+  });
+  document.querySelector('#execute-sql-reload-button').addEventListener('click', event => {
+    onDatabaseExecuteSQL();
+  });
+}
 
 function onNavBarItemClick(id) {
   const id0 = 'browse-data';
