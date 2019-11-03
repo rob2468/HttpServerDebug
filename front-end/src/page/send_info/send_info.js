@@ -1,3 +1,15 @@
+import './send_info.css'
+
+window.onload = function () {
+  addEventListener();
+};
+
+function addEventListener() {
+  document.querySelector('#info_form button').addEventListener('click', event => {
+    submitForm();
+  });
+}
+
 function submitForm() {
   const infoStr = document.getElementById('info_textarea').value.trim();
 

@@ -4,17 +4,15 @@
 <meta charset="utf-8">
 <title>%%LocalizedSendInfoTitle%%</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="send_info.css">
-<script src="send_info.js"></script>
 </head>
 <body>
-    <form id="info_form">
-        <textarea name="content" class="input" id="info_textarea" placeholder="%%LocalizedSendInfoTextareaPlaceholder%%"></textarea>
-        <button type="button" class="submit" onclick=submitForm()><span>%%LocalizedSendInfoSendButtonTitle%%</span></button>
-    </form>
-    <div>
-        <p>Response Data:</p>
-        <p id="response_data"></p>
-    </div>
+  <form id="info_form">
+    <textarea name="content" class="input" id="info_textarea" placeholder="%%LocalizedSendInfoTextareaPlaceholder%%"></textarea>
+    <button type="button" class="submit"><span>%%LocalizedSendInfoSendButtonTitle%%</span></button>
+  </form>
+  <div>
+    <p>Response Data:</p>
+    <p id="response_data"></p>
+  </div>
 </body>
 </html>
