@@ -1,3 +1,7 @@
+import { initTHREE } from './view_debug_canvas';
+import { initSideBarAdjust } from './view_debug_sidebar';
+import './view_debug.css'
+
 /* global variables */
 var allViewsData;
 var selectedID; // view-hierarchy-list active list item id

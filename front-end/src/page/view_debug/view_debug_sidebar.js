@@ -1,4 +1,4 @@
-function initSideBarAdjust() {
+export function initSideBarAdjust() {
   // sidebar
   var navSideBarEle = document.querySelector('.navigation-sidebar');
   var navSplitHandlerEle = navSideBarEle.getElementsByClassName('split-handler')[0];

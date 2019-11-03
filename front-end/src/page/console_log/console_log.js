@@ -1,3 +1,6 @@
+import { requestLocalizationInfo } from '../../util/util';
+import './console_log.css'
+
 /**
  * localization data
  * @type {object}

@@ -52,6 +52,24 @@ module.exports = {
       chunks: [ 'database_inspect' ],
       hash: true,
     }),
+    new HtmlWebpackPlugin({
+      filename: 'view_debug.html',
+      template: './src/page/view_debug/view_debug.html',
+      chunks: [ 'view_debug' ],
+      hash: true,
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'send_info.html',
+      template: './src/page/send_info/send_info.html',
+      chunks: [ 'send_info' ],
+      hash: true,
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'console_log.html',
+      template: './src/page/console_log/console_log.html',
+      chunks: [ 'console_log' ],
+      hash: true,
+    }),
     new CopyWebpackPlugin([
       { from: './src/common/image/favicon.ico', to: path.resolve(destRootPath, 'favicon.ico') },
       { from: './src/common/locals/enus.json', to: path.resolve(destRootPath, 'enus.json') },
