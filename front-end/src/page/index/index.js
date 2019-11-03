@@ -1,6 +1,6 @@
 import { setCookie } from '../../util/util';
 import './index.css';
-import '../../common/default.css';
+import '../../common/reset.css';
 
 window.onload = function () {
   addEventListener();

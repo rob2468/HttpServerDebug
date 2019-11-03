@@ -1,16 +1,24 @@
-import { initTHREE } from './view_debug_canvas';
+import * as THREE from 'three';
+import { initTHREE, animateTHREE, onCanvasClick,
+  onDepthUnitChange, onShowClippedContentClick,
+  onOrientTo2DClick, onOrientTo3DClick,
+  onZoomOutClick, onActualSizeClick,
+  onZoomInClick,
+} from './view_debug_canvas';
 import { initSideBarAdjust } from './view_debug_sidebar';
 import './view_debug.css'
+import '../../common/reset.css';
 
 /* global variables */
-var allViewsData;
+export var allViewsData;
+export const globalData = {};
 var selectedID; // view-hierarchy-list active list item id
 
 // default settings
-var isClippedContentShown = true;
+globalData.isClippedContentShown = true;
 
 // constant variables
-const MESHBORDERDEFAULTCOLOR = 0xA9A9A9;      // mesh border default color
+globalData.MESHBORDERDEFAULTCOLOR = 0xA9A9A9;      // mesh border default color
 const MESHBORDERSELECTEDCOLOR = 0x457CD3;     // mesh border selected color
 const kSiderbarWidth = 300;
 const kNavigationSidebarShownKey = 'kNavigationSidebarShownKey';
@@ -19,13 +27,13 @@ const kViewDataKeyDescription = 'description';
 const kViewDataKeyParent = 'parent';
 
 /* THREE */
-var camera;
-var CameraDefaultPosition = {x: 0, y: 0, z: 1000000};
-var scene;
-var renderer;
-var controls;
-var depthUnit = 20;     // distance between neighboring views
-var raycaster = new THREE.Raycaster();
+globalData.camera = null;
+globalData.CameraDefaultPosition = {x: 0, y: 0, z: 1000000};
+globalData.scene = null;
+globalData.renderer = null;
+globalData.controls = null;
+globalData.depthUnit = 20;     // distance between neighboring views
+globalData.raycaster = new THREE.Raycaster();
 
 window.onload = function () {
   // request data
@@ -62,7 +70,39 @@ window.onload = function () {
   } else {
     showPropertySidebar(true);
   }
+
+  addEventListener();
 };
+
+function addEventListener() {
+  document.querySelector('#canvas-toolbar input.depth-unit').addEventListener('click', event => {
+    onDepthUnitChange();
+  });
+  document.querySelector('#canvas-toolbar button.show-clipped-content').addEventListener('click', event => {
+    onShowClippedContentClick();
+  });
+  document.querySelector('#canvas-toolbar button.orient-to-2d').addEventListener('click', event => {
+    onOrientTo2DClick();
+  });
+  document.querySelector('#canvas-toolbar button.orient-to-3d').addEventListener('click', event => {
+    onOrientTo3DClick();
+  });
+  document.querySelector('#canvas-toolbar button.control-tool-zoom-out').addEventListener('click', event => {
+    onZoomOutClick();
+  });
+  document.querySelector('#canvas-toolbar button.control-tool-actual-size').addEventListener('click', event => {
+    onActualSizeClick();
+  });
+  document.querySelector('#canvas-toolbar button.control-tool-zoom-in').addEventListener('click', event => {
+    onZoomInClick();
+  });
+  document.querySelector('#canvas-toolbar .navigator-control').addEventListener('click', event => {
+    onShowNavigationSidebarClick();
+  });
+  document.querySelector('#canvas-toolbar .utilities-control').addEventListener('click', event => {
+    onShowPropertySidebarClick();
+  });
+}
 
 function requestViewHierarchyData() {
   var viewXHR = new XMLHttpRequest();
@@ -83,7 +123,7 @@ function requestViewHierarchyData() {
   viewXHR.send(null);
 }
 
-function onViewHierarchyNavigationItemClick(id) {
+export function onViewHierarchyNavigationItemClick(id) {
   if (selectedID === id) {
     return;
   }
@@ -100,7 +140,7 @@ function onViewHierarchyNavigationItemClick(id) {
     var oldIdx = parseInt(selectedID, 10);
     var oldViewData = allViewsData[oldIdx];
     if (oldViewData.hasOwnProperty('three')) {
-      oldViewData.three.wireframe.material.color.setHex(MESHBORDERDEFAULTCOLOR);
+      oldViewData.three.wireframe.material.color.setHex(globalData.MESHBORDERDEFAULTCOLOR);
     }
   }
   var curEle = document.getElementById(id);
@@ -382,6 +422,7 @@ function generateViewPropertyListHTML(viewData) {
 }
 
 function onDocumentMouseClick(event) {
+  const renderer = globalData.renderer;
   // origin data
   var domRect = renderer.domElement.getBoundingClientRect();
   var domX = domRect.x;

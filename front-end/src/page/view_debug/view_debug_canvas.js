@@ -1,10 +1,15 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import TWEEN from '@tweenjs/tween.js';
+import { allViewsData, globalData, onViewHierarchyNavigationItemClick } from './view_debug';
+
 // Debug View Hierarchy
 /**
 *  construct 3d view hierarchy display canvas
 *  @param startIdx
 *  use allViewsData array, rendering items in allViewsData, from the startIdx item to the first item with hierarchyDepth == 0 or the last item
 */
-function initTHREE(startIdx) {
+export function initTHREE(startIdx) {
   var viewItem = allViewsData[startIdx];
   if (viewItem.hierarchyDepth !== 0) {
       console.log('should render from root view');
@@ -14,6 +19,7 @@ function initTHREE(startIdx) {
   var appWidth;
   var appHeight;
   var canvasEle = document.querySelector('#canvas-frame');
+  const isClippedContentShown = globalData.isClippedContentShown;
 
   // show clipped content or not
   if (isClippedContentShown) {
@@ -30,22 +36,27 @@ function initTHREE(startIdx) {
   scale = scale > 1 ? 1 : scale;
 
   // renderer
-  renderer = new THREE.WebGLRenderer({antialias: true});
+  const renderer = new THREE.WebGLRenderer({antialias: true});
+  globalData.renderer = renderer;
   renderer.setSize(clientWidth, clientHeight);
   renderer.setClearColor(0xe2e3e7, 1.0);
   canvasEle.appendChild(renderer.domElement);
 
   // scene
-  scene = new THREE.Scene();
+  const scene = new THREE.Scene();
+  globalData.scene = scene;
 
   // camera
-  camera = new THREE.OrthographicCamera(- clientWidth / 2, clientWidth / 2, clientHeight / 2, - clientHeight / 2, 0, 2000000);
+  const camera = new THREE.OrthographicCamera(- clientWidth / 2, clientWidth / 2, clientHeight / 2, - clientHeight / 2, 0, 2000000);
+  globalData.camera = camera;
+  const CameraDefaultPosition = globalData.CameraDefaultPosition;
   camera.position.set(CameraDefaultPosition.x, CameraDefaultPosition.y, CameraDefaultPosition.z);
   camera.up.set(0, 1, 0);
   camera.lookAt(new THREE.Vector3(0, 0, 0));
 
   // OrbitControls
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  globalData.controls = controls;
   controls.autoRotate = false;
   controls.enableZoom = false;
   controls.addEventListener('end', function () {
@@ -61,6 +72,7 @@ function initTHREE(startIdx) {
   var depth;
   var width;
   var height;
+  const depthUnit = globalData.depthUnit;
   for (var i = startIdx; i < allViewsDataLength; i++) {
     viewItem = allViewsData[i];
     depth = viewItem.hierarchyDepth;
@@ -140,7 +152,7 @@ function initTHREE(startIdx) {
 
           // wireframe
           var wireframeGeometry = new THREE.EdgesGeometry(geometry);
-          var wireframeMaterial = new THREE.LineBasicMaterial({color: MESHBORDERDEFAULTCOLOR, linewidth: 1});
+          var wireframeMaterial = new THREE.LineBasicMaterial({color: globalData.MESHBORDERDEFAULTCOLOR, linewidth: 1});
           var wireframe = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
           mesh.add(wireframe);
 
@@ -206,7 +218,7 @@ function deallocTHREE() {
       wireframe = three.wireframe;
 
       // remove from scene
-      scene.remove(mesh);
+      globalData.scene.remove(mesh);
 
       // clean up
       texture.dispose();
@@ -220,22 +232,23 @@ function deallocTHREE() {
     }
   }
 
-  controls.dispose();
-  renderer.dispose();
+  globalData.controls.dispose();
+  globalData.renderer.dispose();
 
-  controls = null;
-  camera = null;
-  scene = null;
-  renderer = null;
+  globalData.controls = null;
+  globalData.camera = null;
+  globalData.scene = null;
+  globalData.renderer = null;
 }
 
 /* click canvas */
 /**
  *  select mesh
  */
-function onCanvasClick(mouseVec) {
-  raycaster.setFromCamera(mouseVec, camera);
-  var intersects = raycaster.intersectObjects(scene.children);
+export function onCanvasClick(mouseVec) {
+  const raycaster = globalData.raycaster;
+  raycaster.setFromCamera(mouseVec, globalData.camera);
+  var intersects = raycaster.intersectObjects(globalData.scene.children);
   if (intersects.length > 0) {
       intersects[0].object.callback();
   }
@@ -243,7 +256,8 @@ function onCanvasClick(mouseVec) {
 
 /* canvas toolbar control */
 // range input, value changed
-function onDepthUnitChange() {
+export function onDepthUnitChange() {
+  const depthUnit = globalData.depthUnit;
   var depthUnitEle = document.querySelector('input[type="range"].depth-unit');
   var newDepthUnit = depthUnitEle.value;
   newDepthUnit = parseInt(newDepthUnit, 10);
@@ -254,6 +268,7 @@ function onDepthUnitChange() {
 }
 
 function updateMeshDepthUnit(newDepthUnit) {
+  const depthUnit = globalData.depthUnit;
   if (newDepthUnit !== depthUnit) {
       for (var i = allViewsData.length - 1; i >= 0; i--) {
           var viewItem = allViewsData[i];
@@ -264,15 +279,17 @@ function updateMeshDepthUnit(newDepthUnit) {
           }
       }
   }
-  depthUnit = newDepthUnit;
+  globalData.depthUnit = newDepthUnit;
 }
 
 /* show clipped content */
-function onShowClippedContentClick() {
+export function onShowClippedContentClick() {
   var ele = document.querySelector('#canvas-toolbar button.show-clipped-content');
+  var isClippedContentShown = globalData.isClippedContentShown;
 
   // update data
   isClippedContentShown = !isClippedContentShown;
+  globalData.isClippedContentShown = isClippedContentShown;
 
   // update controls
   if (isClippedContentShown) {
@@ -285,7 +302,7 @@ function onShowClippedContentClick() {
 
   // remove canvas element
   var canvasEle = document.querySelector('#canvas-frame');
-  canvasEle.removeChild(renderer.domElement);
+  canvasEle.removeChild(globalData.renderer.domElement);
 
   // update three
   deallocTHREE();
@@ -293,25 +310,26 @@ function onShowClippedContentClick() {
 }
 
 /* orient to 2D or 3D */
-function onOrientTo2DClick() {
-  controls.reset();
+export function onOrientTo2DClick() {
+  globalData.controls.reset();
 
+  const CameraDefaultPosition = globalData.CameraDefaultPosition;
   var x = CameraDefaultPosition.x;
   var y = CameraDefaultPosition.y;
   var z = CameraDefaultPosition.z;
-  camera.position.set(x, y, z);
+  globalData.camera.position.set(x, y, z);
 
   // update control tool
   updateOrientButtonsTo2D(false);
 }
 
-function onOrientTo3DClick() {
-  controls.reset();
+export function onOrientTo3DClick() {
+  globalData.controls.reset();
 
-  var z = CameraDefaultPosition.z;
+  var z = globalData.CameraDefaultPosition.z;
   var x = -z * 0.1;
   var y = z * 0.02;
-  camera.position.set(x, y, z);
+  globalData.camera.position.set(x, y, z);
 
   // update control tool
   updateOrientButtonsTo2D(true);
@@ -332,41 +350,44 @@ function updateOrientButtonsTo2D(orientTo2D) {
 }
 
 /* Zoom */
-function onZoomOutClick() {
-  var targetZoom = camera.zoom * 0.9;     // end value
+export function onZoomOutClick() {
+  var targetZoom = globalData.camera.zoom * 0.9;     // end value
   zoomCameraAnimated(targetZoom);
 }
 
-function onActualSizeClick() {
+export function onActualSizeClick() {
   var targetZoom = 1;                     // end value
   zoomCameraAnimated(targetZoom);
 }
 
-function onZoomInClick() {
-  var targetZoom = camera.zoom * 1.1;     // end value
+export function onZoomInClick() {
+  var targetZoom = globalData.camera.zoom * 1.1;     // end value
   zoomCameraAnimated(targetZoom);
 }
 
 function zoomCameraAnimated(targetZoom) {
+  const camera = globalData.camera;
   var currentZoom = camera.zoom;          // start value
   new TWEEN.Tween({ zoom: currentZoom })
-  .to({ zoom: targetZoom }, 300)     // animate, value and duration
-  .easing(TWEEN.Easing.Quadratic.Out)
-  .onUpdate(function () {
-      // modify camera zoom value
-      var zoom = this.zoom;
-      camera.zoom = zoom;
-      camera.updateProjectionMatrix();
-  })
-  .start();
+    .to({ zoom: targetZoom }, 300)     // animate, value and duration
+    .easing(TWEEN.Easing.Quadratic.Out)
+    .onUpdate(function (obj) {
+        // modify camera zoom value
+        const zoom = obj.zoom;
+        camera.zoom = zoom;
+        camera.updateProjectionMatrix();
+    })
+    .start();
 }
 
 /* OrbitControls end event */
 function onOrbitControlsEnd() {
+  const camera = globalData.camera;
   var currentPos = camera.position;
   if (Math.abs(currentPos.x / currentPos.z) < 0.1 &&
       Math.abs(currentPos.y / currentPos.z) < 0.02) {
       // orient to 2D
+      const CameraDefaultPosition = globalData.CameraDefaultPosition;
       new TWEEN.Tween({ x: currentPos.x, y: currentPos.y, z: currentPos.z })
       .to(CameraDefaultPosition, 300)
       .easing(TWEEN.Easing.Quadratic.Out)
@@ -393,7 +414,9 @@ function onOrbitControlsEnd() {
 }
 
 /* requestAnimationFrame */
-function animateTHREE() {
+export function animateTHREE() {
+  const { renderer, scene, camera, controls } = globalData;
+
   TWEEN.update();
   controls.update();
   renderer.render(scene, camera);
