@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@tweenjs/tween.js": "^18.3.2",
+    "chrome-devtools-frontend": "^1.0.708769",
     "three": "^0.110.0"
   }
 }
