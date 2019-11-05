@@ -19,6 +19,7 @@
 #import "HSDGWebServerFileResponse.h"
 #import "HSDGWebServerDataResponse.h"
 #import "HSDGWebServerHTTPStatusCodes.h"
+#import "HSDUtility.h"
 
 @implementation HSDRequestHandler
 
@@ -36,19 +37,7 @@
     }
 
     // parse paths
-    NSString *p = [path copy];
-    if ([p hasPrefix:@"/"]) {
-        p = [p substringFromIndex:1];
-    }
-    if ([p hasSuffix:@"/"]) {
-        p = [p substringToIndex:p.length - 1];
-    }
-
-    // path components
-    NSArray<NSString *> *pathComps = [[NSArray alloc] init];
-    if (p.length > 0) {
-        pathComps = [p componentsSeparatedByString:@"/"];
-    }
+    NSArray<NSString *> *pathComps = [HSDUtility parsePathComponents:path];
     NSString *firstPath;
     NSString *secondPath;
     NSString *thirdPath;
@@ -63,60 +52,7 @@
     }
 
     // route
-    if ([firstPath isEqualToString:@"pages"]) {
-        // html pages
-        if ([secondPath isEqualToString:kHSDComponentDBInspect]) {
-            // database_inspect
-            NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-            if ([thirdPath isEqualToString:[kHSDComponentDBInspect stringByAppendingString:@".html"]]) {
-                // database_inspect.html
-                NSDictionary *replacementDict = [HSDComponentMiddleware fetchDatabaseAPITemplateHTMLReplacement:query];
-                if ([replacementDict count] > 0) {
-                    // valid replacement values for html template
-                    // replace template string
-                    NSString *htmlStr = [[NSString alloc] initWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
-                    htmlStr = [HSDComponentMiddleware formatTemplateString:htmlStr variables:replacementDict];
-
-                    // localization
-                    htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
-                    response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
-                } else {
-                    // show prompt message
-                    NSDictionary *localStrings = [HSDComponentMiddleware localizationJSON:languageType];
-                    NSString *htmlText = [localStrings objectForKey:@"LocalizedDBInspectDBDisconnectedPromptHtml"];
-                    response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlText];
-                }
-            } else {
-                response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
-            }
-        } else if ([secondPath isEqualToString:kHSDComponentViewDebug]) {
-            // view_debug.html
-            NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-            response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
-        } else if ([secondPath isEqualToString:kHSDComponentSendInfo]) {
-            // send_info
-            NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-            if ([thirdPath isEqualToString:[kHSDComponentSendInfo stringByAppendingString:@".html"]]) {
-                // send_info.html
-                NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
-                htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
-                response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
-            } else {
-                response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
-            }
-        } else if ([secondPath isEqualToString:kHSDComponentConsoleLog]) {
-            // console_log
-            NSString *documentPath = [documentRoot stringByAppendingPathComponent:path];
-            if ([thirdPath isEqualToString:[kHSDComponentConsoleLog stringByAppendingString:@".html"]]) {
-                // console_log.html
-                NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
-                htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];
-                response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
-            } else {
-                response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
-            }
-        }
-    } else if ([firstPath isEqualToString:@"api"]) {
+    if ([firstPath isEqualToString:@"api"]) {
         // api requests
         if ([secondPath isEqualToString:kHSDComponentFileExplorer]) {
             // file_explorer api

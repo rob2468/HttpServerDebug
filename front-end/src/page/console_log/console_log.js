@@ -13,7 +13,7 @@ window.onload = function () {
     localStrings = param;
 
     if ('WebSocket' in window) {
-      var ws = new WebSocket('ws://localhost:5555');
+      var ws = new WebSocket('ws://localhost:5555/console_log');
       ws.onopen = function () {
         var stateEle = document.getElementById('connection_state');
         stateEle.innerHTML = 'CONNECTED';

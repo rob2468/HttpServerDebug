@@ -17,7 +17,9 @@
 #import "HSDGWebServerResponse.h"
 #import "HSDGWebServerHTTPStatusCodes.h"
 #import "HSDRequestHandler.h"
-#import "HSDWebSocketHandler.h"
+#import "HSDUtility.h"
+#import "HSDConsoleLogWebSocketHandler.h"
+#import "HSDWebDebugWebSocketHandler.h"
 
 NSString *kHSDNotificationServerStarted = @"kHSDNotificationServerStarted";
 NSString *kHSDNotificationServerStopped = @"kHSDNotificationServerStopped";
@@ -143,8 +145,20 @@ static NSUInteger kHttpServerPortDefault = 0;
     }];
 
     // add WebSocket handler
-    [server setWebSocketHandlerClassWithBlock:^Class _Nullable{
-        return [HSDWebSocketHandler class];
+    [server setWebSocketHandlerClassWithBlock:^HSDGWebSocketHandler * _Nullable(NSString *requestPath) {
+        HSDGWebSocketHandler *handler = nil;
+        NSArray *pathComps = [HSDUtility parsePathComponents:requestPath];
+        if ([pathComps count] > 0) {
+            NSString *firstPart = [pathComps firstObject];
+            if ([firstPart isEqualToString:kHSDComponentConsoleLog]) {
+                // console_log
+                handler = [[HSDConsoleLogWebSocketHandler alloc] init];
+            } else if ([firstPart isEqualToString:kHSDComponentWebDebug]) {
+                // web_debug
+                handler = [[HSDWebDebugWebSocketHandler alloc] init];
+            }
+        }
+        return handler;
     }];
 
     // port

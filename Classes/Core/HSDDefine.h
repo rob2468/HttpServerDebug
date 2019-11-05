@@ -15,6 +15,7 @@ extern NSString *const kHSDComponentSendInfo;
 extern NSString *const kHSDComponentFilePreview;
 extern NSString *const kHSDComponentViewDebug;
 extern NSString *const kHSDComponentConsoleLog;
+extern NSString *const kHSDComponentWebDebug;
 
 extern NSString *const kHSDMarkFormatString;            // mark format strings
 extern NSString *const kHSDMarkLocalizationString;      // mark localization strings

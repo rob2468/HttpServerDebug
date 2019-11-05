@@ -315,14 +315,11 @@ NS_ASSUME_NONNULL_END
             // WebSocket protocol
             BOOL isWebSocketRequest = [HSDGWebSocket isWebSocketRequest:requestHeaders];
             if (isWebSocketRequest) {
-                Class webSocketClass;
+                HSDGWebSocketHandler *webSocketHandler;
                 if (self->_server.webSocketMatchBlock) {
-                    webSocketClass = self->_server.webSocketMatchBlock();
+                    webSocketHandler = self->_server.webSocketMatchBlock(requestPath);
                 }
-                if (!webSocketClass) {
-                    webSocketClass = [HSDGWebSocket class];
-                }
-                self->_webSocket = [[webSocketClass alloc] initWithServer:self->_server requestMessage:self->_requestMessage socket:self->_socket];
+                self->_webSocket = [[HSDGWebSocket alloc] initWithServer:self->_server requestMessage:self->_requestMessage socket:self->_socket handler:webSocketHandler];
                 self->_webSocket.webSocketDelegate = self;
                 return;
             }

@@ -28,6 +28,7 @@
 #import <TargetConditionals.h>
 #import "HSDGWebServerRequest.h"
 #import "HSDGWebServerResponse.h"
+#import "HSDGWebSocketHandler.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -71,7 +72,7 @@ typedef void (^HSDGWebServerAsyncProcessBlock)(__kindof HSDGWebServerRequest* re
 /**
  * WebSocket
  */
-typedef Class _Nullable(^HSDGCDWebServerWebSocketMatchBlock)(void);
+typedef HSDGWebSocketHandler * _Nullable(^HSDGCDWebServerWebSocketMatchBlock)(NSString *requestPath);
 
 /**
  *  The port used by the GCDWebServer (NSNumber / NSUInteger).

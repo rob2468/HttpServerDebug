@@ -14,6 +14,7 @@ NSString *const kHSDComponentSendInfo = @"send_info";
 NSString *const kHSDComponentFilePreview = @"file_preview";
 NSString *const kHSDComponentViewDebug = @"view_debug";
 NSString *const kHSDComponentConsoleLog = @"console_log";
+NSString *const kHSDComponentWebDebug = @"web_debug";
 
 NSString *const kHSDMarkFormatString = @"@@";
 NSString *const kHSDMarkLocalizationString = @"%%";

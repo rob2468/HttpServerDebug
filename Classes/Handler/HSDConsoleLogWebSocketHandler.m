@@ -1,17 +1,17 @@
 //
-//  HSDWebSocketHandler.m
+//  HSDConsoleLogWebSocketHandler.m
 //  HttpServerDebug
 //
-//  Created by jam.chenjun on 2019/5/31.
+//  Created by jam.chenjun on 2019/11/5.
 //  Copyright © 2019 chenjun. All rights reserved.
 //
 
-#import "HSDWebSocketHandler.h"
+#import "HSDConsoleLogWebSocketHandler.h"
 #import "HSDComponentMiddleware.h"
 
-@implementation HSDWebSocketHandler
+@implementation HSDConsoleLogWebSocketHandler
 
-- (void)didOpen {
+- (void)didOpen:(NSString *)requestPath {
     // redirect stderr
     [HSDComponentMiddleware consoleLogRedirectStandardErrorOutput:^(NSString *logStr) {
         [self sendMessage:logStr];

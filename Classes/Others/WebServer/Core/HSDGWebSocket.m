@@ -10,6 +10,7 @@
 #import "HSDGWebServer.h"
 #import "HSDGWebServerPrivate.h"
 #import <CommonCrypto/CommonDigest.h>
+#import "HSDGWebSocketHandler.h"
 
 #define TIMEOUT_NONE          -1
 #define TIMEOUT_REQUEST_BODY  10
@@ -56,6 +57,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
 @end
 
 @interface HSDGWebSocket ()
+<HSDGWebSocketHandlerDelegate>
 
 @property (nonatomic, weak) HSDGWebServer *server;                   // web server
 @property (nonatomic, assign) CFSocketNativeHandle socket;          // the socket
@@ -65,6 +67,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
 
 @property (nonatomic, assign) BOOL isReadSourceSuspended;           // read dispatch source is suspended or not
 @property (nonatomic, assign) NSUInteger socketFDBytesAvailable;    // bytes number available to read
+@property (nonatomic, strong) HSDGWebSocketHandler *handler;
 
 @end
 
@@ -113,12 +116,14 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
     return isWebSocket;
 }
 
-- (instancetype)initWithServer:(HSDGWebServer *)server requestMessage:(CFHTTPMessageRef)requestMessage socket:(CFSocketNativeHandle)socket {
+- (instancetype)initWithServer:(HSDGWebServer *)server requestMessage:(CFHTTPMessageRef)requestMessage socket:(CFSocketNativeHandle)socket handler:(HSDGWebSocketHandler *)handler {
     self = [super init];
     if (self) {
         self.server = server;
         self.requestMessage = requestMessage;
         self.socket = socket;
+        self.handler = handler;
+        self.handler.delegate = self;
         self.term = [[NSData alloc] initWithBytes:"\xFF" length:1];
         self.socketFDBytesAvailable = 0;
         self.isReadSourceSuspended = NO;
@@ -127,7 +132,14 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
         self.readSource = [self createReadDispatchSource];
 
         [self sendResponseHeaders];
-        [self didOpen];
+
+        NSURL *requestURL = CFBridgingRelease(CFHTTPMessageCopyRequestURL(requestMessage));
+        NSString *urlPath = requestURL ? CFBridgingRelease(CFURLCopyPath((CFURLRef)requestURL)) : nil;  // Don't use -[NSURL path] which strips the ending slash
+        if (urlPath == nil) {
+            urlPath = @"/";  // CFURLCopyPath() returns NULL for a relative URL with path "//" contrary to -[NSURL path] which returns "/"
+        }
+        NSString *requestPath = urlPath ? HSDGWebServerUnescapeURLString(urlPath) : nil;
+        [self didOpen:requestPath];
     }
     return self;
 }
@@ -452,16 +464,30 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
     });
 }
 
-#pragma mark - subclassing method
+#pragma mark -
 
-- (void)didOpen {
+- (void)didOpen:(NSString *)requestPath {
+    if (self.handler) {
+        [self.handler didOpen:requestPath];
+    }
 }
 
 - (void)didReceiveMessage:(NSString *)msg {
-
+    if (self.handler) {
+        [self.handler didReceiveMessage:msg];
+    }
 }
 
 - (void)didClose {
+    if (self.handler) {
+        [self.handler didClose];
+    }
+}
+
+#pragma mark - HSDGWebSocketHandlerDelegate
+
+- (void)onWebSocketHandlerSendMessage:(NSString *)msg {
+    [self sendMessage:msg];
 }
 
 @end

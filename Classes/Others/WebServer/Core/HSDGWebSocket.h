@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class HSDGWebServer;
+@class HSDGWebSocketHandler;
 @protocol HSDGWebSocketDelegate;
 
 @interface HSDGWebSocket : NSObject
@@ -25,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * init method
  */
-- (instancetype)initWithServer:(HSDGWebServer *)server requestMessage:(CFHTTPMessageRef)requestMessage socket:(CFSocketNativeHandle)socket;
+- (instancetype)initWithServer:(HSDGWebServer *)server requestMessage:(CFHTTPMessageRef)requestMessage socket:(CFSocketNativeHandle)socket handler:(HSDGWebSocketHandler *)handler;
 
 /**
  * send message from server to client
