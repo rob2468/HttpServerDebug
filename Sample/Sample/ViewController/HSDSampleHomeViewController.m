@@ -10,10 +10,12 @@
 #import "HSDHttpServerControlPannelController.h"
 #import "HSDSampleDBInspectViewController.h"
 #import "HSDSampleViewDebugViewController.h"
+#import "HSDSampleWebDebugViewController.h"
 
 static NSString * const kHSDCtrlPannel = @"HSD Control Pannel";
 static NSString * const kHSDDatabaseInspect = @"Database Inspect";
 static NSString * const kHSDViewDebug = @"View Debug";
+static NSString * const kHSDWebDebug = @"Web Debug";
 
 @interface HSDSampleHomeViewController ()
 <UITableViewDataSource, UITableViewDelegate>
@@ -28,7 +30,7 @@ static NSString * const kHSDViewDebug = @"View Debug";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.dataList = @[kHSDCtrlPannel, kHSDDatabaseInspect, kHSDViewDebug];
+        self.dataList = @[kHSDCtrlPannel, kHSDDatabaseInspect, kHSDViewDebug, kHSDWebDebug];
     }
     return self;
 }
@@ -78,6 +80,9 @@ static NSString * const kHSDViewDebug = @"View Debug";
         [self.navigationController pushViewController:vc animated:YES];
     } else if ([title isEqualToString:kHSDViewDebug]) {
         HSDSampleViewDebugViewController *vc = [[HSDSampleViewDebugViewController alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
+    } else if ([title isEqualToString:kHSDWebDebug]) {
+        HSDSampleWebDebugViewController *vc = [[HSDSampleWebDebugViewController alloc] init];
         [self.navigationController pushViewController:vc animated:YES];
     }
 }

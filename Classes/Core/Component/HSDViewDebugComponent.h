@@ -23,4 +23,6 @@
  */
 + (NSData *)snapshotImageData:(UIView *)view isSubviewsExcluding:(BOOL)isSubviewsExcluding clippedFrame:(CGRect)clippedFrame;
 
++ (NSArray<UIWindow *> *)fetchAllWindows;
+
 @end

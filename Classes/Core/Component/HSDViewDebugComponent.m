@@ -72,7 +72,7 @@ static NSInteger kViewDataValueRootParent = -1;
     return viewsData;
 }
 
-+ (NSArray *)fetchAllWindows {
++ (NSArray<UIWindow *> *)fetchAllWindows {
     // allWindowsIncludingInternalWindows:YES onlyVisibleWindows:NO
     BOOL includeInternalWindows = YES;
     BOOL onlyVisibleWindows = NO;

@@ -10,8 +10,11 @@
 #import <Foundation/Foundation.h>
 
 @class HSDResponseInfo;
+@class HSDWebDebugDomain;
 
 @interface HSDComponentMiddleware : NSObject
+
++ (instancetype)sharedInstance;
 
 #pragma mark - File Explorer
 
@@ -64,6 +67,10 @@
  *  reset STDERR_FILENO
  */
 + (void)consoleLogRecoverStandardErrorOutput;
+
+#pragma mark - Web Debug
+
++ (NSDictionary *)fetchWebDebugTemplateHTMLReplacement;
 
 #pragma mark -
 

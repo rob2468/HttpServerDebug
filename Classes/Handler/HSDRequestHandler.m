@@ -134,21 +134,29 @@
                 NSString *htmlStr = [NSString stringWithContentsOfFile:documentPath encoding:NSUTF8StringEncoding error:nil];
                 htmlStr = [HSDComponentMiddleware localize:languageType text:htmlStr];  // localization
 
+                NSDictionary *replacementDict;
                 if ([path isEqualToString:@"/database_inspect.html"]) {
                     // database_inspect.html
-                    NSDictionary *replacementDict = [HSDComponentMiddleware fetchDatabaseAPITemplateHTMLReplacement:query];
-                    if ([replacementDict count] > 0) {
-                        // valid replacement values for html template
-                        // replace template string
-                        htmlStr = [HSDComponentMiddleware formatTemplateString:htmlStr variables:replacementDict];
-                    } else {
+                    replacementDict = [HSDComponentMiddleware fetchDatabaseAPITemplateHTMLReplacement:query];
+                    if ([replacementDict count] == 0) {
                         // show prompt message
                         NSDictionary *localStrings = [HSDComponentMiddleware localizationJSON:languageType];
                         htmlStr = [localStrings objectForKey:@"LocalizedDBInspectDBDisconnectedPromptHtml"];
                     }
+                } else if ([path isEqualToString:@"/web_debug.html"]) {
+                    // web_debug.html
+                    replacementDict = [HSDComponentMiddleware fetchWebDebugTemplateHTMLReplacement];
                 }
+
+                if ([replacementDict count] > 0) {
+                    // valid replacement values for html template
+                    // replace template string
+                    htmlStr = [HSDComponentMiddleware formatTemplateString:htmlStr variables:replacementDict];
+                }
+
                 response = [[HSDGWebServerDataResponse alloc] initWithHTML:htmlStr];
             } else {
+                // files which is not html type
                 response = [[HSDGWebServerFileResponse alloc] initWithFile:documentPath];
             }
         }

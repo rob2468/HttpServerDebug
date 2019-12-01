@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3927D2832371B0A500D8616C /* HSDSampleWebDebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3927D2822371B0A500D8616C /* HSDSampleWebDebugViewController.m */; };
 		8F45FC0A20BED6330034E4B4 /* HSDSampleCategoryDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F45FC0120BED6320034E4B4 /* HSDSampleCategoryDataModel.m */; };
 		8F45FC0B20BED6330034E4B4 /* HSDSampleDBCategoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F45FC0320BED6320034E4B4 /* HSDSampleDBCategoryManager.m */; };
 		8F45FC0C20BED6330034E4B4 /* HSDSampleDBManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F45FC0520BED6320034E4B4 /* HSDSampleDBManager.m */; };
@@ -26,6 +27,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3927D2812371B0A500D8616C /* HSDSampleWebDebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HSDSampleWebDebugViewController.h; sourceTree = "<group>"; };
+		3927D2822371B0A500D8616C /* HSDSampleWebDebugViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HSDSampleWebDebugViewController.m; sourceTree = "<group>"; };
 		8F16DD331F3CA4FF00A2BFBF /* libHttpServerDebug.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libHttpServerDebug.a; path = "../HttpServerDebug/build/Debug-iphoneos/libHttpServerDebug.a"; sourceTree = "<group>"; };
 		8F45FC0020BED6320034E4B4 /* HSDSampleCategoryDataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSDSampleCategoryDataModel.h; sourceTree = "<group>"; };
 		8F45FC0120BED6320034E4B4 /* HSDSampleCategoryDataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSDSampleCategoryDataModel.m; sourceTree = "<group>"; };
@@ -150,6 +153,8 @@
 				8F8973C420BED5A70081CA70 /* HSDSampleHomeViewController.m */,
 				8FC504A820BED727007D55B9 /* HSDSampleViewDebugViewController.h */,
 				8FC504A720BED727007D55B9 /* HSDSampleViewDebugViewController.m */,
+				3927D2812371B0A500D8616C /* HSDSampleWebDebugViewController.h */,
+				3927D2822371B0A500D8616C /* HSDSampleWebDebugViewController.m */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -258,6 +263,7 @@
 				8F8973A520BED0C60081CA70 /* main.m in Sources */,
 				8FC504A920BED728007D55B9 /* HSDSampleViewDebugViewController.m in Sources */,
 				8F8973C820BED5A80081CA70 /* HSDSampleCategoryEditController.m in Sources */,
+				3927D2832371B0A500D8616C /* HSDSampleWebDebugViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

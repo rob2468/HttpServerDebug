@@ -13,6 +13,7 @@
 #import "HSDSendInfoComponent.h"
 #import "HSDFilePreviewComponent.h"
 #import "HSDConsoleLogComponent.h"
+#import "HSDWebDebugComponent.h"
 #import "HSDManager+Project.h"
 #import "HSDDefine.h"
 #import "HSDResponseInfo.h"
@@ -20,6 +21,7 @@
 @interface HSDComponentMiddleware ()
 
 @property (nonatomic, strong) HSDConsoleLogComponent *consoleLogComponent;
+@property (nonatomic, strong) HSDWebDebugComponent *webDebugComponent;
 
 @end
 
@@ -32,6 +34,13 @@
         singletonMiddleware = [[HSDComponentMiddleware alloc] init];
     });
     return singletonMiddleware;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+    }
+    return self;
 }
 
 #pragma mark - File Explorer
@@ -348,13 +357,23 @@
     [consoleLogComponent recoverStandardErrorOutput];
 }
 
-+ (NSString *)formatTemplateString:(NSString *)str variables:(NSDictionary *)variables {
-    NSMutableString *mStr = [str mutableCopy];
-    [variables enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
-        NSString *template = [NSString stringWithFormat:@"%@%@%@", kHSDMarkFormatString, key, kHSDMarkFormatString];
-        [mStr replaceOccurrencesOfString:template withString:value options:0 range:NSMakeRange(0, mStr.length)];
-    }];
-    return mStr;
+#pragma mark - Web Debug
+
++ (NSDictionary *)fetchWebDebugTemplateHTMLReplacement {
+    HSDWebDebugComponent *webDebugComponent = [HSDComponentMiddleware sharedInstance].webDebugComponent;
+    NSArray<HSDWebDebugWebViewInfo *> *infoArr = [webDebugComponent allWebViewInfo];
+
+    NSMutableString *htmlStr = [@"" mutableCopy];
+    for (HSDWebDebugWebViewInfo *webViewInfo in infoArr) {
+        [htmlStr appendString:@"<li class=\"page-item\">"];
+        [htmlStr appendString:@"<div class=\"page-info\">"];
+        [htmlStr appendFormat:@"<div class=\"page-title\">%@</div>", webViewInfo.title];
+        [htmlStr appendFormat:@"<div class=\"page-url\">%@</div>", webViewInfo.url];
+        [htmlStr appendString:@"</div>"];
+        [htmlStr appendFormat:@"<a class=\"debug\" href=\"http://127.0.0.1:5555/chrome-devtools-frontend/front_end/inspector.html?ws=127.0.0.1:5555/web_debug/devtools/page/1\" target=\"_blank\">调试</a>"];
+        [htmlStr appendString:@"</li>"];
+    }
+    return @{ @"PageList": htmlStr };
 }
 
 #pragma mark - localization
@@ -398,6 +417,17 @@
     return localized;
 }
 
+#pragma mark = Utility
+
++ (NSString *)formatTemplateString:(NSString *)str variables:(NSDictionary *)variables {
+    NSMutableString *mStr = [str mutableCopy];
+    [variables enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        NSString *template = [NSString stringWithFormat:@"%@%@%@", kHSDMarkFormatString, key, kHSDMarkFormatString];
+        [mStr replaceOccurrencesOfString:template withString:value options:0 range:NSMakeRange(0, mStr.length)];
+    }];
+    return mStr;
+}
+
 #pragma mark - Getter
 
 - (HSDConsoleLogComponent *)consoleLogComponent {
@@ -405,6 +435,13 @@
         _consoleLogComponent = [[HSDConsoleLogComponent alloc] init];
     }
     return _consoleLogComponent;
+}
+
+- (HSDWebDebugComponent *)webDebugComponent {
+    if (!_webDebugComponent) {
+        _webDebugComponent = [[HSDWebDebugComponent alloc] init];
+    }
+    return _webDebugComponent;
 }
 
 @end

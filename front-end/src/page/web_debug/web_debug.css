@@ -1,0 +1,29 @@
+.main {
+  font-size: 14px;
+  margin-left: 30%;
+  margin-right: 30%;
+}
+.list-title {
+  margin: 40px 0 30px;
+}
+.page .page-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.page .page-info {
+  min-width: 0;
+  flex-shrink: 2;
+}
+.page .page-info .page-title {
+
+}
+.page .page-info .page-url {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.page .debug {
+  min-width: 40px;
+  height: 25px;
+}

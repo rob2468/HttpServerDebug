@@ -119,4 +119,4 @@ fi
 
 ## Acknowledgments
 
-[CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer), [FLEX](https://github.com/Flipboard/FLEX), [Custom-Context-Menu](https://github.com/callmenick/Custom-Context-Menu), [ZipArchive](https://github.com/ZipArchive/ZipArchive), [GCDWebServer](https://github.com/swisspol/GCDWebServer)
+[CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer), [FLEX](https://github.com/Flipboard/FLEX), [Custom-Context-Menu](https://github.com/callmenick/Custom-Context-Menu), [ZipArchive](https://github.com/ZipArchive/ZipArchive), [GCDWebServer](https://github.com/swisspol/GCDWebServer), [PonyDebugger](https://github.com/square/PonyDebugger)

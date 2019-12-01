@@ -1,5 +1,5 @@
 //
-//  HSDWebDebugWebSocketHandler.h
+//  HSDWebDebugDomainNetwork.h
 //  HttpServerDebug
 //
 //  Created by jam.chenjun on 2019/11/5.
@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "HSDGWebSocketHandler.h"
+#import "HSDWebDebugDomain.h"
 
-@interface HSDWebDebugWebSocketHandler : HSDGWebSocketHandler
+@interface HSDWebDebugDomainNetwork : HSDWebDebugDomain
 
 @end
