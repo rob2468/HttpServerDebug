@@ -8,15 +8,19 @@
 
 #import <Foundation/Foundation.h>
 @class HSDWebDebugWebViewInfo;
+@class WKWebView;
 
 @interface HSDWebDebugComponent : NSObject
 
+/**
+ */
 - (NSArray<HSDWebDebugWebViewInfo *> *)allWebViewInfo;
 
 @end
 
 @interface HSDWebDebugWebViewInfo : NSObject
 
+@property (nonatomic, weak) WKWebView *webView;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *url;
 

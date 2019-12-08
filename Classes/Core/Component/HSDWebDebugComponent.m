@@ -10,10 +10,12 @@
 #import "HSDViewDebugComponent.h"
 #import <WebKit/WebKit.h>
 
+static NSInteger nextPageNum = 1;   // page number, used to represent specific web view
+
 @interface HSDWebDebugComponent()
 
-@property (strong, nonatomic) NSHashTable *allWebViews;
-@property (copy, nonatomic) NSString *jsString;
+@property (nonatomic, strong) NSMutableDictionary *allWebViews;
+@property (nonatomic, copy) NSString *jsString;
 
 @end
 
@@ -22,7 +24,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-//        self.allWebViews = [NSHashTable weakObjectsHashTable];
+        self.allWebViews = [[NSMutableDictionary alloc] init];
         NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
         NSString *inspectFile = [resourcePath stringByAppendingPathComponent:@"HSDWebDebugInspector.js"];
         self.jsString = [[NSString alloc] initWithContentsOfFile:inspectFile encoding:NSUTF8StringEncoding error:nil];
@@ -36,7 +38,6 @@
     NSMutableDictionary<NSString *, HSDWebDebugWebViewInfo *> *titlesDict = [[NSMutableDictionary alloc] init];
     NSMutableArray<NSString *> *webViewAddrs = [[NSMutableArray alloc] init]; // webView memory addresses, used to sort the titles array
 
-    self.allWebViews = [NSHashTable weakObjectsHashTable];
     dispatch_sync(dispatch_get_main_queue(), ^{
         // get all webviews
         NSArray *windows = [HSDViewDebugComponent fetchAllWindows];
