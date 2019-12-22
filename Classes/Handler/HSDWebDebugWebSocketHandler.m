@@ -14,10 +14,11 @@
 #import "HSDWebDebugDomainPage.h"
 #import "HSDWebDebugDomainTarget.h"
 #import "HSDWebDebugDomain.h"
+#import "HSDWebDebugComponent.h"
 
 @interface HSDWebDebugWebSocketHandler()
 
-@property (nonatomic, strong) NSDictionary *webDebugDomains;    // key: domain name, value: handler instance
+@property (nonatomic, strong) NSNumber *pageId;
 
 @end
 
@@ -26,13 +27,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.webDebugDomains = @{
-            @"Browser": [[HSDWebDebugDomainBrowser alloc] init],
-            @"Network": [[HSDWebDebugDomainNetwork alloc] init],
-            @"DOM": [[HSDWebDebugDomainDOM alloc] init],
-            @"Page": [[HSDWebDebugDomainPage alloc] init],
-            @"Target": [[HSDWebDebugDomainTarget alloc] init],
-        };
+        
     }
     return self;
 }
@@ -41,35 +36,31 @@
  * websocket did open
  */
 - (void)didOpen:(NSString *)requestPath {
-
+    self.pageId = [NSNumber numberWithInteger:[[requestPath lastPathComponent] integerValue]];
 }
 
 - (void)didReceiveMessage:(NSString *)msg {
     NSLog(@"HSDWEBSOCKET: didReceiveMessage: \n%@", msg);
 
+    HSDDevToolProtocolInfo *devProtocolInfo = [[HSDDevToolProtocolInfo alloc] init];
+    devProtocolInfo.pageId = self.pageId;
+
     // parse received data
     NSDictionary *msgDict = [NSJSONSerialization JSONObjectWithData:[msg dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
     NSString *fullMethodName = [msgDict objectForKey:@"method"];
     NSArray *components = [fullMethodName componentsSeparatedByString:@"."];
-    NSString *domainName;
-    NSString *methodName;
     if ([components count] >= 2) {
-        domainName = [components objectAtIndex:0];
-        methodName = [components objectAtIndex:1];
+        devProtocolInfo.domainName = [components objectAtIndex:0];
+        devProtocolInfo.methodName = [components objectAtIndex:1];
     }
-    NSString *objectID = [msgDict objectForKey:@"id"];
-
-    // get handler
-    HSDWebDebugDomain *handler = nil;
-    if (domainName.length > 0) {
-        handler = [self.webDebugDomains objectForKey:domainName];
-    }
+    NSString *objectId = [msgDict objectForKey:@"id"];
+    devProtocolInfo.objectId = objectId;
 
     // callback
     void (^responseCallback)(NSDictionary *result, NSError *error) = ^(NSDictionary *result, NSError *error) {
         // assemble data
         NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
-        [response setObject:objectID forKey:@"id"];
+        [response setObject:objectId forKey:@"id"];
         if (result) {
             [response setObject:result forKey:@"result"];
         }
@@ -82,12 +73,7 @@
         [self sendMessage:encodedData];
     };
 
-    if (handler) {
-        // handle received data
-        [handler handleMethodWithName:methodName parameters:[msgDict objectForKey:@"params"] responseCallback:responseCallback];
-    } else {
-        responseCallback(nil, nil);
-    }
+    [HSDComponentMiddleware handleWebDebugDevProtocol:devProtocolInfo parameters:msgDict responseCallback:responseCallback];
 }
 
 - (void)didClose {

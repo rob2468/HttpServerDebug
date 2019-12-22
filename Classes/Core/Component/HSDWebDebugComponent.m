@@ -9,8 +9,7 @@
 #import "HSDWebDebugComponent.h"
 #import "HSDViewDebugComponent.h"
 #import <WebKit/WebKit.h>
-
-static NSInteger nextPageNum = 1;   // page number, used to represent specific web view
+#import "HSDDefine.h"
 
 @interface HSDWebDebugComponent()
 
@@ -24,7 +23,7 @@ static NSInteger nextPageNum = 1;   // page number, used to represent specific w
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.allWebViews = [[NSMutableDictionary alloc] init];
+        // get the injection js script string
         NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"HttpServerDebug" ofType:@"bundle"];
         NSString *inspectFile = [resourcePath stringByAppendingPathComponent:@"HSDWebDebugInspector.js"];
         self.jsString = [[NSString alloc] initWithContentsOfFile:inspectFile encoding:NSUTF8StringEncoding error:nil];
@@ -35,7 +34,7 @@ static NSInteger nextPageNum = 1;   // page number, used to represent specific w
 - (NSArray<HSDWebDebugWebViewInfo *> *)allWebViewInfo {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-    NSMutableDictionary<NSString *, HSDWebDebugWebViewInfo *> *titlesDict = [[NSMutableDictionary alloc] init];
+    self.allWebViews = [[NSMutableDictionary alloc] init];
     NSMutableArray<NSString *> *webViewAddrs = [[NSMutableArray alloc] init]; // webView memory addresses, used to sort the titles array
 
     dispatch_sync(dispatch_get_main_queue(), ^{
@@ -46,41 +45,49 @@ static NSInteger nextPageNum = 1;   // page number, used to represent specific w
         }
 
         NSInteger count = [self.allWebViews count];
-        for (WKWebView *webView in self.allWebViews) {
-            NSString *memAddr = [NSString stringWithFormat:@"%p", webView];
+        if (count > 0) {
+            __block NSInteger currentCount = 0;
+            for (NSNumber *key in [self.allWebViews allKeys]) {
+                HSDWebDebugWebViewInfo *webViewInfo = [self.allWebViews objectForKey:key];
+                WKWebView *webView = webViewInfo.webView;
+                NSString *memAddr = [NSString stringWithFormat:@"%p", webView];
 
-            // get webview title
-            [webView evaluateJavaScript:@"getWebViewInfo();" completionHandler:^(NSDictionary *webViewInfo, NSError * _Nullable error) {
-                HSDWebDebugWebViewInfo *infoObj = [[HSDWebDebugWebViewInfo alloc] init];
-                infoObj.title = [webViewInfo objectForKey:@"title"];
-                infoObj.url = [webViewInfo objectForKey:@"url"];
-                [titlesDict setObject:infoObj forKey:memAddr];
+                // get webview title
+                [webView evaluateJavaScript:@"getWebViewInfo();" completionHandler:^(NSDictionary *infoDict, NSError * _Nullable error) {
+                    webViewInfo.title = [infoDict objectForKey:@"title"];
+                    webViewInfo.url = [infoDict objectForKey:@"url"];
 
-                if ([titlesDict count] >= count) {
-                    // all titles have gotten
-                    dispatch_semaphore_signal(semaphore);
-                }
-            }];
+                    currentCount++;
+                    if (currentCount >= count) {
+                        // all titles have gotten
+                        dispatch_semaphore_signal(semaphore);
+                    }
+                }];
 
-            // memory address
-            [webViewAddrs addObject:memAddr];
+                // memory address
+                [webViewAddrs addObject:memAddr];
+            }
+        } else {
+            dispatch_semaphore_signal(semaphore);
         }
+
     });
 
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
     // sort
-    NSMutableArray<HSDWebDebugWebViewInfo *> *retVal = [[NSMutableArray alloc] init];
-    for (WKWebView *webView in self.allWebViews) {
-        NSString *memAddr = [NSString stringWithFormat:@"%p", webView];
-        for (NSString *key in [titlesDict allKeys]) {
-            if ([memAddr isEqualToString:key]) {
-                [retVal addObject:[titlesDict objectForKey:key]];
-                break;
-            }
+    NSMutableArray<NSNumber *> *pageIds = [[self.allWebViews allKeys] mutableCopy];
+    [pageIds sortUsingComparator:^NSComparisonResult(NSNumber *obj1, NSNumber *obj2) {
+        if (obj1.integerValue < obj2.integerValue) {
+            return NSOrderedAscending;
         }
-    }
+        return NSOrderedDescending;
+    }];
 
+    NSMutableArray<HSDWebDebugWebViewInfo *> *retVal = [[NSMutableArray alloc] init];
+    for (NSNumber *pageId in pageIds) {
+        [retVal addObject:[self.allWebViews objectForKey:pageId]];
+    }
     return retVal;
 }
 
@@ -91,7 +98,12 @@ static NSInteger nextPageNum = 1;   // page number, used to represent specific w
     if ([view isKindOfClass:[WKWebView class]]) {
         // store webview
         WKWebView *webView = (WKWebView *)view;
-        [self.allWebViews addObject:webView];
+        NSNumber *pageId = [self generatePageId];
+
+        HSDWebDebugWebViewInfo *info = [[HSDWebDebugWebViewInfo alloc] init];
+        info.webView = webView;
+        info.pageId = pageId;
+        [self.allWebViews setObject:info forKey:pageId];
 
         // inject js script
         [webView evaluateJavaScript:self.jsString completionHandler:^(id _Nullable abc, NSError * _Nullable error) {
@@ -105,8 +117,37 @@ static NSInteger nextPageNum = 1;   // page number, used to represent specific w
     }
 }
 
+- (NSNumber *)generatePageId {
+    static NSInteger nextPageId = 1;   // page number, used to represent specific web view
+    NSNumber *pageId = [NSNumber numberWithInteger:nextPageId];
+    nextPageId++;
+    return pageId;
+}
+
+- (void)handleDevProtocol:(HSDDevToolProtocolInfo *)devToolProtocolInfo parameters:(NSDictionary *)msgDict responseCallback:(void (^)(NSDictionary *, NSError *))responseCallback {
+    NSDictionary *result = nil;
+    if ([devToolProtocolInfo.domainName isEqualToString:kHSDWebDebugDomainDOM]) {
+        if ([devToolProtocolInfo.methodName isEqualToString:@"getDocument"]) {
+            HSDWebDebugWebViewInfo *webViewInfo = [self.allWebViews objectForKey:devToolProtocolInfo.pageId];
+            webViewInfo.webView;
+
+            NSString *a = @"/Users/jam/Desktop/workspace/ios-app/HttpServerDebug/Resources/HttpServerDebug.bundle/data.json";
+            NSData *d = [[NSData alloc] initWithContentsOfFile:a];
+            result = [NSJSONSerialization JSONObjectWithData:d options:0 error:nil];
+            result = [result objectForKey:@"result"];
+        }
+    }
+    if (responseCallback) {
+        responseCallback(result, nil);
+    }
+}
+
 @end
 
 @implementation HSDWebDebugWebViewInfo
+
+@end
+
+@implementation HSDDevToolProtocolInfo
 
 @end

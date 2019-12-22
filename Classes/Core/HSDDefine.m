@@ -24,3 +24,12 @@ NSString *const kHSDUserDefaultsKeyServerPort = @"hsd_userdefaultskey_server_por
 
 const UInt16 kHSDServerPortUserSettingMin = 1024;
 const UInt16 kHSDServerPostUserSettingMax = 65535;
+
+NSString *const kHSDWebDebugDomainDOM = @"DOM";
+NSString *const kHSDWebDebugDomainPage = @"Page";
+
+//@"Browser": [[HSDWebDebugDomainBrowser alloc] init],
+//@"Network": [[HSDWebDebugDomainNetwork alloc] init],
+//@"DOM": [[HSDWebDebugDomainDOM alloc] init],
+//@"Page": [[HSDWebDebugDomainPage alloc] init],
+//@"Target": [[HSDWebDebugDomainTarget alloc] init],

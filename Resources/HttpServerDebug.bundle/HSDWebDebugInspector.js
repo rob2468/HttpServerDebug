@@ -5,7 +5,11 @@ function getWebViewInfo() {
   return { title, url };
 }
 
-document.body.style.backgroundColor = '#f00';
+function getDocument() {
 
-window.webkit.messageHandlers.hsdTest.postMessage('abcdefg');
+}
+
+// Test
+// document.body.style.backgroundColor = '#f00';
+// window.webkit.messageHandlers.hsdTest.postMessage('abcdefg');
 

@@ -11,6 +11,7 @@
 
 @class HSDResponseInfo;
 @class HSDWebDebugDomain;
+@class HSDDevToolProtocolInfo;
 
 @interface HSDComponentMiddleware : NSObject
 
@@ -71,6 +72,8 @@
 #pragma mark - Web Debug
 
 + (NSDictionary *)fetchWebDebugTemplateHTMLReplacement;
+
++ (void)handleWebDebugDevProtocol:(HSDDevToolProtocolInfo *)devToolProtocolInfo parameters:(NSDictionary *)msgDict responseCallback:(void(^)(NSDictionary *result, NSError *error))responseCallback;
 
 #pragma mark -
 

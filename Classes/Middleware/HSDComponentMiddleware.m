@@ -370,10 +370,15 @@
         [htmlStr appendFormat:@"<div class=\"page-title\">%@</div>", webViewInfo.title];
         [htmlStr appendFormat:@"<div class=\"page-url\">%@</div>", webViewInfo.url];
         [htmlStr appendString:@"</div>"];
-        [htmlStr appendFormat:@"<a class=\"debug\" href=\"http://127.0.0.1:5555/chrome-devtools-frontend/front_end/inspector.html?ws=127.0.0.1:5555/web_debug/devtools/page/1\" target=\"_blank\">调试</a>"];
+        [htmlStr appendFormat:@"<a class=\"debug\" href=\"http://127.0.0.1:5555/chrome-devtools-frontend/front_end/inspector.html?ws=127.0.0.1:5555/web_debug/devtools/page/%@\" target=\"_blank\">调试</a>", webViewInfo.pageId];
         [htmlStr appendString:@"</li>"];
     }
     return @{ @"PageList": htmlStr };
+}
+
++ (void)handleWebDebugDevProtocol:(HSDDevToolProtocolInfo *)devToolProtocolInfo parameters:(NSDictionary *)msgDict responseCallback:(void(^)(NSDictionary *result, NSError *error))responseCallback {
+    HSDWebDebugComponent *webDebugComponent = [HSDComponentMiddleware sharedInstance].webDebugComponent;
+    [webDebugComponent handleDevProtocol:devToolProtocolInfo parameters:msgDict responseCallback:responseCallback];
 }
 
 #pragma mark - localization

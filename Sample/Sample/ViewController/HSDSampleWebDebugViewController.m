@@ -29,12 +29,12 @@
     [self.webView loadRequest:request];
     [self.view addSubview:self.webView];
 
-    [[self.webView configuration].userContentController addScriptMessageHandler:self name:@"hsdTest"];
-
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self stub];
-    });
+//    [[self.webView configuration].userContentController addScriptMessageHandler:self name:@"hsdTest"];
+//
+//
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [self stub];
+//    });
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {

@@ -26,3 +26,7 @@ extern NSString *const kHSDUserDefaultsKeyServerPort;   // server port
 // user setting max and min port number
 extern const UInt16 kHSDServerPortUserSettingMin;
 extern const UInt16 kHSDServerPostUserSettingMax;
+
+// Web Debug Chrom DevTool Protocol Domain name
+extern NSString *const kHSDWebDebugDomainDOM;
+extern NSString *const kHSDWebDebugDomainPage;
