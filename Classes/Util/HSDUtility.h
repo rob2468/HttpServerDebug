@@ -8,12 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface HSDUtility : NSObject
 
 + (NSArray<NSString *> *)parsePathComponents:(NSString *)path;
 
 @end
 
-NS_ASSUME_NONNULL_END
+#ifdef DEBUG
+#define HSD_LOG_DEBUG(fmt, ...) NSLog(@"[HSD]:" fmt, ##__VA_ARGS__);
+#else
+#define HSD_LOG_DEBUG(fmt, ...);
+#endif

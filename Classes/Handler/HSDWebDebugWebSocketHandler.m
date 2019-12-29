@@ -15,6 +15,7 @@
 #import "HSDWebDebugDomainTarget.h"
 #import "HSDWebDebugDomain.h"
 #import "HSDWebDebugComponent.h"
+#import "HSDUtility.h"
 
 @interface HSDWebDebugWebSocketHandler()
 
@@ -40,8 +41,6 @@
 }
 
 - (void)didReceiveMessage:(NSString *)msg {
-    NSLog(@"HSDWEBSOCKET: didReceiveMessage: \n%@", msg);
-
     HSDDevToolProtocolInfo *devProtocolInfo = [[HSDDevToolProtocolInfo alloc] init];
     devProtocolInfo.pageId = self.pageId;
 
@@ -65,7 +64,7 @@
             [response setObject:result forKey:@"result"];
         }
         [response setObject:[NSNull null] forKey:@"error"];
-        NSLog(@"request: \n%@ \nresponse: \n%@", msgDict, response);
+        HSD_LOG_DEBUG(@"[WebDebug][WebSocket]\nrequest:\n%@\nresponse:\n%@", msgDict, response);
 
         // serialization
         NSData *data = [NSJSONSerialization dataWithJSONObject:response options:0 error:nil];

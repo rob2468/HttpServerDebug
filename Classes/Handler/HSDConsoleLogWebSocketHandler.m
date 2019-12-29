@@ -8,18 +8,20 @@
 
 #import "HSDConsoleLogWebSocketHandler.h"
 #import "HSDComponentMiddleware.h"
+#import "HSDUtility.h"
 
 @implementation HSDConsoleLogWebSocketHandler
 
 - (void)didOpen:(NSString *)requestPath {
     // redirect stderr
+    __weak __typeof(self) weakSelf = self;
     [HSDComponentMiddleware consoleLogRedirectStandardErrorOutput:^(NSString *logStr) {
-        [self sendMessage:logStr];
+        [weakSelf sendMessage:logStr];
     }];
 }
 
 - (void)didReceiveMessage:(NSString *)msg {
-    NSLog(@"HSDWEBSOCKET: didReceiveMessage: %@", msg);
+    HSD_LOG_DEBUG(@"didReceiveMessage: %@", msg);
 }
 
 - (void)didClose {

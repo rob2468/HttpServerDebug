@@ -305,7 +305,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
             // already received read event
             GWS_LOG_WARNING(@"HSDGCDWebSocket dispatch_suspend read source");
 
-            dispatch_suspend(self.readSource);
+//            dispatch_suspend(self.readSource);
             self.isReadSourceSuspended = YES;
         }
     }
@@ -396,7 +396,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame) {
 
         if (self.isReadSourceSuspended) {
             // current reading finished, prepare for the next read event
-            dispatch_resume(self.readSource);
+//            dispatch_resume(self.readSource);
             self.socketFDBytesAvailable = 0;
         }
     } else {
