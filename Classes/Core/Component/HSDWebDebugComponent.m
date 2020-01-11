@@ -127,20 +127,41 @@
 - (void)handleDevProtocol:(HSDDevToolProtocolInfo *)devToolProtocolInfo parameters:(NSDictionary *)msgDict responseCallback:(void (^)(NSDictionary *, NSError *))responseCallback {
     __block NSDictionary *result = nil;
 
-    if ([devToolProtocolInfo.domainName isEqualToString:kHSDWebDebugDomainDOM]) {
-        if ([devToolProtocolInfo.methodName isEqualToString:@"getDocument"]) {
+    NSString *domainName = devToolProtocolInfo.domainName;
+    NSString *methodName = devToolProtocolInfo.methodName;
+    NSDictionary *params = devToolProtocolInfo.params;
+    if ([domainName isEqualToString:kHSDWebDebugDomainDOM]) {
+        if ([methodName isEqualToString:@"getDocument"]) {
             HSDWebDebugWebViewInfo *webViewInfo = [self.allWebViews objectForKey:devToolProtocolInfo.pageId];
             dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-            [webViewInfo.webView evaluateJavaScript:@"getDocument();" completionHandler:^(NSDictionary *res, NSError * _Nullable error) {
-                result = res;
-                dispatch_semaphore_signal(semaphore);
-            }];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [webViewInfo.webView evaluateJavaScript:@"getDocument();" completionHandler:^(NSDictionary *res, NSError * _Nullable error) {
+                    result = res;
+                    dispatch_semaphore_signal(semaphore);
+                }];
+            });
+
             dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
 //            NSString *a = @"/Users/jam/Desktop/workspace/ios-app/HttpServerDebug/Resources/HttpServerDebug.bundle/data.json";
 //            NSData *d = [[NSData alloc] initWithContentsOfFile:a];
 //            result = [NSJSONSerialization JSONObjectWithData:d options:0 error:nil];
 //            result = [result objectForKey:@"result"];
+        } else if ([devToolProtocolInfo.methodName isEqualToString:@"getBoxModel"]) {
+            HSDWebDebugWebViewInfo *webViewInfo = [self.allWebViews objectForKey:devToolProtocolInfo.pageId];
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSData *paramsData = [NSJSONSerialization dataWithJSONObject:params options:0 error:nil];
+                NSString *paramsString = [[NSString alloc] initWithData:paramsData encoding:NSUTF8StringEncoding];
+                [webViewInfo.webView evaluateJavaScript:[NSString stringWithFormat:@"getBoxModel(%@);", paramsString] completionHandler:^(NSDictionary *res, NSError * _Nullable error) {
+                    result = res;
+                    dispatch_semaphore_signal(semaphore);
+                }];
+            });
+
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
         }
     }
     if (responseCallback) {

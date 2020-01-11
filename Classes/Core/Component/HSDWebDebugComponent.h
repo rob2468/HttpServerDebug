@@ -32,9 +32,10 @@
 
 @interface HSDDevToolProtocolInfo : NSObject
 
-@property (nonatomic, strong) NSNumber *pageId;
+@property (nonatomic, strong) NSNumber *pageId;     // indicate web page
+@property (nonatomic, copy) NSString *objectId;     // indicate one communication
 @property (nonatomic, copy) NSString *domainName;
 @property (nonatomic, copy) NSString *methodName;
-@property (nonatomic, copy) NSString *objectId;
+@property (nonatomic, strong) NSDictionary *params;
 
 @end

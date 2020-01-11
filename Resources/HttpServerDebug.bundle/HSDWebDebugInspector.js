@@ -18,18 +18,25 @@ function getDocument() {
 }
 
 function visitHTMLElementDFS(element, identifier) {
-  let nodeData;
+  let nodeData = null;
   if (element) {
     // visit children nodes
     const childNodesData = [];
     const childNodes = Array.from(element.childNodes);
     for (let i = 0; i < childNodes.length; i++) {
-      const node = visitHTMLElementDFS(childNodes[i], identifier + 1);
-      childNodesData.push(node);
+      const childNodeData = visitHTMLElementDFS(childNodes[i], identifier + 1);
+      if (childNodeData) {
+        childNodesData.push(childNodeData);
+      }
     }
 
     // construct node structure
     nodeData = constructNode(element, identifier, childNodesData);
+
+    if (nodeData && nodeData.nodeType === Node.TEXT_NODE && !/\S/.test(nodeData.nodeValue)) {
+      // remove empty node
+      nodeData = null;
+    }
   }
   return nodeData;
 }
@@ -61,6 +68,22 @@ function constructNode(element, identifier, children) {
   };
   return nodeInfo;
 }
+
+function getBoxModel(params) {
+  // alert(params);
+  // const { nodeId } = params;
+  return {
+    model: {
+      content: [1, 2, 3, 4],
+      padding: [1, 2, 3, 4],
+      border: [1, 2, 3, 4],
+      margin: [1, 2, 3, 4],
+      width: 100,
+      height: 100,
+    },
+  };
+}
+
 
 // console.log(JSON.stringify(getDocument()));
 

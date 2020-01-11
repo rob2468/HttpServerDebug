@@ -54,6 +54,7 @@
     }
     NSString *objectId = [msgDict objectForKey:@"id"];
     devProtocolInfo.objectId = objectId;
+    devProtocolInfo.params = [msgDict objectForKey:@"params"];
 
     // callback
     void (^responseCallback)(NSDictionary *result, NSError *error) = ^(NSDictionary *result, NSError *error) {
