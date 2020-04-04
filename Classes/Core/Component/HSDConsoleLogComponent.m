@@ -54,18 +54,16 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
 #pragma mark - state
 
 - (BOOL)isRedirected {
-    BOOL isRedirected;
-    if (self.stdErrFd == kStdErrIllegalFd) {
-        isRedirected = NO;
-    } else {
-        isRedirected = YES;
-    }
-    return isRedirected;
+    return self.stdErrFd != kStdErrIllegalFd;
 }
 
 #pragma mark -
 
 - (void)redirectStandardErrorOutput {
+    if ([self isRedirected]) {
+        return;
+    }
+
     // save origin STDERR_FILENO with a new file descriptor
     self.stdErrFd = dup(STDERR_FILENO);
 
@@ -84,6 +82,10 @@ static int kStdErrIllegalFd = -1;     // stderr illegal file descriptor value
 }
 
 -(void)recoverStandardErrorOutput {
+    if (![self isRedirected]) {
+        return;
+    }
+
     // remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleReadCompletionNotification object:nil];
 
