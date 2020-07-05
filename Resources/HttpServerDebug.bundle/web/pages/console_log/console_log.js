@@ -10,7 +10,8 @@ window.onload = function () {
     localStrings = param;
 
     if ('WebSocket' in window) {
-      var ws = new WebSocket('ws://localhost:5555');
+      var host = window.location.host;
+      var ws = new WebSocket('ws://' + host);
       ws.onopen = function () {
         var stateEle = document.getElementById('connection_state');
         stateEle.innerHTML = 'CONNECTED';
